@@ -1,17 +1,22 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Loader2, ShieldCheck, AlertCircle, ArrowLeft } from 'lucide-react';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AlertCircle, ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { z } from "zod";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-
-import { useAuthStore } from '../store/authStore';
+import { useAuthStore } from "../store/authStore";
 
 // ============================================================================
 // VALIDATION SCHEMA
@@ -20,9 +25,9 @@ import { useAuthStore } from '../store/authStore';
 const verify2FASchema = z.object({
   code: z
     .string()
-    .min(6, 'Code must be 6 digits')
-    .max(6, 'Code must be 6 digits')
-    .regex(/^\d+$/, 'Code must contain only numbers'),
+    .min(6, "Code must be 6 digits")
+    .max(6, "Code must be 6 digits")
+    .regex(/^\d+$/, "Code must contain only numbers"),
 });
 
 type Verify2FAFormData = z.infer<typeof verify2FASchema>;
@@ -44,13 +49,13 @@ export function Verify2FAPage() {
   } = useForm<Verify2FAFormData>({
     resolver: zodResolver(verify2FASchema),
     defaultValues: {
-      code: '',
+      code: "",
     },
   });
 
   // If no temp token, redirect to login
   if (!tempToken) {
-    navigate('/login');
+    navigate("/login");
     return null;
   }
 
@@ -62,19 +67,21 @@ export function Verify2FAPage() {
       // TODO: Implement actual 2FA verification API call
       // For now, this is a placeholder that shows the structure
       // const response = await verify2FA({ temp_token: tempToken, code: data.code });
-      
+
       // Simulate API call for now
-      console.log('2FA verification:', { tempToken, code: data.code });
-      
+      console.log("2FA verification:", { tempToken, code: data.code });
+
       // On success, the API would return tokens and user data
       // handleLoginSuccess(response.data);
-      
-      setError('2FA verification not yet implemented. Please contact administrator.');
+
+      setError(
+        "2FA verification not yet implemented. Please contact administrator.",
+      );
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error
           ? err.message
-          : 'Invalid verification code. Please try again.';
+          : "Invalid verification code. Please try again.";
       setError(errorMessage);
     } finally {
       setIsLoading(false);
@@ -84,7 +91,7 @@ export function Verify2FAPage() {
   const handleBackToLogin = () => {
     setRequires2FA(false);
     setTempToken(null);
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
@@ -94,7 +101,9 @@ export function Verify2FAPage() {
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
             <ShieldCheck className="h-6 w-6 text-primary" />
           </div>
-          <CardTitle className="text-2xl font-bold">Two-Factor Authentication</CardTitle>
+          <CardTitle className="text-2xl font-bold">
+            Two-Factor Authentication
+          </CardTitle>
           <CardDescription>
             Enter the 6-digit code from your authenticator app
           </CardDescription>
@@ -120,10 +129,12 @@ export function Verify2FAPage() {
                 maxLength={6}
                 className="text-center text-2xl tracking-widest"
                 disabled={isLoading}
-                {...register('code')}
+                {...register("code")}
               />
               {errors.code && (
-                <p className="text-sm text-red-500 text-center">{errors.code.message}</p>
+                <p className="text-sm text-red-500 text-center">
+                  {errors.code.message}
+                </p>
               )}
             </div>
 
@@ -134,7 +145,7 @@ export function Verify2FAPage() {
                   Verifying...
                 </>
               ) : (
-                'Verify Code'
+                "Verify Code"
               )}
             </Button>
 
@@ -151,11 +162,11 @@ export function Verify2FAPage() {
           </form>
 
           <p className="mt-4 text-center text-sm text-muted-foreground">
-            Can't access your authenticator?{' '}
+            Can't access your authenticator?{" "}
             <button
               type="button"
               className="text-primary hover:underline"
-              onClick={() => setError('Backup code feature coming soon')}
+              onClick={() => setError("Backup code feature coming soon")}
             >
               Use backup code
             </button>

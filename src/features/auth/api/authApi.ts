@@ -1,12 +1,12 @@
-import apiClient from '@/shared/api/client';
+import apiClient from "@/shared/api/client";
 import type {
+  AdminLoginRequest,
+  AdminLoginResponse,
   ApiResponse,
   LoanOfficerLoginRequest,
   LoanOfficerLoginResponse,
-  AdminLoginRequest,
-  AdminLoginResponse,
   LogoutRequest,
-} from '@/types/api';
+} from "@/types/api";
 
 // ============================================================================
 // LOAN OFFICER AUTH API
@@ -17,11 +17,11 @@ import type {
  * POST /api/auth/loan-officer/login/
  */
 export async function loginLoanOfficer(
-  credentials: LoanOfficerLoginRequest
+  credentials: LoanOfficerLoginRequest,
 ): Promise<ApiResponse<LoanOfficerLoginResponse>> {
   const response = await apiClient.post<ApiResponse<LoanOfficerLoginResponse>>(
-    '/api/auth/loan-officer/login/',
-    credentials
+    "/api/auth/loan-officer/login/",
+    credentials,
   );
   return response.data;
 }
@@ -30,10 +30,12 @@ export async function loginLoanOfficer(
  * Logout as a loan officer
  * POST /api/auth/loan-officer/logout/
  */
-export async function logoutLoanOfficer(refreshToken: string): Promise<ApiResponse<null>> {
+export async function logoutLoanOfficer(
+  refreshToken: string,
+): Promise<ApiResponse<null>> {
   const response = await apiClient.post<ApiResponse<null>>(
-    '/api/auth/loan-officer/logout/',
-    { refresh_token: refreshToken } as LogoutRequest
+    "/api/auth/loan-officer/logout/",
+    { refresh_token: refreshToken } as LogoutRequest,
   );
   return response.data;
 }
@@ -47,11 +49,11 @@ export async function logoutLoanOfficer(refreshToken: string): Promise<ApiRespon
  * POST /api/auth/admin/login/
  */
 export async function loginAdmin(
-  credentials: AdminLoginRequest
+  credentials: AdminLoginRequest,
 ): Promise<ApiResponse<AdminLoginResponse>> {
   const response = await apiClient.post<ApiResponse<AdminLoginResponse>>(
-    '/api/auth/admin/login/',
-    credentials
+    "/api/auth/admin/login/",
+    credentials,
   );
   return response.data;
 }
@@ -60,10 +62,12 @@ export async function loginAdmin(
  * Logout as an admin
  * POST /api/auth/admin/logout/
  */
-export async function logoutAdmin(refreshToken: string): Promise<ApiResponse<null>> {
+export async function logoutAdmin(
+  refreshToken: string,
+): Promise<ApiResponse<null>> {
   const response = await apiClient.post<ApiResponse<null>>(
-    '/api/auth/admin/logout/',
-    { refresh_token: refreshToken } as LogoutRequest
+    "/api/auth/admin/logout/",
+    { refresh_token: refreshToken } as LogoutRequest,
   );
   return response.data;
 }
@@ -77,9 +81,9 @@ export async function logoutAdmin(refreshToken: string): Promise<ApiResponse<nul
  */
 export async function logout(
   refreshToken: string,
-  role: 'loan_officer' | 'admin'
+  role: "loan_officer" | "admin",
 ): Promise<ApiResponse<null>> {
-  if (role === 'admin') {
+  if (role === "admin") {
     return logoutAdmin(refreshToken);
   }
   return logoutLoanOfficer(refreshToken);

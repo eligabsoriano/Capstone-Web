@@ -1,7 +1,7 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
-export type UserRole = 'admin' | 'loan_officer';
+export type UserRole = "admin" | "loan_officer";
 
 // Base user fields shared by both roles
 interface BaseUser {
@@ -12,7 +12,7 @@ interface BaseUser {
 
 // Loan Officer specific fields
 export interface LoanOfficerUser extends BaseUser {
-  role: 'loan_officer';
+  role: "loan_officer";
   fullName: string;
   department: string;
   employeeId: string;
@@ -21,7 +21,7 @@ export interface LoanOfficerUser extends BaseUser {
 
 // Admin specific fields
 export interface AdminUser extends BaseUser {
-  role: 'admin';
+  role: "admin";
   username: string;
   fullName: string;
   permissions: string[];
@@ -48,18 +48,32 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       tempToken: null,
       requires2FA: false,
-      setUser: (user) => set({ user, isAuthenticated: !!user, requires2FA: false, tempToken: null }),
+      setUser: (user) =>
+        set({
+          user,
+          isAuthenticated: !!user,
+          requires2FA: false,
+          tempToken: null,
+        }),
       setTempToken: (tempToken) => set({ tempToken }),
       setRequires2FA: (requires2FA) => set({ requires2FA }),
       logout: () => {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        set({ user: null, isAuthenticated: false, tempToken: null, requires2FA: false });
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        set({
+          user: null,
+          isAuthenticated: false,
+          tempToken: null,
+          requires2FA: false,
+        });
       },
     }),
     {
-      name: 'auth-storage',
-      partialize: (state) => ({ user: state.user, isAuthenticated: state.isAuthenticated }),
-    }
-  )
+      name: "auth-storage",
+      partialize: (state) => ({
+        user: state.user,
+        isAuthenticated: state.isAuthenticated,
+      }),
+    },
+  ),
 );

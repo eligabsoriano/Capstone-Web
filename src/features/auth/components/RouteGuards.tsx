@@ -1,5 +1,5 @@
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { useAuth, type UserRole } from '../hooks';
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { type UserRole, useAuth } from "../hooks";
 
 // ============================================================================
 // PROTECTED ROUTE - Requires authentication
@@ -28,7 +28,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   }
 
   // Render children or Outlet for nested routes
-  return children ? <>{children}</> : <Outlet />;
+  return children ? children : <Outlet />;
 }
 
 // ============================================================================
@@ -45,7 +45,11 @@ interface RequireRoleProps {
  * Route guard that requires the user to have one of the allowed roles.
  * Must be used inside a ProtectedRoute.
  */
-export function RequireRole({ allowedRoles, children, fallbackPath = '/' }: RequireRoleProps) {
+export function RequireRole({
+  allowedRoles,
+  children,
+  fallbackPath = "/",
+}: RequireRoleProps) {
   const { role, isAuthenticated } = useAuth();
 
   // If not authenticated, ProtectedRoute should handle this
@@ -59,7 +63,7 @@ export function RequireRole({ allowedRoles, children, fallbackPath = '/' }: Requ
     return <Navigate to={fallbackPath} replace />;
   }
 
-  return children ? <>{children}</> : <Outlet />;
+  return children ? children : <Outlet />;
 }
 
 // ============================================================================
@@ -79,13 +83,14 @@ export function GuestOnlyRoute({ children }: GuestOnlyRouteProps) {
   const location = useLocation();
 
   // Get the intended destination from state, or default to home
-  const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/';
+  const from =
+    (location.state as { from?: { pathname: string } })?.from?.pathname || "/";
 
   if (isAuthenticated) {
     return <Navigate to={from} replace />;
   }
 
-  return children ? <>{children}</> : <Outlet />;
+  return children ? children : <Outlet />;
 }
 
 // ============================================================================
@@ -102,7 +107,11 @@ interface RequirePermissionProps {
  * Route guard that requires the admin user to have a specific permission.
  * Super admins automatically have all permissions.
  */
-export function RequirePermission({ permission, children, fallbackPath = '/' }: RequirePermissionProps) {
+export function RequirePermission({
+  permission,
+  children,
+  fallbackPath = "/",
+}: RequirePermissionProps) {
   const { isAdmin, hasPermission } = useAuth();
 
   // Only admins can have permissions
@@ -115,5 +124,5 @@ export function RequirePermission({ permission, children, fallbackPath = '/' }: 
     return <Navigate to={fallbackPath} replace />;
   }
 
-  return children ? <>{children}</> : <Outlet />;
+  return children ? children : <Outlet />;
 }

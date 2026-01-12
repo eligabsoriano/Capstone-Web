@@ -1,31 +1,43 @@
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Loader2, Building2, ShieldCheck, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  AlertCircle,
+  Building2,
+  Eye,
+  EyeOff,
+  Loader2,
+  ShieldCheck,
+} from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-
-import { useLogin } from '../hooks';
+import { useLogin } from "../hooks";
 
 // ============================================================================
 // VALIDATION SCHEMAS
 // ============================================================================
 
 const loanOfficerSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(1, 'Password is required'),
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(1, "Password is required"),
   remember_me: z.boolean().optional(),
 });
 
 const adminSchema = z.object({
-  username: z.string().min(1, 'Username is required'),
-  password: z.string().min(1, 'Password is required'),
+  username: z.string().min(1, "Username is required"),
+  password: z.string().min(1, "Password is required"),
 });
 
 type LoanOfficerFormData = z.infer<typeof loanOfficerSchema>;
@@ -36,12 +48,15 @@ type AdminFormData = z.infer<typeof adminSchema>;
 // ============================================================================
 
 export function LoginPage() {
-  const [activeTab, setActiveTab] = useState<'loan_officer' | 'admin'>('loan_officer');
-  const { loginAsLoanOfficer, loginAsAdmin, isLoading, error, clearError } = useLogin();
+  const [activeTab, setActiveTab] = useState<"loan_officer" | "admin">(
+    "loan_officer",
+  );
+  const { loginAsLoanOfficer, loginAsAdmin, isLoading, error, clearError } =
+    useLogin();
 
   // Handle tab change - clear any existing errors
   const handleTabChange = (value: string) => {
-    setActiveTab(value as 'loan_officer' | 'admin');
+    setActiveTab(value as "loan_officer" | "admin");
     clearError();
   };
 
@@ -50,12 +65,21 @@ export function LoginPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">MSME Loan Portal</CardTitle>
-          <CardDescription>Sign in to access the loan management system</CardDescription>
+          <CardDescription>
+            Sign in to access the loan management system
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+          <Tabs
+            value={activeTab}
+            onValueChange={handleTabChange}
+            className="w-full"
+          >
             <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="loan_officer" className="flex items-center gap-2">
+              <TabsTrigger
+                value="loan_officer"
+                className="flex items-center gap-2"
+              >
                 <Building2 className="h-4 w-4" />
                 Loan Officer
               </TabsTrigger>
@@ -81,10 +105,7 @@ export function LoginPage() {
             </TabsContent>
 
             <TabsContent value="admin">
-              <AdminLoginForm
-                onSubmit={loginAsAdmin}
-                isLoading={isLoading}
-              />
+              <AdminLoginForm onSubmit={loginAsAdmin} isLoading={isLoading} />
             </TabsContent>
           </Tabs>
         </CardContent>
@@ -102,9 +123,12 @@ interface LoanOfficerLoginFormProps {
   isLoading: boolean;
 }
 
-function LoanOfficerLoginForm({ onSubmit, isLoading }: LoanOfficerLoginFormProps) {
+function LoanOfficerLoginForm({
+  onSubmit,
+  isLoading,
+}: LoanOfficerLoginFormProps) {
   const [showPassword, setShowPassword] = useState(false);
-  
+
   const {
     register,
     handleSubmit,
@@ -112,8 +136,8 @@ function LoanOfficerLoginForm({ onSubmit, isLoading }: LoanOfficerLoginFormProps
   } = useForm<LoanOfficerFormData>({
     resolver: zodResolver(loanOfficerSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
       remember_me: false,
     },
   });
@@ -128,7 +152,7 @@ function LoanOfficerLoginForm({ onSubmit, isLoading }: LoanOfficerLoginFormProps
           placeholder="officer@company.com"
           autoComplete="email"
           disabled={isLoading}
-          {...register('email')}
+          {...register("email")}
         />
         {errors.email && (
           <p className="text-sm text-red-500">{errors.email.message}</p>
@@ -140,11 +164,11 @@ function LoanOfficerLoginForm({ onSubmit, isLoading }: LoanOfficerLoginFormProps
         <div className="relative">
           <Input
             id="officer-password"
-            type={showPassword ? 'text' : 'password'}
+            type={showPassword ? "text" : "password"}
             placeholder="Enter your password"
             autoComplete="current-password"
             disabled={isLoading}
-            {...register('password')}
+            {...register("password")}
           />
           <Button
             type="button"
@@ -172,7 +196,7 @@ function LoanOfficerLoginForm({ onSubmit, isLoading }: LoanOfficerLoginFormProps
           type="checkbox"
           className="h-4 w-4 rounded border-gray-300"
           disabled={isLoading}
-          {...register('remember_me')}
+          {...register("remember_me")}
         />
         <Label htmlFor="remember-me" className="text-sm font-normal">
           Remember me for 3 days
@@ -186,7 +210,7 @@ function LoanOfficerLoginForm({ onSubmit, isLoading }: LoanOfficerLoginFormProps
             Signing in...
           </>
         ) : (
-          'Sign in as Loan Officer'
+          "Sign in as Loan Officer"
         )}
       </Button>
     </form>
@@ -204,7 +228,7 @@ interface AdminLoginFormProps {
 
 function AdminLoginForm({ onSubmit, isLoading }: AdminLoginFormProps) {
   const [showPassword, setShowPassword] = useState(false);
-  
+
   const {
     register,
     handleSubmit,
@@ -212,8 +236,8 @@ function AdminLoginForm({ onSubmit, isLoading }: AdminLoginFormProps) {
   } = useForm<AdminFormData>({
     resolver: zodResolver(adminSchema),
     defaultValues: {
-      username: '',
-      password: '',
+      username: "",
+      password: "",
     },
   });
 
@@ -227,7 +251,7 @@ function AdminLoginForm({ onSubmit, isLoading }: AdminLoginFormProps) {
           placeholder="admin"
           autoComplete="username"
           disabled={isLoading}
-          {...register('username')}
+          {...register("username")}
         />
         {errors.username && (
           <p className="text-sm text-red-500">{errors.username.message}</p>
@@ -239,11 +263,11 @@ function AdminLoginForm({ onSubmit, isLoading }: AdminLoginFormProps) {
         <div className="relative">
           <Input
             id="admin-password"
-            type={showPassword ? 'text' : 'password'}
+            type={showPassword ? "text" : "password"}
             placeholder="Enter your password"
             autoComplete="current-password"
             disabled={isLoading}
-            {...register('password')}
+            {...register("password")}
           />
           <Button
             type="button"
@@ -272,7 +296,7 @@ function AdminLoginForm({ onSubmit, isLoading }: AdminLoginFormProps) {
             Signing in...
           </>
         ) : (
-          'Sign in as Admin'
+          "Sign in as Admin"
         )}
       </Button>
     </form>

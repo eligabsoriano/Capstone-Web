@@ -1,11 +1,11 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import {
-  LoginPage,
-  Verify2FAPage,
-  ProtectedRoute,
   GuestOnlyRoute,
+  LoginPage,
+  ProtectedRoute,
   RequireRole,
-} from '@/features/auth/components';
+  Verify2FAPage,
+} from "@/features/auth/components";
 
 // Placeholder pages - replace with actual implementations
 const DashboardLayout = () => (
@@ -53,11 +53,11 @@ export const router = createBrowserRouter([
     element: <GuestOnlyRoute />,
     children: [
       {
-        path: '/login',
+        path: "/login",
         element: <LoginPage />,
       },
       {
-        path: '/verify-2fa',
+        path: "/verify-2fa",
         element: <Verify2FAPage />,
       },
     ],
@@ -71,13 +71,13 @@ export const router = createBrowserRouter([
     children: [
       // Dashboard - redirects based on role
       {
-        path: '/',
+        path: "/",
         element: <DashboardLayout />,
       },
 
       // Change password (for loan officers on first login)
       {
-        path: '/change-password',
+        path: "/change-password",
         element: <ChangePasswordPage />,
       },
 
@@ -85,10 +85,10 @@ export const router = createBrowserRouter([
       // LOAN OFFICER ROUTES
       // ========================================================================
       {
-        element: <RequireRole allowedRoles={['loan_officer', 'admin']} />,
+        element: <RequireRole allowedRoles={["loan_officer", "admin"]} />,
         children: [
           {
-            path: '/officer',
+            path: "/officer",
             element: <LoanOfficerDashboard />,
           },
           // Add more loan officer routes here
@@ -99,10 +99,10 @@ export const router = createBrowserRouter([
       // ADMIN ONLY ROUTES
       // ========================================================================
       {
-        element: <RequireRole allowedRoles={['admin']} />,
+        element: <RequireRole allowedRoles={["admin"]} />,
         children: [
           {
-            path: '/admin',
+            path: "/admin",
             element: <AdminDashboard />,
           },
           // Add more admin routes here
@@ -115,7 +115,7 @@ export const router = createBrowserRouter([
   // CATCH-ALL - Redirect to home
   // ============================================================================
   {
-    path: '*',
+    path: "*",
     element: <Navigate to="/" replace />,
   },
 ]);

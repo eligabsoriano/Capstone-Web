@@ -1,13 +1,17 @@
-import { useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { loginLoanOfficer, loginAdmin } from '../api';
-import { useAuthStore, type LoanOfficerUser, type AdminUser } from '../store/authStore';
+import { useCallback, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import type {
-  LoanOfficerLoginRequest,
   AdminLoginRequest,
-  LoanOfficerLoginResponse,
   AdminLoginResponse,
-} from '@/types/api';
+  LoanOfficerLoginRequest,
+  LoanOfficerLoginResponse,
+} from "@/types/api";
+import { loginAdmin, loginLoanOfficer } from "../api";
+import {
+  type AdminUser,
+  type LoanOfficerUser,
+  useAuthStore,
+} from "../store/authStore";
 
 interface UseLoginReturn {
   loginAsLoanOfficer: (credentials: LoanOfficerLoginRequest) => Promise<void>;
@@ -36,27 +40,27 @@ export function useLogin(): UseLoginReturn {
   const handleLoginSuccess = useCallback(
     (
       data: LoanOfficerLoginResponse | AdminLoginResponse,
-      role: 'loan_officer' | 'admin'
+      role: "loan_officer" | "admin",
     ) => {
       // Check if 2FA is required
       if (data.requires_2fa && data.temp_token) {
         setTempToken(data.temp_token);
         setRequires2FA(true);
-        navigate('/verify-2fa');
+        navigate("/verify-2fa");
         return;
       }
 
       // Store tokens
-      localStorage.setItem('access_token', data.access_token);
-      localStorage.setItem('refresh_token', data.refresh_token);
+      localStorage.setItem("access_token", data.access_token);
+      localStorage.setItem("refresh_token", data.refresh_token);
 
       // Transform and store user data based on role
-      if (role === 'loan_officer') {
+      if (role === "loan_officer") {
         const loanOfficerData = data as LoanOfficerLoginResponse;
         const user: LoanOfficerUser = {
           id: loanOfficerData.user.id,
           email: loanOfficerData.user.email,
-          role: 'loan_officer',
+          role: "loan_officer",
           fullName: loanOfficerData.user.full_name,
           department: loanOfficerData.user.department,
           employeeId: loanOfficerData.user.employee_id,
@@ -66,9 +70,9 @@ export function useLogin(): UseLoginReturn {
 
         // Redirect based on password change requirement
         if (loanOfficerData.must_change_password) {
-          navigate('/change-password');
+          navigate("/change-password");
         } else {
-          navigate('/');
+          navigate("/");
         }
       } else {
         const adminData = data as AdminLoginResponse;
@@ -76,16 +80,16 @@ export function useLogin(): UseLoginReturn {
           id: adminData.user.id,
           email: adminData.user.email,
           username: adminData.user.username,
-          role: 'admin',
+          role: "admin",
           fullName: adminData.user.full_name,
           permissions: adminData.user.permissions,
           superAdmin: adminData.user.super_admin,
         };
         setUser(user);
-        navigate('/');
+        navigate("/");
       }
     },
-    [navigate, setUser, setTempToken, setRequires2FA]
+    [navigate, setUser, setTempToken, setRequires2FA],
   );
 
   /**
@@ -99,23 +103,23 @@ export function useLogin(): UseLoginReturn {
       try {
         const response = await loginLoanOfficer(credentials);
 
-        if (response.status === 'success' && response.data) {
-          handleLoginSuccess(response.data, 'loan_officer');
+        if (response.status === "success" && response.data) {
+          handleLoginSuccess(response.data, "loan_officer");
         } else {
-          setError(response.message || 'Login failed');
+          setError(response.message || "Login failed");
         }
       } catch (err: unknown) {
         const errorMessage =
           err instanceof Error
             ? err.message
-            : (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
-              'An error occurred during login';
+            : (err as { response?: { data?: { message?: string } } })?.response
+                ?.data?.message || "An error occurred during login";
         setError(errorMessage);
       } finally {
         setIsLoading(false);
       }
     },
-    [handleLoginSuccess]
+    [handleLoginSuccess],
   );
 
   /**
@@ -129,23 +133,23 @@ export function useLogin(): UseLoginReturn {
       try {
         const response = await loginAdmin(credentials);
 
-        if (response.status === 'success' && response.data) {
-          handleLoginSuccess(response.data, 'admin');
+        if (response.status === "success" && response.data) {
+          handleLoginSuccess(response.data, "admin");
         } else {
-          setError(response.message || 'Login failed');
+          setError(response.message || "Login failed");
         }
       } catch (err: unknown) {
         const errorMessage =
           err instanceof Error
             ? err.message
-            : (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
-              'An error occurred during login';
+            : (err as { response?: { data?: { message?: string } } })?.response
+                ?.data?.message || "An error occurred during login";
         setError(errorMessage);
       } finally {
         setIsLoading(false);
       }
     },
-    [handleLoginSuccess]
+    [handleLoginSuccess],
   );
 
   return {
