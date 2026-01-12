@@ -109,7 +109,7 @@ export function useLogin(): UseLoginReturn {
           err instanceof Error
             ? err.message
             : (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
-              'An error occurred during login';
+            'An error occurred during login';
         setError(errorMessage);
       } finally {
         setIsLoading(false);
@@ -139,7 +139,7 @@ export function useLogin(): UseLoginReturn {
           err instanceof Error
             ? err.message
             : (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
-              'An error occurred during login';
+            'An error occurred during login';
         setError(errorMessage);
       } finally {
         setIsLoading(false);
