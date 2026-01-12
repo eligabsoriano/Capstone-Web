@@ -48,10 +48,11 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       tempToken: null,
       requires2FA: false,
+      // setUser also updates isAuthenticated
       setUser: (user) =>
         set({
           user,
-          isAuthenticated: !!user,
+          isAuthenticated: user !== null,
           requires2FA: false,
           tempToken: null,
         }),
@@ -70,10 +71,14 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: "auth-storage",
-      partialize: (state) => ({
-        user: state.user,
-        isAuthenticated: state.isAuthenticated,
-      }),
+      // Persist user - isAuthenticated will be derived on rehydration
+      partialize: (state) => ({ user: state.user }),
+      // On rehydration, set isAuthenticated based on user
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          state.isAuthenticated = state.user !== null;
+        }
+      },
     },
   ),
 );

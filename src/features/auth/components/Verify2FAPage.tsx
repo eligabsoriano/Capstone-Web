@@ -59,7 +59,7 @@ export function Verify2FAPage() {
     return null;
   }
 
-  const onSubmit = async (data: Verify2FAFormData) => {
+  const onSubmit = async (_data: Verify2FAFormData) => {
     setIsLoading(true);
     setError(null);
 
@@ -67,9 +67,6 @@ export function Verify2FAPage() {
       // TODO: Implement actual 2FA verification API call
       // For now, this is a placeholder that shows the structure
       // const response = await verify2FA({ temp_token: tempToken, code: data.code });
-
-      // Simulate API call for now
-      console.log("2FA verification:", { tempToken, code: data.code });
 
       // On success, the API would return tokens and user data
       // handleLoginSuccess(response.data);
