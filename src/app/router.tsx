@@ -1,6 +1,15 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { AdminLayout } from "@/features/admin/components";
-import { AdminDashboardPage } from "@/features/admin/pages";
+import {
+  AdminAdminsPage,
+  AdminApplicationsPage,
+  AdminAuditLogsPage,
+  AdminDashboardPage,
+  AdminOfficersPage,
+  AdminProductsPage,
+  AdminSettingsPage,
+  AdminWorkloadPage,
+} from "@/features/admin/pages";
 import {
   GuestOnlyRoute,
   LoginPage,
@@ -53,97 +62,6 @@ const ChangePasswordPage = () => (
       <p className="text-sm text-muted-foreground mt-4">
         (Password change form coming soon)
       </p>
-    </div>
-  </div>
-);
-
-// Placeholder admin sub-pages
-const AdminOfficersPage = () => (
-  <div className="space-y-6">
-    <div>
-      <h1 className="text-3xl font-bold tracking-tight">Loan Officers</h1>
-      <p className="text-muted-foreground">Manage loan officer accounts</p>
-    </div>
-    <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
-      Loan officers management coming soon
-    </div>
-  </div>
-);
-
-const AdminAdminsPage = () => (
-  <div className="space-y-6">
-    <div>
-      <h1 className="text-3xl font-bold tracking-tight">Admins</h1>
-      <p className="text-muted-foreground">
-        Manage administrator accounts (Super Admin only)
-      </p>
-    </div>
-    <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
-      Admin management coming soon
-    </div>
-  </div>
-);
-
-const AdminApplicationsPage = () => (
-  <div className="space-y-6">
-    <div>
-      <h1 className="text-3xl font-bold tracking-tight">Applications</h1>
-      <p className="text-muted-foreground">View and manage loan applications</p>
-    </div>
-    <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
-      Applications oversight coming soon
-    </div>
-  </div>
-);
-
-const AdminProductsPage = () => (
-  <div className="space-y-6">
-    <div>
-      <h1 className="text-3xl font-bold tracking-tight">Loan Products</h1>
-      <p className="text-muted-foreground">Configure loan products</p>
-    </div>
-    <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
-      Product management coming soon
-    </div>
-  </div>
-);
-
-const AdminWorkloadPage = () => (
-  <div className="space-y-6">
-    <div>
-      <h1 className="text-3xl font-bold tracking-tight">Officer Workload</h1>
-      <p className="text-muted-foreground">
-        View and manage loan officer assignments
-      </p>
-    </div>
-    <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
-      Officer workload dashboard coming soon
-    </div>
-  </div>
-);
-
-const AdminAuditLogsPage = () => (
-  <div className="space-y-6">
-    <div>
-      <h1 className="text-3xl font-bold tracking-tight">Audit Logs</h1>
-      <p className="text-muted-foreground">View system activity logs</p>
-    </div>
-    <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
-      Audit logs coming soon
-    </div>
-  </div>
-);
-
-const AdminSettingsPage = () => (
-  <div className="space-y-6">
-    <div>
-      <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
-      <p className="text-muted-foreground">
-        System configuration and preferences
-      </p>
-    </div>
-    <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
-      Settings coming soon
     </div>
   </div>
 );
