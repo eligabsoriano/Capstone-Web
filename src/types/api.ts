@@ -1,6 +1,6 @@
 // Standard API response from Django backend
 export interface ApiResponse<T> {
-  status: 'success' | 'error';
+  status: "success" | "error";
   message?: string;
   data?: T;
   errors?: Record<string, string[]>;
@@ -22,7 +22,7 @@ export interface LoanOfficerUser {
   full_name: string;
   department: string;
   employee_id: string;
-  role: 'loan_officer';
+  role: "loan_officer";
 }
 
 export interface LoanOfficerLoginResponse {
@@ -48,7 +48,7 @@ export interface AdminUser {
   username: string;
   email: string;
   full_name: string;
-  role: 'admin';
+  role: "admin";
   permissions: string[];
   super_admin: boolean;
 }

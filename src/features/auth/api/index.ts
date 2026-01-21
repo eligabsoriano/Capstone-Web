@@ -1,1 +1,7 @@
-export { loginLoanOfficer, loginAdmin, logout, logoutLoanOfficer, logoutAdmin } from './authApi';
+export {
+  loginAdmin,
+  loginLoanOfficer,
+  logout,
+  logoutAdmin,
+  logoutLoanOfficer,
+} from "./authApi";

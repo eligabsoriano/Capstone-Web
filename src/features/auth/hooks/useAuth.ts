@@ -1,4 +1,10 @@
-import { useAuthStore, type User, type LoanOfficerUser, type AdminUser, type UserRole } from '../store/authStore';
+import {
+  type AdminUser,
+  type LoanOfficerUser,
+  type User,
+  type UserRole,
+  useAuthStore,
+} from "../store/authStore";
 
 interface UseAuthReturn {
   user: User | null;
@@ -19,8 +25,8 @@ export function useAuth(): UseAuthReturn {
   const { user, isAuthenticated, requires2FA, tempToken } = useAuthStore();
 
   const role = user?.role ?? null;
-  const isLoanOfficer = role === 'loan_officer';
-  const isAdmin = role === 'admin';
+  const isLoanOfficer = role === "loan_officer";
+  const isAdmin = role === "admin";
 
   // Check if user is super admin (admins with all permissions)
   const isSuperAdmin = isAdmin && (user as AdminUser)?.superAdmin === true;
@@ -31,14 +37,14 @@ export function useAuth(): UseAuthReturn {
    */
   const hasPermission = (permission: string): boolean => {
     if (!isAdmin || !user) return false;
-    
+
     const adminUser = user as AdminUser;
-    
+
     // Super admin has all permissions
-    if (adminUser.superAdmin || adminUser.permissions.includes('*')) {
+    if (adminUser.superAdmin || adminUser.permissions.includes("*")) {
       return true;
     }
-    
+
     return adminUser.permissions.includes(permission);
   };
 

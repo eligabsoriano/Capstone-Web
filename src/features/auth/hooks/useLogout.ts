@@ -1,7 +1,7 @@
-import { useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { logout } from '../api';
-import { useAuthStore } from '../store/authStore';
+import { useCallback, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { logout } from "../api";
+import { useAuthStore } from "../store/authStore";
 
 interface UseLogoutReturn {
   handleLogout: () => Promise<void>;
@@ -22,7 +22,7 @@ export function useLogout(): UseLogoutReturn {
     setIsLoading(true);
     setError(null);
 
-    const refreshToken = localStorage.getItem('refresh_token');
+    const refreshToken = localStorage.getItem("refresh_token");
 
     try {
       // Call logout API if we have a refresh token and user role
@@ -31,12 +31,12 @@ export function useLogout(): UseLogoutReturn {
       }
     } catch (err) {
       // Log error but don't prevent logout
-      console.error('Logout API error:', err);
+      console.error("Logout API error:", err);
     } finally {
       // Always clear local state regardless of API success
       clearAuthState();
       setIsLoading(false);
-      navigate('/login');
+      navigate("/login");
     }
   }, [user?.role, clearAuthState, navigate]);
 
