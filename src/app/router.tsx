@@ -9,6 +9,14 @@ import {
   Verify2FAPage,
 } from "@/features/auth/components";
 import { useAuthStore } from "@/features/auth/store/authStore";
+import { OfficerLayout } from "@/features/loan-officer/components";
+import {
+  OfficerApplicationsPage,
+  OfficerDashboardPage,
+  OfficerDisbursementsPage,
+  OfficerPaymentsPage,
+  OfficerSettingsPage,
+} from "@/features/loan-officer/pages";
 
 // ============================================================================
 // ROLE-BASED REDIRECT - Redirects user to their appropriate dashboard
@@ -34,13 +42,6 @@ function RoleBasedRedirect() {
 // ============================================================================
 // PLACEHOLDER PAGES - Replace with actual implementations
 // ============================================================================
-
-const LoanOfficerDashboard = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold">Loan Officer Dashboard</h1>
-    <p className="text-muted-foreground">Review and manage loan applications</p>
-  </div>
-);
 
 const ChangePasswordPage = () => (
   <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-8">
@@ -188,16 +189,37 @@ export const router = createBrowserRouter([
       },
 
       // ========================================================================
-      // LOAN OFFICER ROUTES
+      // LOAN OFFICER ROUTES - With OfficerLayout
       // ========================================================================
       {
         element: <RequireRole allowedRoles={["loan_officer", "admin"]} />,
         children: [
           {
             path: "/officer",
-            element: <LoanOfficerDashboard />,
+            element: <OfficerLayout />,
+            children: [
+              {
+                index: true,
+                element: <OfficerDashboardPage />,
+              },
+              {
+                path: "applications",
+                element: <OfficerApplicationsPage />,
+              },
+              {
+                path: "disbursements",
+                element: <OfficerDisbursementsPage />,
+              },
+              {
+                path: "payments",
+                element: <OfficerPaymentsPage />,
+              },
+              {
+                path: "settings",
+                element: <OfficerSettingsPage />,
+              },
+            ],
           },
-          // Add more loan officer routes here
         ],
       },
 
