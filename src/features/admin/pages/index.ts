@@ -1,5 +1,6 @@
 export { AdminDashboardPage } from "./AdminDashboardPage";
 export { AdminOfficersPage } from "./AdminOfficersPage";
+export { AdminOfficerDetailPage } from "./AdminOfficerDetailPage";
 export { AdminAdminsPage } from "./AdminAdminsPage";
 export { AdminApplicationsPage } from "./AdminApplicationsPage";
 export { AdminProductsPage } from "./AdminProductsPage";

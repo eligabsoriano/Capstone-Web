@@ -5,6 +5,7 @@ import {
   AdminApplicationsPage,
   AdminAuditLogsPage,
   AdminDashboardPage,
+  AdminOfficerDetailPage,
   AdminOfficersPage,
   AdminProductsPage,
   AdminSettingsPage,
@@ -158,6 +159,10 @@ export const router = createBrowserRouter([
               {
                 path: "officers",
                 element: <AdminOfficersPage />,
+              },
+              {
+                path: "officers/:id",
+                element: <AdminOfficerDetailPage />,
               },
               {
                 path: "admins",
