@@ -20,9 +20,9 @@ import {
 import { useAuthStore } from "@/features/auth/store/authStore";
 import { OfficerLayout } from "@/features/loan-officer/components";
 import {
+  OfficerApplicationDetailPage,
   OfficerApplicationsPage,
   OfficerDashboardPage,
-  OfficerDisbursementsPage,
   OfficerPaymentsPage,
   OfficerSettingsPage,
 } from "@/features/loan-officer/pages";
@@ -125,8 +125,8 @@ export const router = createBrowserRouter([
                 element: <OfficerApplicationsPage />,
               },
               {
-                path: "disbursements",
-                element: <OfficerDisbursementsPage />,
+                path: "applications/:id",
+                element: <OfficerApplicationDetailPage />,
               },
               {
                 path: "payments",
