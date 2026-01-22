@@ -9,10 +9,9 @@ import { type APIRequestContext, expect, test } from "@playwright/test";
 
 const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:8000";
 
-// Test credentials
 const TEST_LOAN_OFFICER = {
-  email: "test.officer@example.com",
-  password: "TestPassword123!",
+  email: "officer@test.com",
+  password: "f8kycZFECF^l",
 };
 
 // Helper function to login and get access token
