@@ -12,6 +12,7 @@ import {
   AdminWorkloadPage,
 } from "@/features/admin/pages";
 import {
+  ChangePasswordPage,
   GuestOnlyRoute,
   LoginPage,
   ProtectedRoute,
@@ -52,20 +53,6 @@ function RoleBasedRedirect() {
 // ============================================================================
 // PLACEHOLDER PAGES - Replace with actual implementations
 // ============================================================================
-
-const ChangePasswordPage = () => (
-  <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-8">
-    <div className="max-w-md w-full text-center">
-      <h1 className="text-2xl font-bold mb-4">Change Your Password</h1>
-      <p className="text-muted-foreground">
-        You must change your password before continuing.
-      </p>
-      <p className="text-sm text-muted-foreground mt-4">
-        (Password change form coming soon)
-      </p>
-    </div>
-  </div>
-);
 
 // ============================================================================
 // ROUTER CONFIGURATION

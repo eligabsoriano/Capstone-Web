@@ -76,12 +76,76 @@ export interface Verify2FAResponse {
   user: LoanOfficerUser | AdminUser;
 }
 
+export interface Setup2FAResponse {
+  qr_code: string; // Base64 encoded QR code image
+  secret: string; // Backup secret key
+  message: string;
+}
+
+export interface Confirm2FASetupRequest {
+  code: string;
+}
+
+export interface Disable2FARequest {
+  code: string;
+}
+
+export interface Get2FAStatusResponse {
+  two_factor_enabled: boolean;
+  backup_codes_remaining: number;
+}
+
+export interface BackupCodesRequest {
+  code: string; // Current 2FA code to verify identity
+}
+
+export interface BackupCodesResponse {
+  backup_codes: string[];
+  message: string;
+}
+
 // ============================================================================
 // LOGOUT TYPES
 // ============================================================================
 
 export interface LogoutRequest {
   refresh_token: string;
+}
+
+// ============================================================================
+// REFRESH TOKEN TYPES
+// ============================================================================
+
+export interface RefreshTokenRequest {
+  refresh: string;
+}
+
+export interface RefreshTokenResponse {
+  access_token: string;
+}
+
+// ============================================================================
+// PASSWORD MANAGEMENT TYPES
+// ============================================================================
+
+export interface ChangePasswordRequest {
+  old_password: string;
+  new_password: string;
+}
+
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface VerifyResetOTPRequest {
+  email: string;
+  otp: string;
+}
+
+export interface ResetPasswordRequest {
+  email: string;
+  otp: string;
+  new_password: string;
 }
 
 // Generic login response union type

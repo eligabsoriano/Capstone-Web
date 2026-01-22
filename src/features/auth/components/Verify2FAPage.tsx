@@ -59,21 +59,70 @@ export function Verify2FAPage() {
     return null;
   }
 
-  const onSubmit = async (_data: Verify2FAFormData) => {
+  const onSubmit = async (data: Verify2FAFormData) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      // TODO: Implement actual 2FA verification API call
-      // For now, this is a placeholder that shows the structure
-      // const response = await verify2FA({ temp_token: tempToken, code: data.code });
+      const response = await fetch("/api/auth/2fa/verify/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          temp_token: tempToken,
+          code: data.code,
+        }),
+      });
 
-      // On success, the API would return tokens and user data
-      // handleLoginSuccess(response.data);
+      const result = await response.json();
 
-      setError(
-        "2FA verification not yet implemented. Please contact administrator.",
-      );
+      if (result.status === "success" && result.data) {
+        // Store tokens
+        localStorage.setItem("access_token", result.data.access_token);
+        localStorage.setItem("refresh_token", result.data.refresh_token);
+
+        // Determine user role and create user object
+        const userData = result.data.user;
+        let user: import("../store/authStore").User;
+
+        if ("employee_id" in userData) {
+          // Loan Officer
+          user = {
+            id: userData.id,
+            email: userData.email,
+            role: "loan_officer" as const,
+            fullName: userData.full_name,
+            department: userData.department,
+            employeeId: userData.employee_id,
+            mustChangePassword: false,
+          };
+        } else {
+          // Admin
+          user = {
+            id: userData.id,
+            email: userData.email,
+            username: userData.username,
+            role: "admin" as const,
+            fullName: userData.full_name,
+            permissions: userData.permissions,
+            superAdmin: userData.super_admin,
+          };
+        }
+
+        // Update auth store
+        const { setUser } = await import("../store/authStore").then((m) => ({
+          setUser: m.useAuthStore.getState().setUser,
+        }));
+        setUser(user);
+        setRequires2FA(false);
+        setTempToken(null);
+
+        // Redirect based on role
+        navigate(user.role === "admin" ? "/admin" : "/officer");
+      } else {
+        setError(result.message || "Invalid verification code");
+      }
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error

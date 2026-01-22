@@ -88,3 +88,140 @@ export async function logout(
   }
   return logoutLoanOfficer(refreshToken);
 }
+
+// ============================================================================
+// REFRESH TOKEN
+// ============================================================================
+
+/**
+ * Refresh access token using refresh token
+ * POST /api/auth/refresh-token/
+ */
+export async function refreshAccessToken(
+  refreshToken: string,
+): Promise<ApiResponse<{ access_token: string }>> {
+  const response = await apiClient.post<ApiResponse<{ access_token: string }>>(
+    "/api/auth/refresh-token/",
+    { refresh: refreshToken },
+  );
+  return response.data;
+}
+
+// ============================================================================
+// TWO-FACTOR AUTHENTICATION (2FA)
+// ============================================================================
+
+/**
+ * Verify 2FA code during login
+ * POST /api/auth/2fa/verify/
+ */
+export async function verify2FA(data: {
+  temp_token: string;
+  code: string;
+}): Promise<
+  ApiResponse<{
+    access_token: string;
+    refresh_token: string;
+    user:
+      | import("@/types/api").LoanOfficerUser
+      | import("@/types/api").AdminUser;
+  }>
+> {
+  const response = await apiClient.post<
+    ApiResponse<{
+      access_token: string;
+      refresh_token: string;
+      user:
+        | import("@/types/api").LoanOfficerUser
+        | import("@/types/api").AdminUser;
+    }>
+  >("/api/auth/2fa/verify/", data);
+  return response.data;
+}
+
+/**
+ * Setup 2FA (get QR code)
+ * POST /api/auth/2fa/setup/
+ */
+export async function setup2FA(): Promise<
+  ApiResponse<{
+    qr_code: string;
+    secret: string;
+    message: string;
+  }>
+> {
+  const response = await apiClient.post<
+    ApiResponse<{
+      qr_code: string;
+      secret: string;
+      message: string;
+    }>
+  >("/api/auth/2fa/setup/");
+  return response.data;
+}
+
+/**
+ * Confirm 2FA setup
+ * POST /api/auth/2fa/confirm/
+ */
+export async function confirm2FASetup(data: {
+  code: string;
+}): Promise<ApiResponse<null>> {
+  const response = await apiClient.post<ApiResponse<null>>(
+    "/api/auth/2fa/confirm/",
+    data,
+  );
+  return response.data;
+}
+
+/**
+ * Get 2FA status
+ * GET /api/auth/2fa/status/
+ */
+export async function get2FAStatus(): Promise<
+  ApiResponse<{
+    two_factor_enabled: boolean;
+    backup_codes_remaining: number;
+  }>
+> {
+  const response = await apiClient.get<
+    ApiResponse<{
+      two_factor_enabled: boolean;
+      backup_codes_remaining: number;
+    }>
+  >("/api/auth/2fa/status/");
+  return response.data;
+}
+
+/**
+ * Disable 2FA
+ * POST /api/auth/2fa/disable/
+ */
+export async function disable2FA(data: {
+  code: string;
+}): Promise<ApiResponse<null>> {
+  const response = await apiClient.post<ApiResponse<null>>(
+    "/api/auth/2fa/disable/",
+    data,
+  );
+  return response.data;
+}
+
+/**
+ * Generate new backup codes
+ * POST /api/auth/2fa/backup-codes/
+ */
+export async function generateBackupCodes(data: { code: string }): Promise<
+  ApiResponse<{
+    backup_codes: string[];
+    message: string;
+  }>
+> {
+  const response = await apiClient.post<
+    ApiResponse<{
+      backup_codes: string[];
+      message: string;
+    }>
+  >("/api/auth/2fa/backup-codes/", data);
+  return response.data;
+}
