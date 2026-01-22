@@ -14,40 +14,42 @@ test.describe("Login Page UI", () => {
   test("should display login page with all required elements", async ({
     page,
   }) => {
-    // Check for heading
-    await expect(page.locator("h1, h2").first()).toBeVisible();
+    // Check for heading (CardTitle uses data-slot attribute)
+    await expect(
+      page.locator('[data-slot="card-title"]').first(),
+    ).toBeVisible();
 
-    // Check for email input
+    // Check for email input (loan officer tab is default)
     const emailInput = page.locator(
-      'input[type="email"], input[name="email"], input[placeholder*="email" i]',
+      'input[type="email"], input[id="officer-email"]',
     );
     await expect(emailInput.first()).toBeVisible();
 
     // Check for password input
-    const passwordInput = page.locator('input[type="password"]');
-    await expect(passwordInput).toBeVisible();
+    const passwordInput = page.locator(
+      'input[type="password"], input[id="officer-password"]',
+    );
+    await expect(passwordInput.first()).toBeVisible();
 
     // Check for submit button
-    const submitButton = page.locator(
-      'button[type="submit"], button:has-text("Login"), button:has-text("Sign in")',
-    );
+    const submitButton = page.locator('button[type="submit"]');
     await expect(submitButton.first()).toBeVisible();
   });
 
   test("should show validation error for empty form submission", async ({
     page,
   }) => {
-    const submitButton = page.locator(
-      'button[type="submit"], button:has-text("Login"), button:has-text("Sign in")',
-    );
-    await submitButton.first().click();
+    const submitButton = page.locator('button[type="submit"]').first();
+    await submitButton.click();
 
     // Wait for validation messages or error state
     await page.waitForTimeout(500);
 
-    // Check for validation error indicators
+    // Check for validation error indicators (react-hook-form shows red text errors)
     const hasError = await page
-      .locator('[class*="error"], [class*="invalid"], [aria-invalid="true"]')
+      .locator(
+        '[class*="text-red"], [class*="error"], [class*="invalid"], [aria-invalid="true"]',
+      )
       .first()
       .isVisible()
       .catch(() => false);
@@ -57,43 +59,47 @@ test.describe("Login Page UI", () => {
   });
 
   test("should toggle password visibility", async ({ page }) => {
-    const passwordInput = page.locator('input[type="password"]').first();
+    // Wait for the password input to be visible first
+    const passwordInput = page.locator('input[id="officer-password"]');
+    await expect(passwordInput).toBeVisible();
 
-    // Look for password toggle button
-    const toggleButton = page.locator(
-      'button[aria-label*="password" i], button:has([class*="eye"]), [class*="toggle"]',
-    );
+    // Get initial type
+    const initialType = await passwordInput.getAttribute("type");
+    expect(initialType).toBe("password");
 
-    if ((await toggleButton.count()) > 0) {
-      await toggleButton.first().click();
+    // The toggle button is the sibling button inside the relative div container
+    // It's positioned absolute right-0 within the same parent div as the input
+    const toggleButton = page
+      .locator(
+        'input[id="officer-password"] + button, input[id="officer-password"] ~ button',
+      )
+      .first();
 
-      // After toggle, password should be visible (type="text")
-      const inputType = await passwordInput.getAttribute("type");
-      // It might now be "text" or still "password" based on implementation
-      expect(["text", "password"]).toContain(inputType);
-    }
+    await toggleButton.click();
+
+    // After toggle, password should be visible (type="text")
+    const newType = await passwordInput.getAttribute("type");
+    expect(newType).toBe("text");
   });
 
   test("should show error message for invalid credentials", async ({
     page,
   }) => {
-    const emailInput = page.locator('input[type="email"], input[name="email"]');
-    const passwordInput = page.locator('input[type="password"]');
-    const submitButton = page.locator(
-      'button[type="submit"], button:has-text("Login"), button:has-text("Sign in")',
-    );
+    const emailInput = page.locator('input[id="officer-email"]');
+    const passwordInput = page.locator('input[id="officer-password"]');
+    const submitButton = page.locator('button[type="submit"]').first();
 
-    await emailInput.first().fill("invalid@example.com");
+    await emailInput.fill("invalid@example.com");
     await passwordInput.fill("wrongpassword123");
-    await submitButton.first().click();
+    await submitButton.click();
 
     // Wait for API response and error display
     await page.waitForTimeout(2000);
 
-    // Check for error message (could be toast, alert, or inline error)
+    // Check for error message (Alert component with destructive variant)
     const errorVisible = await page
       .locator(
-        '[role="alert"], [class*="error"], [class*="toast"], [class*="alert"]',
+        '[role="alert"], [class*="destructive"], [class*="error"], [class*="alert"]',
       )
       .first()
       .isVisible()
@@ -130,15 +136,13 @@ test.describe("Login Page UI", () => {
     await page.goto("/login");
 
     // Check that form elements are still visible and accessible
-    const emailInput = page.locator('input[type="email"], input[name="email"]');
-    const passwordInput = page.locator('input[type="password"]');
-    const submitButton = page.locator(
-      'button[type="submit"], button:has-text("Login"), button:has-text("Sign in")',
-    );
+    const emailInput = page.locator('input[id="officer-email"]');
+    const passwordInput = page.locator('input[id="officer-password"]');
+    const submitButton = page.locator('button[type="submit"]').first();
 
-    await expect(emailInput.first()).toBeVisible();
+    await expect(emailInput).toBeVisible();
     await expect(passwordInput).toBeVisible();
-    await expect(submitButton.first()).toBeVisible();
+    await expect(submitButton).toBeVisible();
   });
 });
 
@@ -256,19 +260,19 @@ test.describe("Accessibility", () => {
     await page.goto("/login");
 
     // Check for labels associated with inputs
-    const emailInput = page.locator('input[type="email"], input[name="email"]');
-    const passwordInput = page.locator('input[type="password"]');
+    const emailInput = page.locator('input[id="officer-email"]');
+    const passwordInput = page.locator('input[id="officer-password"]');
 
-    // Inputs should have associated labels or aria-label
-    const emailHasLabel =
-      (await emailInput.first().getAttribute("aria-label")) !== null ||
-      (await emailInput.first().getAttribute("id")) !== null;
+    // Inputs should have associated labels (using htmlFor/id)
+    const emailId = await emailInput.getAttribute("id");
+    const passwordId = await passwordInput.getAttribute("id");
 
-    const passwordHasLabel =
-      (await passwordInput.getAttribute("aria-label")) !== null ||
-      (await passwordInput.getAttribute("id")) !== null;
+    // Labels exist with for attribute matching input id
+    const emailLabel = page.locator(`label[for="${emailId}"]`);
+    const passwordLabel = page.locator(`label[for="${passwordId}"]`);
 
-    expect(emailHasLabel || passwordHasLabel).toBeTruthy();
+    expect(await emailLabel.count()).toBeGreaterThan(0);
+    expect(await passwordLabel.count()).toBeGreaterThan(0);
   });
 
   test("login form should be keyboard navigable", async ({ page }) => {
