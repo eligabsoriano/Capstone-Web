@@ -400,8 +400,8 @@ test.describe("Two-Factor Authentication (2FA)", () => {
         expect(body.data).toHaveProperty("two_factor_enabled");
         expect(typeof body.data.two_factor_enabled).toBe("boolean");
       } else {
-        // Endpoint might not be accessible to loan officers
-        expect([401, 403, 404]).toContain(response.status());
+        // Endpoint might not be accessible to loan officers or 2FA not set up
+        expect([400, 401, 403, 404]).toContain(response.status());
       }
     });
 

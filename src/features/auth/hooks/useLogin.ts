@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { parseError } from "@/lib/errors";
 import type {
   AdminLoginRequest,
   AdminLoginResponse,
@@ -106,15 +107,10 @@ export function useLogin(): UseLoginReturn {
         if (response.status === "success" && response.data) {
           handleLoginSuccess(response.data, "loan_officer");
         } else {
-          setError(response.message || "Login failed");
+          setError(response.message || "Login failed. Please try again.");
         }
       } catch (err: unknown) {
-        const errorMessage =
-          err instanceof Error
-            ? err.message
-            : (err as { response?: { data?: { message?: string } } })?.response
-                ?.data?.message || "An error occurred during login";
-        setError(errorMessage);
+        setError(parseError(err));
       } finally {
         setIsLoading(false);
       }
@@ -136,15 +132,10 @@ export function useLogin(): UseLoginReturn {
         if (response.status === "success" && response.data) {
           handleLoginSuccess(response.data, "admin");
         } else {
-          setError(response.message || "Login failed");
+          setError(response.message || "Login failed. Please try again.");
         }
       } catch (err: unknown) {
-        const errorMessage =
-          err instanceof Error
-            ? err.message
-            : (err as { response?: { data?: { message?: string } } })?.response
-                ?.data?.message || "An error occurred during login";
-        setError(errorMessage);
+        setError(parseError(err));
       } finally {
         setIsLoading(false);
       }

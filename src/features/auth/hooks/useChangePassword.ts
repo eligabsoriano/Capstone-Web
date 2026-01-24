@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { parseError } from "@/lib/errors";
 import { changePassword } from "../api";
 import { useAuthStore } from "../store/authStore";
 
@@ -50,15 +51,12 @@ export function useChangePassword(): UseChangePasswordReturn {
             }
           }, 1500);
         } else {
-          setError(response.message || "Failed to change password");
+          setError(
+            response.message || "Failed to change password. Please try again.",
+          );
         }
       } catch (err: unknown) {
-        const errorMessage =
-          err instanceof Error
-            ? err.message
-            : (err as { response?: { data?: { message?: string } } })?.response
-                ?.data?.message || "An error occurred while changing password";
-        setError(errorMessage);
+        setError(parseError(err));
       } finally {
         setIsLoading(false);
       }

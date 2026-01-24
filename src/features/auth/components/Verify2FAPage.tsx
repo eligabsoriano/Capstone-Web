@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+import { parseError } from "@/lib/errors";
 import { useAuthStore } from "../store/authStore";
 
 // ============================================================================
@@ -124,11 +125,7 @@ export function Verify2FAPage() {
         setError(result.message || "Invalid verification code");
       }
     } catch (err: unknown) {
-      const errorMessage =
-        err instanceof Error
-          ? err.message
-          : "Invalid verification code. Please try again.";
-      setError(errorMessage);
+      setError(parseError(err));
     } finally {
       setIsLoading(false);
     }
