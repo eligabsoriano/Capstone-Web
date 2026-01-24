@@ -69,12 +69,9 @@ export function useLogin(): UseLoginReturn {
         };
         setUser(user);
 
-        // Redirect based on password change requirement
-        if (loanOfficerData.must_change_password) {
-          navigate("/change-password");
-        } else {
-          navigate("/");
-        }
+        // Always redirect to officer dashboard
+        // Note: Backend change-password endpoint not supported for loan officers
+        navigate("/officer");
       } else {
         const adminData = data as AdminLoginResponse;
         const user: AdminUser = {
@@ -87,7 +84,7 @@ export function useLogin(): UseLoginReturn {
           superAdmin: adminData.user.super_admin,
         };
         setUser(user);
-        navigate("/");
+        navigate("/admin");
       }
     },
     [navigate, setUser, setTempToken, setRequires2FA],

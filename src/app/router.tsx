@@ -12,7 +12,6 @@ import {
   AdminWorkloadPage,
 } from "@/features/admin/pages";
 import {
-  ChangePasswordPage,
   GuestOnlyRoute,
   LoginPage,
   ProtectedRoute,
@@ -88,17 +87,11 @@ export const router = createBrowserRouter([
         element: <RoleBasedRedirect />,
       },
 
-      // Change password (for loan officers on first login)
-      {
-        path: "/change-password",
-        element: <ChangePasswordPage />,
-      },
-
       // ========================================================================
       // LOAN OFFICER ROUTES - With OfficerLayout
       // ========================================================================
       {
-        element: <RequireRole allowedRoles={["loan_officer", "admin"]} />,
+        element: <RequireRole allowedRoles={["loan_officer"]} />,
         children: [
           {
             path: "/officer",

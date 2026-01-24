@@ -77,8 +77,8 @@ export interface Verify2FAResponse {
 }
 
 export interface Setup2FAResponse {
-  qr_code: string; // Base64 encoded QR code image
-  secret: string; // Backup secret key
+  provisioning_uri: string;
+  manual_entry_key: string;
   message: string;
 }
 
@@ -86,8 +86,13 @@ export interface Confirm2FASetupRequest {
   code: string;
 }
 
+export interface Confirm2FASetupResponse {
+  backup_codes: string[];
+  message: string;
+}
+
 export interface Disable2FARequest {
-  code: string;
+  password: string;
 }
 
 export interface Get2FAStatusResponse {
@@ -96,7 +101,7 @@ export interface Get2FAStatusResponse {
 }
 
 export interface BackupCodesRequest {
-  code: string; // Current 2FA code to verify identity
+  password: string; // Password to verify identity
 }
 
 export interface BackupCodesResponse {
@@ -122,30 +127,6 @@ export interface RefreshTokenRequest {
 
 export interface RefreshTokenResponse {
   access_token: string;
-}
-
-// ============================================================================
-// PASSWORD MANAGEMENT TYPES
-// ============================================================================
-
-export interface ChangePasswordRequest {
-  old_password: string;
-  new_password: string;
-}
-
-export interface ForgotPasswordRequest {
-  email: string;
-}
-
-export interface VerifyResetOTPRequest {
-  email: string;
-  otp: string;
-}
-
-export interface ResetPasswordRequest {
-  email: string;
-  otp: string;
-  new_password: string;
 }
 
 // Generic login response union type

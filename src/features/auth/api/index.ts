@@ -12,10 +12,3 @@ export {
   setup2FA,
   verify2FA,
 } from "./authApi";
-
-export {
-  changePassword,
-  forgotPassword,
-  resetPassword,
-  verifyResetOTP,
-} from "./passwordApi";

@@ -145,15 +145,15 @@ export async function verify2FA(data: {
  */
 export async function setup2FA(): Promise<
   ApiResponse<{
-    qr_code: string;
-    secret: string;
+    provisioning_uri: string;
+    manual_entry_key: string;
     message: string;
   }>
 > {
   const response = await apiClient.post<
     ApiResponse<{
-      qr_code: string;
-      secret: string;
+      provisioning_uri: string;
+      manual_entry_key: string;
       message: string;
     }>
   >("/api/auth/2fa/setup/");
@@ -198,7 +198,7 @@ export async function get2FAStatus(): Promise<
  * POST /api/auth/2fa/disable/
  */
 export async function disable2FA(data: {
-  code: string;
+  password: string;
 }): Promise<ApiResponse<null>> {
   const response = await apiClient.post<ApiResponse<null>>(
     "/api/auth/2fa/disable/",
@@ -211,7 +211,7 @@ export async function disable2FA(data: {
  * Generate new backup codes
  * POST /api/auth/2fa/backup-codes/
  */
-export async function generateBackupCodes(data: { code: string }): Promise<
+export async function generateBackupCodes(data: { password: string }): Promise<
   ApiResponse<{
     backup_codes: string[];
     message: string;

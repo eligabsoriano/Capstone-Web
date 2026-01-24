@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import { parseError } from "@/lib/errors";
+import apiClient from "@/shared/api/client";
 import { useAuthStore } from "../store/authStore";
 
 // ============================================================================
@@ -65,23 +66,17 @@ export function Verify2FAPage() {
     setError(null);
 
     try {
-      const response = await fetch("/api/auth/2fa/verify/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          temp_token: tempToken,
-          code: data.code,
-        }),
+      const response = await apiClient.post("/api/auth/2fa/verify/", {
+        temp_token: tempToken,
+        code: data.code,
       });
 
-      const result = await response.json();
+      const result = response.data;
 
       if (result.status === "success" && result.data) {
-        // Store tokens
-        localStorage.setItem("access_token", result.data.access_token);
-        localStorage.setItem("refresh_token", result.data.refresh_token);
+        // Store tokens - backend returns 'access' and 'refresh'
+        localStorage.setItem("access_token", result.data.access);
+        localStorage.setItem("refresh_token", result.data.refresh);
 
         // Determine user role and create user object
         const userData = result.data.user;
