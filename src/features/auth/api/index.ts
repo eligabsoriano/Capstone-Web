@@ -1,7 +1,14 @@
 export {
+  confirm2FASetup,
+  disable2FA,
+  generateBackupCodes,
+  get2FAStatus,
   loginAdmin,
   loginLoanOfficer,
   logout,
   logoutAdmin,
   logoutLoanOfficer,
+  refreshAccessToken,
+  setup2FA,
+  verify2FA,
 } from "./authApi";
