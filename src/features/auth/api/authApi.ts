@@ -164,13 +164,18 @@ export async function setup2FA(): Promise<
  * Confirm 2FA setup
  * POST /api/auth/2fa/confirm/
  */
-export async function confirm2FASetup(data: {
-  code: string;
-}): Promise<ApiResponse<null>> {
-  const response = await apiClient.post<ApiResponse<null>>(
-    "/api/auth/2fa/confirm/",
-    data,
-  );
+export async function confirm2FASetup(data: { code: string }): Promise<
+  ApiResponse<{
+    backup_codes: string[];
+    message: string;
+  }>
+> {
+  const response = await apiClient.post<
+    ApiResponse<{
+      backup_codes: string[];
+      message: string;
+    }>
+  >("/api/auth/2fa/confirm/", data);
   return response.data;
 }
 
@@ -223,5 +228,25 @@ export async function generateBackupCodes(data: { password: string }): Promise<
       message: string;
     }>
   >("/api/auth/2fa/backup-codes/", data);
+  return response.data;
+}
+
+// ============================================================================
+// PASSWORD MANAGEMENT
+// ============================================================================
+
+/**
+ * Change password for authenticated user (Customer or LoanOfficer)
+ * POST /api/auth/change-password/
+ */
+export async function changePassword(data: {
+  old_password: string;
+  new_password: string;
+  confirm_password: string;
+}): Promise<ApiResponse<null>> {
+  const response = await apiClient.post<ApiResponse<null>>(
+    "/api/auth/change-password/",
+    data,
+  );
   return response.data;
 }
