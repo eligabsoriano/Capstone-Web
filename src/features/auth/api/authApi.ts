@@ -242,6 +242,7 @@ export async function generateBackupCodes(data: { password: string }): Promise<
 export async function changePassword(data: {
   old_password: string;
   new_password: string;
+  confirm_password: string;
 }): Promise<ApiResponse<null>> {
   const response = await apiClient.post<ApiResponse<null>>(
     "/api/auth/change-password/",

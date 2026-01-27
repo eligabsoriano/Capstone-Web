@@ -54,6 +54,7 @@ export function ChangePasswordSettings() {
       const response = await changePassword({
         old_password: oldPassword,
         new_password: newPassword,
+        confirm_password: confirmPassword,
       });
 
       if (response.status === "success") {
