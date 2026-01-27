@@ -1,4 +1,5 @@
 export {
+  changePassword,
   confirm2FASetup,
   disable2FA,
   generateBackupCodes,
