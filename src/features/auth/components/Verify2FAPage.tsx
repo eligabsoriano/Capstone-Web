@@ -27,9 +27,8 @@ import { useAuthStore } from "../store/authStore";
 const verify2FASchema = z.object({
   code: z
     .string()
-    .min(6, "Code must be 6 digits")
-    .max(6, "Code must be 6 digits")
-    .regex(/^\d+$/, "Code must contain only numbers"),
+    .min(6, "Code must be at least 6 characters")
+    .max(10, "Code is too long"),
 });
 
 type Verify2FAFormData = z.infer<typeof verify2FASchema>;
@@ -43,6 +42,7 @@ export function Verify2FAPage() {
   const { tempToken, setRequires2FA, setTempToken } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [useBackupCode, setUseBackupCode] = useState(false);
 
   const {
     register,
@@ -69,6 +69,7 @@ export function Verify2FAPage() {
       const response = await apiClient.post("/api/auth/2fa/verify/", {
         temp_token: tempToken,
         code: data.code,
+        use_backup: useBackupCode,
       });
 
       const result = response.data;
@@ -143,7 +144,9 @@ export function Verify2FAPage() {
             Two-Factor Authentication
           </CardTitle>
           <CardDescription>
-            Enter the 6-digit code from your authenticator app
+            {useBackupCode
+              ? "Enter one of your backup codes"
+              : "Enter the 6-digit code from your authenticator app"}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -157,14 +160,16 @@ export function Verify2FAPage() {
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="code">Verification Code</Label>
+              <Label htmlFor="code">
+                {useBackupCode ? "Backup Code" : "Verification Code"}
+              </Label>
               <Input
                 id="code"
                 type="text"
-                inputMode="numeric"
-                placeholder="000000"
+                inputMode={useBackupCode ? "text" : "numeric"}
+                placeholder={useBackupCode ? "XXXX-XXXX" : "000000"}
                 autoComplete="one-time-code"
-                maxLength={6}
+                maxLength={useBackupCode ? 10 : 6}
                 className="text-center text-2xl tracking-widest"
                 disabled={isLoading}
                 {...register("code")}
@@ -200,14 +205,29 @@ export function Verify2FAPage() {
           </form>
 
           <p className="mt-4 text-center text-sm text-muted-foreground">
-            Can't access your authenticator?{" "}
-            <button
-              type="button"
-              className="text-primary hover:underline"
-              onClick={() => setError("Backup code feature coming soon")}
-            >
-              Use backup code
-            </button>
+            {useBackupCode ? (
+              <>
+                Have your authenticator?{" "}
+                <button
+                  type="button"
+                  className="text-primary hover:underline"
+                  onClick={() => setUseBackupCode(false)}
+                >
+                  Use authenticator code
+                </button>
+              </>
+            ) : (
+              <>
+                Can't access your authenticator?{" "}
+                <button
+                  type="button"
+                  className="text-primary hover:underline"
+                  onClick={() => setUseBackupCode(true)}
+                >
+                  Use backup code
+                </button>
+              </>
+            )}
           </p>
         </CardContent>
       </Card>

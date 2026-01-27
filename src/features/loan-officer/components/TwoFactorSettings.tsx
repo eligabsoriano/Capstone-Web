@@ -76,8 +76,14 @@ export function TwoFactorSettings() {
           enabled: response.data.two_factor_enabled,
           backupCodesRemaining: response.data.backup_codes_remaining,
         });
+      } else {
+        // Set default status on non-success response
+        setStatus({ enabled: false, backupCodesRemaining: 0 });
+        setError(response.message || "Failed to fetch 2FA status");
       }
     } catch (err) {
+      // Set default status on error so component renders
+      setStatus({ enabled: false, backupCodesRemaining: 0 });
       setError(parseError(err));
     }
   }, []);
@@ -134,10 +140,19 @@ export function TwoFactorSettings() {
 
     try {
       const response = await confirm2FASetup({ code });
-      if (response.status === "success") {
+      if (response.status === "success" && response.data) {
         setSuccess("Two-factor authentication has been enabled!");
         setStatus({ enabled: true, backupCodesRemaining: 10 });
-        setStep("idle");
+        // Show backup codes if returned
+        if (
+          response.data.backup_codes &&
+          response.data.backup_codes.length > 0
+        ) {
+          setBackupCodes(response.data.backup_codes);
+          setStep("backup-codes");
+        } else {
+          setStep("idle");
+        }
         setSetupData(null);
         setCode("");
       } else {

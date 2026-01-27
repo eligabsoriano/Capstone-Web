@@ -164,13 +164,18 @@ export async function setup2FA(): Promise<
  * Confirm 2FA setup
  * POST /api/auth/2fa/confirm/
  */
-export async function confirm2FASetup(data: {
-  code: string;
-}): Promise<ApiResponse<null>> {
-  const response = await apiClient.post<ApiResponse<null>>(
-    "/api/auth/2fa/confirm/",
-    data,
-  );
+export async function confirm2FASetup(data: { code: string }): Promise<
+  ApiResponse<{
+    backup_codes: string[];
+    message: string;
+  }>
+> {
+  const response = await apiClient.post<
+    ApiResponse<{
+      backup_codes: string[];
+      message: string;
+    }>
+  >("/api/auth/2fa/confirm/", data);
   return response.data;
 }
 
