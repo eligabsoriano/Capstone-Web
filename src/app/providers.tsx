@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import type { ReactNode } from "react";
 import { Toaster } from "sonner";
-import { ErrorBoundary } from "@/components/common";
+import { ErrorBoundary, ThemeProvider } from "@/components/common";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,17 +20,19 @@ interface ProvidersProps {
 export function Providers({ children }: ProvidersProps) {
   return (
     <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        {children}
-        <Toaster
-          position="top-right"
-          richColors
-          closeButton
-          expand={false}
-          duration={4000}
-        />
-        <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
+      <ThemeProvider defaultTheme="system">
+        <QueryClientProvider client={queryClient}>
+          {children}
+          <Toaster
+            position="top-right"
+            richColors
+            closeButton
+            expand={false}
+            duration={4000}
+          />
+          <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
+      </ThemeProvider>
     </ErrorBoundary>
   );
 }
