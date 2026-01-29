@@ -27,7 +27,7 @@ import {
   useOfficerWorkload,
 } from "../hooks/useWorkloadAndProducts";
 
-export default function AdminWorkloadPage() {
+export function AdminWorkloadPage() {
   const {
     data: workloadData,
     isLoading,
