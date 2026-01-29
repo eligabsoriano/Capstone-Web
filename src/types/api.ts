@@ -278,4 +278,155 @@ export interface OfficerWorkload {
   email: string;
   current_applications: number;
   completed_today: number;
+  employee_id?: string;
+  pending_count?: number;
+  active?: boolean;
+}
+
+// ============================================================================
+// ADMIN - LOAN PRODUCTS TYPES
+// ============================================================================
+
+export interface LoanProduct {
+  id: string;
+  name: string;
+  code: string;
+  description: string;
+  min_amount: number;
+  max_amount: number;
+  interest_rate: number;
+  min_term_months: number;
+  max_term_months: number;
+  required_documents: string[];
+  min_business_months?: number;
+  min_monthly_income?: number;
+  business_types?: string[];
+  target_description?: string;
+  active: boolean;
+  created_at: string;
+}
+
+export interface CreateProductRequest {
+  name: string;
+  code: string;
+  description: string;
+  min_amount: number;
+  max_amount: number;
+  interest_rate: number;
+  min_term_months: number;
+  max_term_months: number;
+  required_documents?: string[];
+  min_business_months?: number;
+  min_monthly_income?: number;
+  target_description?: string;
+}
+
+export interface UpdateProductRequest {
+  name?: string;
+  description?: string;
+  min_amount?: number;
+  max_amount?: number;
+  interest_rate?: number;
+  min_term_months?: number;
+  max_term_months?: number;
+  required_documents?: string[];
+  min_business_months?: number;
+  min_monthly_income?: number;
+  target_description?: string;
+  active?: boolean;
+}
+
+// ============================================================================
+// LOAN OFFICER - APPLICATIONS TYPES
+// ============================================================================
+
+export interface OfficerApplicationListItem {
+  id: string;
+  customer_id: string;
+  product_name: string;
+  requested_amount: number;
+  recommended_amount: number;
+  term_months: number;
+  status: string;
+  eligibility_score: number;
+  risk_category: string;
+  submitted_at: string | null;
+}
+
+export interface OfficerApplicationDetail {
+  id: string;
+  customer_id: string;
+  product: {
+    id: string | null;
+    name: string;
+    code: string | null;
+  };
+  requested_amount: number;
+  recommended_amount: number;
+  term_months: number;
+  purpose: string;
+  status: string;
+  eligibility_score: number;
+  risk_category: string;
+  ai_recommendation: string | null;
+  assigned_officer: string | null;
+  officer_notes: string | null;
+  rejection_reason: string | null;
+  submitted_at: string | null;
+  decision_date: string | null;
+}
+
+export interface ReviewApplicationRequest {
+  action: "approve" | "reject";
+  approved_amount?: number;
+  rejection_reason?: string;
+  notes?: string;
+}
+
+export interface ReviewApplicationResponse {
+  id: string;
+  status: string;
+  approved_amount: number | null;
+}
+
+export interface DisburseApplicationRequest {
+  amount?: number;
+  method: string;
+  reference: string;
+}
+
+export interface DisburseApplicationResponse {
+  id: string;
+  status: string;
+  disbursed_amount: number;
+  disbursement_method: string;
+  disbursement_reference: string;
+  disbursed_at: string | null;
+  schedule?: {
+    monthly_payment: number;
+    total_amount: number;
+    term_months: number;
+  };
+}
+
+// ============================================================================
+// LOAN OFFICER - PAYMENTS TYPES
+// ============================================================================
+
+export interface RecordPaymentRequest {
+  loan_id: string;
+  installment_number: number;
+  amount: number;
+  payment_method: string;
+  reference: string;
+  notes?: string;
+}
+
+export interface RecordPaymentResponse {
+  payment_id: string;
+  loan_id: string;
+  installment_number: number;
+  amount: number;
+  installment_status: string;
+  remaining_balance: number;
 }

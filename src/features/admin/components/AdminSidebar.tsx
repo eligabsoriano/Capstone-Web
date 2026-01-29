@@ -2,7 +2,6 @@ import {
   BarChart3,
   ChevronLeft,
   ChevronRight,
-  ClipboardList,
   FileText,
   LayoutDashboard,
   LogOut,
@@ -33,30 +32,20 @@ interface NavItem {
   label: string;
   icon: React.ElementType;
   href: string;
-  permission?: string;
   superAdminOnly?: boolean;
 }
 
+// Simplified nav - no granular permissions, only superAdminOnly distinction
 const navItems: NavItem[] = [
   { label: "Dashboard", icon: LayoutDashboard, href: "/admin" },
-  {
-    label: "Loan Officers",
-    icon: Users,
-    href: "/admin/officers",
-    permission: "create_loan_officer|manage_loan_officers",
-  },
+  { label: "Loan Officers", icon: Users, href: "/admin/officers" },
   {
     label: "Admins",
     icon: UserCog,
     href: "/admin/admins",
     superAdminOnly: true,
   },
-  {
-    label: "Applications",
-    icon: ClipboardList,
-    href: "/admin/applications",
-    permission: "view_analytics",
-  },
+  // NOTE: "Applications" removed - Loan Officers handle applications, not admins
   { label: "Officer Workload", icon: BarChart3, href: "/admin/workload" },
   { label: "Loan Products", icon: Package, href: "/admin/products" },
   { label: "Audit Logs", icon: FileText, href: "/admin/audit-logs" },
@@ -71,26 +60,14 @@ export function AdminSidebar({
   const { user } = useAuthStore();
   const { handleLogout, isLoading: isLoggingOut } = useLogout();
 
-  // Filter nav items based on permissions
+  // Simplified filter: Super Admin sees everything, regular Admin sees all except superAdminOnly
   const visibleNavItems = navItems.filter((item) => {
     // Super admin sees everything
     if (user?.role === "admin" && "superAdmin" in user && user.superAdmin) {
       return true;
     }
-    // Check super admin only items
-    if (item.superAdminOnly) {
-      return false;
-    }
-    // Check permission-based items
-    if (item.permission && user?.role === "admin" && "permissions" in user) {
-      // Handle OR conditions (e.g., 'create_loan_officer|manage_loan_officers')
-      const requiredPermissions = item.permission.split("|");
-      return requiredPermissions.some((perm) =>
-        user.permissions.includes(perm),
-      );
-    }
-    // Items without permission requirement are visible
-    return !item.permission;
+    // Regular admin: hide superAdminOnly items
+    return !item.superAdminOnly;
   });
 
   const handleNavClick = () => {

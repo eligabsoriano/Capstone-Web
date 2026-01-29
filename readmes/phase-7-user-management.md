@@ -1,158 +1,73 @@
-# Phase 7: User Management (Admin Only)
+# Phase 7: User Management
 
 **Status:** [ ] Not Started  
-**Duration:** 1-2 days
+**Last Updated:** 2026-01-28
 
 ---
 
-## Endpoints for Manual Testing
+## Role Hierarchy (Simplified)
 
-### Loan Officer Management
+| Role | Can Manage Officers | Can Manage Admins | Can Manage Products |
+|------|---------------------|-------------------|---------------------|
+| **Super Admin** | ✅ | ✅ | ✅ |
+| **Admin** | ✅ | ❌ | ✅ |
+| **Loan Officer** | ❌ | ❌ | ❌ |
+
+> **Simplified Model**: No granular permissions. Admins get standard access; only `superAdminOnly` flag differentiates.
+
+---
+
+## Loan Officer Management (Admin + Super Admin)
 
 | Feature | Method | Endpoint | Status |
 |---------|--------|----------|--------|
-| List Officers | GET | `/api/auth/admin/loan-officers/` | [ ] |
-| Create Officer | POST | `/api/auth/admin/loan-officers/` | [ ] |
-| Get Officer | GET | `/api/auth/admin/loan-officers/{id}/` | [ ] |
-| Update Officer | PUT | `/api/auth/admin/loan-officers/{id}/` | [ ] |
-| Deactivate Officer | DELETE | `/api/auth/admin/loan-officers/{id}/` | [ ] |
+| List Officers | GET | `/api/auth/admin/loan-officers/` | ✅ Backend |
+| Create Officer | POST | `/api/auth/admin/loan-officers/` | ✅ Backend |
+| Get Officer | GET | `/api/auth/admin/loan-officers/{id}/` | ✅ Backend |
+| Update Officer | PUT | `/api/auth/admin/loan-officers/{id}/` | ✅ Backend |
+| Deactivate | DELETE | `/api/auth/admin/loan-officers/{id}/` | ✅ Backend |
 
-### Admin Management (Super Admin Only)
+---
+
+## Admin Management (Super Admin ONLY)
 
 | Feature | Method | Endpoint | Status |
 |---------|--------|----------|--------|
-| List Admins | GET | `/api/auth/admin/admins/` | [ ] |
-| Create Admin | POST | `/api/auth/admin/admins/` | [ ] |
-| Get Admin | GET | `/api/auth/admin/admins/{id}/` | [ ] |
-| Update Admin | PUT | `/api/auth/admin/admins/{id}/` | [ ] |
-| Update Permissions | PUT | `/api/auth/admin/admins/{id}/permissions/` | [ ] |
-
----
-
-## Request/Response Examples
-
-### List Loan Officers
-
-```bash
-GET /api/auth/admin/loan-officers/
-Authorization: Bearer <access_token>
-```
-
-**Response:**
-```json
-{
-  "results": [
-    {
-      "id": "officer_001",
-      "email": "john.doe@example.com",
-      "first_name": "John",
-      "last_name": "Doe",
-      "employee_id": "EMP-001",
-      "is_active": true,
-      "two_factor_enabled": true,
-      "created_at": "2024-01-01T10:00:00Z",
-      "last_login": "2024-01-28T08:30:00Z",
-      "stats": {
-        "applications_reviewed": 145,
-        "applications_approved": 112
-      }
-    }
-  ]
-}
-```
-
-### Create Loan Officer
-
-```bash
-POST /api/auth/admin/loan-officers/
-Authorization: Bearer <access_token>
-Content-Type: application/json
-
-{
-  "email": "new.officer@example.com",
-  "first_name": "Jane",
-  "last_name": "Smith",
-  "employee_id": "EMP-002",
-  "password": "TempPassword123!"
-}
-```
-
-**Response:**
-```json
-{
-  "message": "Loan officer created successfully",
-  "officer": {
-    "id": "officer_002",
-    "email": "new.officer@example.com",
-    "first_name": "Jane",
-    "last_name": "Smith",
-    "employee_id": "EMP-002",
-    "is_active": true,
-    "two_factor_enabled": false
-  }
-}
-```
-
-### Deactivate Officer
-
-```bash
-DELETE /api/auth/admin/loan-officers/{id}/
-Authorization: Bearer <access_token>
-```
-
-**Response:**
-```json
-{
-  "message": "Loan officer deactivated successfully"
-}
-```
-
-### Update Admin Permissions (Super Admin Only)
-
-```bash
-PUT /api/auth/admin/admins/{id}/permissions/
-Authorization: Bearer <access_token>
-Content-Type: application/json
-
-{
-  "permissions": {
-    "can_manage_officers": true,
-    "can_manage_admins": false,
-    "can_view_analytics": true,
-    "can_manage_products": true
-  }
-}
-```
-
----
-
-## Role Hierarchy
-
-| Role | Can Manage |
-|------|------------|
-| Super Admin | Admins + Officers + Everything |
-| Admin | Officers + Products + Analytics |
-| Loan Officer | Applications only |
+| List Admins | GET | `/api/auth/admin/admins/` | ✅ Backend |
+| Create Admin | POST | `/api/auth/admin/admins/` | ✅ Backend |
+| Get Admin | GET | `/api/auth/admin/admins/{id}/` | ✅ Backend |
+| Update Admin | PUT | `/api/auth/admin/admins/{id}/` | ✅ Backend |
+| Deactivate | DELETE | `/api/auth/admin/admins/{id}/` | ✅ Backend |
 
 ---
 
 ## Frontend Tasks
 
-- [ ] Create users list page
-- [ ] Create user data table
-- [ ] Create add officer modal
-- [ ] Create add admin modal (super admin)
-- [ ] Add activate/deactivate actions
-- [ ] Add role-based route protection
-- [ ] Add admin-only navigation items
-- [ ] Create permissions editor (super admin)
+### Admin Dashboard
+- [ ] Loan Officers list page (`/admin/officers`)
+- [ ] Create officer modal
+- [ ] Edit officer modal
+- [ ] Activate/deactivate toggle
+
+### Super Admin Only
+- [ ] Admins list page (`/admin/admins`)
+- [ ] Create admin modal
+- [ ] Edit admin modal
 
 ---
 
-## User Status Colors
+## Sidebar Navigation
 
-| Status | Color |
-|--------|-------|
-| Active | Green |
-| Inactive | Red |
-| New (never logged in) | Yellow |
+```typescript
+// AdminSidebar.tsx - Final structure
+const navItems = [
+  { label: "Dashboard", href: "/admin" },
+  { label: "Loan Officers", href: "/admin/officers" },
+  { label: "Admins", href: "/admin/admins", superAdminOnly: true },
+  { label: "Officer Workload", href: "/admin/workload" },
+  { label: "Loan Products", href: "/admin/products" },
+  { label: "Audit Logs", href: "/admin/audit-logs" },
+  { label: "Settings", href: "/admin/settings" },
+];
+// NO "Applications" - that's for Loan Officers only
+```
