@@ -1,4 +1,4 @@
-import { Loader2, Package, Pencil, Plus, Trash2 } from "lucide-react";
+import { Loader2, Package, Pencil, Plus, Trash2, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
@@ -45,6 +45,24 @@ import {
   useUpdateProduct,
 } from "../hooks/useWorkloadAndProducts";
 
+// Available document types
+const DOCUMENT_OPTIONS = [
+  { value: "valid_id", label: "Valid ID" },
+  { value: "proof_of_income", label: "Proof of Income" },
+  { value: "business_permit", label: "Business Permit" },
+  { value: "bank_statements", label: "Bank Statements" },
+  { value: "collateral_docs", label: "Collateral Documents" },
+] as const;
+
+// Available business types
+const BUSINESS_TYPE_OPTIONS = [
+  { value: "retail", label: "Retail" },
+  { value: "food", label: "Food & Beverage" },
+  { value: "services", label: "Services" },
+  { value: "manufacturing", label: "Manufacturing" },
+  { value: "agriculture", label: "Agriculture" },
+] as const;
+
 const initialFormData: CreateProductRequest = {
   name: "",
   code: "",
@@ -54,7 +72,11 @@ const initialFormData: CreateProductRequest = {
   interest_rate: 12,
   min_term_months: 3,
   max_term_months: 36,
-  required_documents: [],
+  required_documents: ["valid_id"],
+  min_business_months: 6,
+  min_monthly_income: 5000,
+  business_types: [],
+  target_description: "",
 };
 
 export function AdminProductsPage() {
@@ -96,10 +118,15 @@ export function AdminProductsPage() {
       description: product.description,
       min_amount: product.min_amount,
       max_amount: product.max_amount,
-      interest_rate: product.interest_rate,
+      // Convert from decimal (0.12) to percentage (12) for display
+      interest_rate: product.interest_rate * 100,
       min_term_months: product.min_term_months,
       max_term_months: product.max_term_months,
-      required_documents: product.required_documents,
+      required_documents: product.required_documents || [],
+      min_business_months: product.min_business_months ?? 6,
+      min_monthly_income: product.min_monthly_income ?? 5000,
+      business_types: product.business_types || [],
+      target_description: product.target_description || "",
     });
     setIsModalOpen(true);
   };
@@ -110,15 +137,23 @@ export function AdminProductsPage() {
       return;
     }
 
+    // Convert interest rate from percentage (e.g., 12) to decimal (e.g., 0.12)
+    const interestRateDecimal = formData.interest_rate / 100;
+
     if (editingProduct) {
       const updateData: UpdateProductRequest = {
         name: formData.name,
         description: formData.description,
         min_amount: formData.min_amount,
         max_amount: formData.max_amount,
-        interest_rate: formData.interest_rate,
+        interest_rate: interestRateDecimal,
         min_term_months: formData.min_term_months,
         max_term_months: formData.max_term_months,
+        required_documents: formData.required_documents,
+        min_business_months: formData.min_business_months,
+        min_monthly_income: formData.min_monthly_income,
+        business_types: formData.business_types,
+        target_description: formData.target_description,
       };
 
       updateMutation.mutate(
@@ -135,7 +170,12 @@ export function AdminProductsPage() {
         },
       );
     } else {
-      createMutation.mutate(formData, {
+      // Create with converted interest rate
+      const createData: CreateProductRequest = {
+        ...formData,
+        interest_rate: interestRateDecimal,
+      };
+      createMutation.mutate(createData, {
         onSuccess: () => {
           toast.success("Product created successfully");
           setIsModalOpen(false);
@@ -247,7 +287,7 @@ export function AdminProductsPage() {
                       {formatCurrency(product.max_amount)}
                     </TableCell>
                     <TableCell className="text-center">
-                      {product.interest_rate}%
+                      {(product.interest_rate * 100).toFixed(1)}%
                     </TableCell>
                     <TableCell className="text-center">
                       {product.min_term_months}-{product.max_term_months}mo
@@ -391,6 +431,130 @@ export function AdminProductsPage() {
                     handleInputChange("max_term_months", Number(e.target.value))
                   }
                 />
+              </div>
+            </div>
+
+            {/* Eligibility Requirements Section */}
+            <div className="border-t pt-4 mt-4">
+              <h3 className="text-sm font-semibold mb-3">
+                Eligibility Requirements
+              </h3>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="min_business_months">
+                    Min Business Age (months)
+                  </Label>
+                  <Input
+                    id="min_business_months"
+                    type="number"
+                    value={formData.min_business_months ?? 6}
+                    onChange={(e) =>
+                      handleInputChange(
+                        "min_business_months",
+                        Number(e.target.value),
+                      )
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="min_monthly_income">
+                    Min Monthly Income (₱)
+                  </Label>
+                  <Input
+                    id="min_monthly_income"
+                    type="number"
+                    value={formData.min_monthly_income ?? 5000}
+                    onChange={(e) =>
+                      handleInputChange(
+                        "min_monthly_income",
+                        Number(e.target.value),
+                      )
+                    }
+                  />
+                </div>
+              </div>
+
+              {/* Required Documents */}
+              <div className="space-y-2 mt-4">
+                <Label>Required Documents</Label>
+                <div className="flex flex-wrap gap-2">
+                  {DOCUMENT_OPTIONS.map((doc) => {
+                    const isSelected =
+                      formData.required_documents?.includes(doc.value) ?? false;
+                    return (
+                      <Badge
+                        key={doc.value}
+                        variant={isSelected ? "default" : "outline"}
+                        className="cursor-pointer"
+                        onClick={() => {
+                          const current = formData.required_documents || [];
+                          const updated = isSelected
+                            ? current.filter((d) => d !== doc.value)
+                            : [...current, doc.value];
+                          setFormData((prev) => ({
+                            ...prev,
+                            required_documents: updated,
+                          }));
+                        }}
+                      >
+                        {doc.label}
+                        {isSelected && <X className="h-3 w-3 ml-1" />}
+                      </Badge>
+                    );
+                  })}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Click to toggle required documents
+                </p>
+              </div>
+
+              {/* Business Types */}
+              <div className="space-y-2 mt-4">
+                <Label>Target Business Types (leave empty for all)</Label>
+                <div className="flex flex-wrap gap-2">
+                  {BUSINESS_TYPE_OPTIONS.map((type) => {
+                    const isSelected =
+                      formData.business_types?.includes(type.value) ?? false;
+                    return (
+                      <Badge
+                        key={type.value}
+                        variant={isSelected ? "default" : "outline"}
+                        className="cursor-pointer"
+                        onClick={() => {
+                          const current = formData.business_types || [];
+                          const updated = isSelected
+                            ? current.filter((t) => t !== type.value)
+                            : [...current, type.value];
+                          setFormData((prev) => ({
+                            ...prev,
+                            business_types: updated,
+                          }));
+                        }}
+                      >
+                        {type.label}
+                        {isSelected && <X className="h-3 w-3 ml-1" />}
+                      </Badge>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Target Description */}
+              <div className="space-y-2 mt-4">
+                <Label htmlFor="target_description">Target Description</Label>
+                <Textarea
+                  id="target_description"
+                  placeholder="e.g., For small sari-sari stores and retail businesses"
+                  value={formData.target_description ?? ""}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                    handleInputChange("target_description", e.target.value)
+                  }
+                  rows={2}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Marketing text shown to customers
+                </p>
               </div>
             </div>
           </div>

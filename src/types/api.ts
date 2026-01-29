@@ -318,6 +318,7 @@ export interface CreateProductRequest {
   required_documents?: string[];
   min_business_months?: number;
   min_monthly_income?: number;
+  business_types?: string[];
   target_description?: string;
 }
 
@@ -332,6 +333,7 @@ export interface UpdateProductRequest {
   required_documents?: string[];
   min_business_months?: number;
   min_monthly_income?: number;
+  business_types?: string[];
   target_description?: string;
   active?: boolean;
 }
