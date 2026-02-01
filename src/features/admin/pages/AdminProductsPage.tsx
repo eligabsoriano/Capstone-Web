@@ -193,13 +193,13 @@ export function AdminProductsPage() {
 
     deleteMutation.mutate(deletingProduct.id, {
       onSuccess: () => {
-        toast.success("Product deleted successfully");
+        toast.success("Product deactivated successfully");
         setIsDeleteDialogOpen(false);
         setDeletingProduct(null);
-        refetch();
+        // refetch is handled by the mutation hook via invalidateQueries
       },
       onError: (err: Error) => {
-        toast.error(err.message || "Failed to delete product");
+        toast.error(err.message || "Failed to deactivate product");
       },
     });
   };

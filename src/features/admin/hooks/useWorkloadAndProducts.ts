@@ -92,8 +92,10 @@ export function useDeleteProduct() {
 
   return useMutation({
     mutationFn: (productId: string) => deleteProduct(productId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin", "products"] });
+    onSuccess: async () => {
+      // Force refetch by invalidating and removing stale cache
+      await queryClient.invalidateQueries({ queryKey: ["admin", "products"] });
+      await queryClient.refetchQueries({ queryKey: ["admin", "products"] });
     },
   });
 }
