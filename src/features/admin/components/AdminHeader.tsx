@@ -1,5 +1,6 @@
 import { Bell, LogOut, Menu, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { ThemeToggle } from "@/components/common";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -74,6 +75,9 @@ export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
 
         {/* Right Section */}
         <div className="flex items-center gap-2">
+          {/* Theme Toggle */}
+          <ThemeToggle />
+
           {/* Notifications */}
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-5 w-5" />

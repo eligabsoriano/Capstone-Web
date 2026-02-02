@@ -1,16 +1,19 @@
 import apiClient from "@/shared/api/client";
 import type {
-    ApiResponse,
-    LoanOfficerListItem,
-    LoanOfficerDetail,
-    CreateOfficerRequest,
-    CreateOfficerResponse,
-    UpdateOfficerRequest,
-    AdminDashboardData,
-    AuditLogsResponse,
-    OfficerWorkload,
-    AssignApplicationRequest,
-    AssignApplicationResponse,
+  AdminDashboardData,
+  ApiResponse,
+  AssignApplicationRequest,
+  AssignApplicationResponse,
+  AuditLogsResponse,
+  CreateOfficerRequest,
+  CreateOfficerResponse,
+  CreateProductRequest,
+  LoanOfficerDetail,
+  LoanOfficerListItem,
+  LoanProduct,
+  OfficerWorkload,
+  UpdateOfficerRequest,
+  UpdateProductRequest,
 } from "@/types/api";
 
 // ============================================================================
@@ -21,11 +24,13 @@ import type {
  * Get admin dashboard analytics
  * GET /api/analytics/admin/
  */
-export async function getAdminDashboard(): Promise<ApiResponse<AdminDashboardData>> {
-    const response = await apiClient.get<ApiResponse<AdminDashboardData>>(
-        "/api/analytics/admin/"
-    );
-    return response.data;
+export async function getAdminDashboard(): Promise<
+  ApiResponse<AdminDashboardData>
+> {
+  const response = await apiClient.get<ApiResponse<AdminDashboardData>>(
+    "/api/analytics/admin/",
+  );
+  return response.data;
 }
 
 // ============================================================================
@@ -36,14 +41,16 @@ export async function getAdminDashboard(): Promise<ApiResponse<AdminDashboardDat
  * List all loan officers
  * GET /api/auth/admin/loan-officers/
  */
-export async function getOfficersList(
-    params?: { active?: boolean; department?: string }
-): Promise<ApiResponse<{ loan_officers: LoanOfficerListItem[]; total: number }>> {
-    const response = await apiClient.get<ApiResponse<{ loan_officers: LoanOfficerListItem[]; total: number }>>(
-        "/api/auth/admin/loan-officers/",
-        { params }
-    );
-    return response.data;
+export async function getOfficersList(params?: {
+  active?: boolean;
+  department?: string;
+}): Promise<
+  ApiResponse<{ loan_officers: LoanOfficerListItem[]; total: number }>
+> {
+  const response = await apiClient.get<
+    ApiResponse<{ loan_officers: LoanOfficerListItem[]; total: number }>
+  >("/api/auth/admin/loan-officers/", { params });
+  return response.data;
 }
 
 /**
@@ -51,12 +58,12 @@ export async function getOfficersList(
  * GET /api/auth/admin/loan-officers/:id/
  */
 export async function getOfficerDetail(
-    officerId: string
+  officerId: string,
 ): Promise<ApiResponse<LoanOfficerDetail>> {
-    const response = await apiClient.get<ApiResponse<LoanOfficerDetail>>(
-        `/api/auth/admin/loan-officers/${officerId}/`
-    );
-    return response.data;
+  const response = await apiClient.get<ApiResponse<LoanOfficerDetail>>(
+    `/api/auth/admin/loan-officers/${officerId}/`,
+  );
+  return response.data;
 }
 
 /**
@@ -64,13 +71,13 @@ export async function getOfficerDetail(
  * POST /api/auth/admin/loan-officers/
  */
 export async function createOfficer(
-    data: CreateOfficerRequest
+  data: CreateOfficerRequest,
 ): Promise<ApiResponse<CreateOfficerResponse>> {
-    const response = await apiClient.post<ApiResponse<CreateOfficerResponse>>(
-        "/api/auth/admin/loan-officers/",
-        data
-    );
-    return response.data;
+  const response = await apiClient.post<ApiResponse<CreateOfficerResponse>>(
+    "/api/auth/admin/loan-officers/",
+    data,
+  );
+  return response.data;
 }
 
 /**
@@ -78,14 +85,14 @@ export async function createOfficer(
  * PUT /api/auth/admin/loan-officers/:id/
  */
 export async function updateOfficer(
-    officerId: string,
-    data: UpdateOfficerRequest
+  officerId: string,
+  data: UpdateOfficerRequest,
 ): Promise<ApiResponse<LoanOfficerListItem>> {
-    const response = await apiClient.put<ApiResponse<LoanOfficerListItem>>(
-        `/api/auth/admin/loan-officers/${officerId}/`,
-        data
-    );
-    return response.data;
+  const response = await apiClient.put<ApiResponse<LoanOfficerListItem>>(
+    `/api/auth/admin/loan-officers/${officerId}/`,
+    data,
+  );
+  return response.data;
 }
 
 /**
@@ -93,12 +100,12 @@ export async function updateOfficer(
  * DELETE /api/auth/admin/loan-officers/:id/
  */
 export async function deactivateOfficer(
-    officerId: string
+  officerId: string,
 ): Promise<ApiResponse<null>> {
-    const response = await apiClient.delete<ApiResponse<null>>(
-        `/api/auth/admin/loan-officers/${officerId}/`
-    );
-    return response.data;
+  const response = await apiClient.delete<ApiResponse<null>>(
+    `/api/auth/admin/loan-officers/${officerId}/`,
+  );
+  return response.data;
 }
 
 // ============================================================================
@@ -109,14 +116,15 @@ export async function deactivateOfficer(
  * Get audit logs
  * GET /api/analytics/audit-logs/
  */
-export async function getAuditLogs(
-    params?: { action?: string; limit?: number }
-): Promise<ApiResponse<AuditLogsResponse>> {
-    const response = await apiClient.get<ApiResponse<AuditLogsResponse>>(
-        "/api/analytics/audit-logs/",
-        { params }
-    );
-    return response.data;
+export async function getAuditLogs(params?: {
+  action?: string;
+  limit?: number;
+}): Promise<ApiResponse<AuditLogsResponse>> {
+  const response = await apiClient.get<ApiResponse<AuditLogsResponse>>(
+    "/api/analytics/audit-logs/",
+    { params },
+  );
+  return response.data;
 }
 
 // ============================================================================
@@ -128,12 +136,12 @@ export async function getAuditLogs(
  * GET /api/loans/admin/officers/workload/
  */
 export async function getOfficerWorkload(): Promise<
-    ApiResponse<{ officers: OfficerWorkload[]; total: number }>
+  ApiResponse<{ officers: OfficerWorkload[]; total: number }>
 > {
-    const response = await apiClient.get<
-        ApiResponse<{ officers: OfficerWorkload[]; total: number }>
-    >("/api/loans/admin/officers/workload/");
-    return response.data;
+  const response = await apiClient.get<
+    ApiResponse<{ officers: OfficerWorkload[]; total: number }>
+  >("/api/loans/admin/officers/workload/");
+  return response.data;
 }
 
 // ============================================================================
@@ -145,12 +153,83 @@ export async function getOfficerWorkload(): Promise<
  * POST /api/loans/admin/applications/:id/assign/
  */
 export async function assignApplication(
-    applicationId: string,
-    data: AssignApplicationRequest
+  applicationId: string,
+  data: AssignApplicationRequest,
 ): Promise<ApiResponse<AssignApplicationResponse>> {
-    const response = await apiClient.post<ApiResponse<AssignApplicationResponse>>(
-        `/api/loans/admin/applications/${applicationId}/assign/`,
-        data
-    );
-    return response.data;
+  const response = await apiClient.post<ApiResponse<AssignApplicationResponse>>(
+    `/api/loans/admin/applications/${applicationId}/assign/`,
+    data,
+  );
+  return response.data;
+}
+
+// ============================================================================
+// LOAN PRODUCTS MANAGEMENT
+// ============================================================================
+
+/**
+ * List all loan products (including inactive)
+ * GET /api/loans/admin/products/
+ */
+export async function getProducts(params?: {
+  active?: boolean;
+}): Promise<ApiResponse<{ products: LoanProduct[]; total: number }>> {
+  const response = await apiClient.get<
+    ApiResponse<{ products: LoanProduct[]; total: number }>
+  >("/api/loans/admin/products/", { params });
+  return response.data;
+}
+
+/**
+ * Get loan product detail
+ * GET /api/loans/admin/products/:id/
+ */
+export async function getProductDetail(
+  productId: string,
+): Promise<ApiResponse<LoanProduct>> {
+  const response = await apiClient.get<ApiResponse<LoanProduct>>(
+    `/api/loans/admin/products/${productId}/`,
+  );
+  return response.data;
+}
+
+/**
+ * Create a new loan product
+ * POST /api/loans/admin/products/
+ */
+export async function createProduct(
+  data: CreateProductRequest,
+): Promise<ApiResponse<{ id: string; code: string; name: string }>> {
+  const response = await apiClient.post<
+    ApiResponse<{ id: string; code: string; name: string }>
+  >("/api/loans/admin/products/", data);
+  return response.data;
+}
+
+/**
+ * Update loan product
+ * PUT /api/loans/admin/products/:id/
+ */
+export async function updateProduct(
+  productId: string,
+  data: UpdateProductRequest,
+): Promise<ApiResponse<{ id: string }>> {
+  const response = await apiClient.put<ApiResponse<{ id: string }>>(
+    `/api/loans/admin/products/${productId}/`,
+    data,
+  );
+  return response.data;
+}
+
+/**
+ * Delete (deactivate) loan product
+ * DELETE /api/loans/admin/products/:id/
+ */
+export async function deleteProduct(
+  productId: string,
+): Promise<ApiResponse<null>> {
+  const response = await apiClient.delete<ApiResponse<null>>(
+    `/api/loans/admin/products/${productId}/`,
+  );
+  return response.data;
 }

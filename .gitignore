@@ -25,3 +25,5 @@ dist-ssr
 
 #backend
 backend/
+
+e2e/

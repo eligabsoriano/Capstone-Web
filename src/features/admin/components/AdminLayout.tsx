@@ -2,6 +2,7 @@ import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 
+import { Breadcrumbs } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
@@ -91,6 +92,7 @@ export function AdminLayout() {
 
           {/* Page Content */}
           <main className="p-6">
+            <Breadcrumbs className="mb-4" />
             <Outlet />
           </main>
         </div>

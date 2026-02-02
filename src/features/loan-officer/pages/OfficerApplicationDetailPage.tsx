@@ -1,106 +1,484 @@
-import { ArrowLeft, CheckCircle, FileText, User, XCircle } from "lucide-react";
-import { useParams, useNavigate } from "react-router-dom";
+import {
+  AlertCircle,
+  ArrowLeft,
+  Banknote,
+  Brain,
+  CheckCircle,
+  FileText,
+  Loader2,
+  User,
+  XCircle,
+} from "lucide-react";
+import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ApprovalModal } from "../components/ApprovalModal";
+import { DisbursementModal } from "../components/DisbursementModal";
+import { RejectionModal } from "../components/RejectionModal";
+import {
+  useDisburseApplication,
+  useOfficerApplicationDetail,
+  useReviewApplication,
+} from "../hooks";
 
 export function OfficerApplicationDetailPage() {
-    const { id } = useParams<{ id: string }>();
-    const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
 
+  const {
+    data: application,
+    isLoading,
+    error,
+  } = useOfficerApplicationDetail(id || "");
+  const reviewMutation = useReviewApplication();
+  const disburseMutation = useDisburseApplication();
+
+  const [approvalModalOpen, setApprovalModalOpen] = useState(false);
+  const [rejectionModalOpen, setRejectionModalOpen] = useState(false);
+  const [disbursementModalOpen, setDisbursementModalOpen] = useState(false);
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-PH", {
+      style: "currency",
+      currency: "PHP",
+    }).format(amount);
+  };
+
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return "-";
+    return new Date(dateString).toLocaleDateString("en-PH", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const getStatusBadgeVariant = (status: string) => {
+    switch (status) {
+      case "approved":
+        return "default";
+      case "rejected":
+        return "destructive";
+      case "under_review":
+        return "secondary";
+      case "disbursed":
+        return "outline";
+      default:
+        return "outline";
+    }
+  };
+
+  const handleApprove = async (amount: number, notes: string) => {
+    if (!id) return;
+    await reviewMutation.mutateAsync({
+      applicationId: id,
+      data: { action: "approve", approved_amount: amount, notes },
+    });
+    setApprovalModalOpen(false);
+  };
+
+  const handleReject = async (reason: string, notes: string) => {
+    if (!id) return;
+    await reviewMutation.mutateAsync({
+      applicationId: id,
+      data: { action: "reject", rejection_reason: reason, notes },
+    });
+    setRejectionModalOpen(false);
+  };
+
+  const handleDisburse = async (
+    method: string,
+    reference: string,
+    amount: number,
+  ) => {
+    if (!id) return;
+    await disburseMutation.mutateAsync({
+      applicationId: id,
+      data: { method, reference, amount },
+    });
+    setDisbursementModalOpen(false);
+  };
+
+  if (isLoading) {
     return (
-        <div className="space-y-6">
-            {/* Header with back button */}
-            <div className="flex items-center gap-4">
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => navigate("/officer/applications")}
-                    className="text-gray-600 hover:text-teal-700 hover:bg-teal-50"
-                >
-                    <ArrowLeft className="h-5 w-5" />
-                </Button>
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-                        Application Details
-                    </h1>
-                    <p className="text-gray-500">Application ID: {id}</p>
-                </div>
-            </div>
-
-            {/* Content Grid */}
-            <div className="grid gap-6 lg:grid-cols-3">
-                {/* Main Content - 2 columns */}
-                <div className="lg:col-span-2 space-y-6">
-                    {/* Customer Profile */}
-                    <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-                        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                            <User className="h-5 w-5 text-teal-600" />
-                            Customer Profile
-                        </h2>
-                        <div className="text-center py-8 text-gray-500">
-                            Customer profile information will be loaded here
-                        </div>
-                    </div>
-
-                    {/* Documents */}
-                    <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-                        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                            <FileText className="h-5 w-5 text-teal-600" />
-                            Uploaded Documents
-                        </h2>
-                        <div className="text-center py-8 text-gray-500">
-                            Documents for verification will appear here
-                        </div>
-                    </div>
-                </div>
-
-                {/* Sidebar - Actions */}
-                <div className="space-y-6">
-                    {/* Application Status */}
-                    <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-                        <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                            Application Status
-                        </h2>
-                        <div className="text-center py-4 text-gray-500">
-                            Status and loan details will appear here
-                        </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-                        <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                            Actions
-                        </h2>
-                        <div className="space-y-3">
-                            <Button
-                                className="w-full bg-teal-600 hover:bg-teal-700 text-white"
-                                disabled
-                            >
-                                <CheckCircle className="h-4 w-4 mr-2" />
-                                Approve Application
-                            </Button>
-                            <Button
-                                variant="outline"
-                                className="w-full border-red-200 text-red-600 hover:bg-red-50"
-                                disabled
-                            >
-                                <XCircle className="h-4 w-4 mr-2" />
-                                Reject Application
-                            </Button>
-                            <Button
-                                variant="outline"
-                                className="w-full border-teal-200 text-teal-600 hover:bg-teal-50"
-                                disabled
-                            >
-                                Disburse Loan
-                            </Button>
-                        </div>
-                        <p className="text-xs text-gray-400 mt-3 text-center">
-                            Actions will be enabled when application data loads
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
+      <div className="flex items-center justify-center py-24">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
     );
+  }
+
+  if (error || !application) {
+    return (
+      <div className="space-y-6">
+        <Button
+          variant="ghost"
+          onClick={() => navigate("/officer/applications")}
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Applications
+        </Button>
+        <Card className="border-destructive">
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-3 text-destructive">
+              <AlertCircle className="h-5 w-5" />
+              <p>Failed to load application details.</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  const canReview = ["submitted", "under_review"].includes(application.status);
+  const canDisburse = application.status === "approved";
+
+  return (
+    <div className="space-y-6">
+      {/* Header with back button */}
+      <div className="flex items-center gap-4">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => navigate("/officer/applications")}
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+        <div className="flex-1">
+          <h1 className="text-3xl font-bold tracking-tight">
+            Application Details
+          </h1>
+          <p className="text-muted-foreground">
+            Application ID: <span className="font-mono">{id}</span>
+          </p>
+        </div>
+        <Badge
+          variant={getStatusBadgeVariant(application.status)}
+          className="text-base px-3 py-1"
+        >
+          {application.status.replace("_", " ").toUpperCase()}
+        </Badge>
+      </div>
+
+      {/* Content Grid */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Main Content - 2 columns */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Loan Details */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-primary" />
+                Loan Details
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <p className="text-sm text-muted-foreground">Product</p>
+                  <p className="font-medium">{application.product.name}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Product Code</p>
+                  <p className="font-mono">{application.product.code || "-"}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">
+                    Requested Amount
+                  </p>
+                  <p className="font-medium text-lg">
+                    {formatCurrency(application.requested_amount)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">
+                    Recommended Amount
+                  </p>
+                  <p className="font-medium text-lg">
+                    {formatCurrency(application.recommended_amount)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Term</p>
+                  <p className="font-medium">
+                    {application.term_months} months
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Purpose</p>
+                  <p className="font-medium">{application.purpose || "-"}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Customer Profile */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <User className="h-5 w-5 text-primary" />
+                Customer Profile
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <p className="text-sm text-muted-foreground">Customer ID</p>
+                  <p className="font-mono">{application.customer_id}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Submitted At</p>
+                  <p className="font-medium">
+                    {formatDate(application.submitted_at)}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* AI Recommendation */}
+          {application.ai_recommendation && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Brain className="h-5 w-5 text-primary" />
+                  AI Recommendation
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Eligibility Status */}
+                <div className="flex items-center gap-2">
+                  {application.ai_recommendation.eligible ? (
+                    <Badge variant="default" className="bg-green-600">
+                      <CheckCircle className="h-3 w-3 mr-1" />
+                      Eligible
+                    </Badge>
+                  ) : (
+                    <Badge variant="destructive">
+                      <XCircle className="h-3 w-3 mr-1" />
+                      Not Eligible
+                    </Badge>
+                  )}
+                  <span className="text-sm text-muted-foreground">
+                    Recommended:{" "}
+                    {formatCurrency(
+                      application.ai_recommendation.recommended_amount,
+                    )}
+                  </span>
+                </div>
+
+                {/* Reasoning */}
+                {application.ai_recommendation.reasoning && (
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground mb-1">
+                      Reasoning
+                    </p>
+                    <p className="text-sm">
+                      {application.ai_recommendation.reasoning}
+                    </p>
+                  </div>
+                )}
+
+                {/* Strengths */}
+                {application.ai_recommendation.strengths?.length > 0 && (
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground mb-2">
+                      Strengths
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {application.ai_recommendation.strengths.map(
+                        (strength) => (
+                          <Badge
+                            key={strength}
+                            variant="outline"
+                            className="border-green-500 text-green-700 dark:text-green-400"
+                          >
+                            <CheckCircle className="h-3 w-3 mr-1" />
+                            {strength}
+                          </Badge>
+                        ),
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Concerns */}
+                {application.ai_recommendation.concerns?.length > 0 && (
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground mb-2">
+                      Concerns
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {application.ai_recommendation.concerns.map((concern) => (
+                        <Badge
+                          key={concern}
+                          variant="outline"
+                          className="border-yellow-500 text-yellow-700 dark:text-yellow-400"
+                        >
+                          <AlertCircle className="h-3 w-3 mr-1" />
+                          {concern}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Missing Requirements */}
+                {application.ai_recommendation.missing_requirements?.length >
+                  0 && (
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground mb-2">
+                      Missing Requirements
+                    </p>
+                    <ul className="list-disc list-inside text-sm text-destructive space-y-1">
+                      {application.ai_recommendation.missing_requirements.map(
+                        (req) => (
+                          <li key={req}>{req}</li>
+                        ),
+                      )}
+                    </ul>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
+        {/* Sidebar - Risk & Actions */}
+        <div className="space-y-6">
+          {/* Risk Assessment */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Risk Assessment</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Eligibility Score</span>
+                <span className="font-bold text-2xl">
+                  {application.eligibility_score}%
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Risk Category</span>
+                <Badge
+                  variant={
+                    application.risk_category === "low"
+                      ? "default"
+                      : application.risk_category === "medium"
+                        ? "secondary"
+                        : "destructive"
+                  }
+                >
+                  {application.risk_category?.toUpperCase() || "N/A"}
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Actions */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Actions</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {canReview && (
+                <>
+                  <Button
+                    className="w-full"
+                    onClick={() => setApprovalModalOpen(true)}
+                    disabled={reviewMutation.isPending}
+                  >
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    Approve Application
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full border-destructive text-destructive hover:bg-destructive/10"
+                    onClick={() => setRejectionModalOpen(true)}
+                    disabled={reviewMutation.isPending}
+                  >
+                    <XCircle className="h-4 w-4 mr-2" />
+                    Reject Application
+                  </Button>
+                </>
+              )}
+              {canDisburse && (
+                <Button
+                  className="w-full"
+                  onClick={() => setDisbursementModalOpen(true)}
+                  disabled={disburseMutation.isPending}
+                >
+                  <Banknote className="h-4 w-4 mr-2" />
+                  Disburse Loan
+                </Button>
+              )}
+              {!canReview && !canDisburse && (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  No actions available for this application status.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Decision Info (if available) */}
+          {application.decision_date && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Decision Info</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Decision Date</span>
+                  <span>{formatDate(application.decision_date)}</span>
+                </div>
+                {application.officer_notes && (
+                  <div className="pt-2 border-t">
+                    <p className="text-muted-foreground mb-1">Notes:</p>
+                    <p>{application.officer_notes}</p>
+                  </div>
+                )}
+                {application.rejection_reason && (
+                  <div className="pt-2 border-t">
+                    <p className="text-muted-foreground mb-1">
+                      Rejection Reason:
+                    </p>
+                    <p className="text-destructive">
+                      {application.rejection_reason}
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </div>
+
+      {/* Modals */}
+      <ApprovalModal
+        open={approvalModalOpen}
+        onClose={() => setApprovalModalOpen(false)}
+        onConfirm={handleApprove}
+        recommendedAmount={application.recommended_amount}
+        requestedAmount={application.requested_amount}
+        isPending={reviewMutation.isPending}
+      />
+      <RejectionModal
+        open={rejectionModalOpen}
+        onClose={() => setRejectionModalOpen(false)}
+        onConfirm={handleReject}
+        isPending={reviewMutation.isPending}
+      />
+      <DisbursementModal
+        open={disbursementModalOpen}
+        onClose={() => setDisbursementModalOpen(false)}
+        onConfirm={handleDisburse}
+        approvedAmount={application.recommended_amount}
+        isPending={disburseMutation.isPending}
+      />
+    </div>
+  );
 }

@@ -1,1 +1,4 @@
+export { Breadcrumbs } from "./Breadcrumbs";
 export { ErrorBoundary } from "./ErrorBoundary";
+export { ThemeProvider, useTheme } from "./ThemeProvider";
+export { ThemeToggle } from "./ThemeToggle";

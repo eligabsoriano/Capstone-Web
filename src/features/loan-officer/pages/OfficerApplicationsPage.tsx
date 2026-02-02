@@ -1,27 +1,247 @@
-import { ClipboardList } from "lucide-react";
+import { AlertCircle, ClipboardList, Loader2, Search } from "lucide-react";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { useOfficerApplications } from "../hooks";
 
 export function OfficerApplicationsPage() {
-    return (
-        <div className="space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-                    Application Queue
-                </h1>
-                <p className="text-gray-500">
-                    Review and manage assigned loan applications
-                </p>
-            </div>
+  const [statusFilter, setStatusFilter] = useState("pending");
+  const [searchQuery, setSearchQuery] = useState("");
 
-            {/* Placeholder content */}
-            <div className="bg-white rounded-xl border border-gray-200 p-8 shadow-sm">
-                <div className="text-center py-8">
-                    <ClipboardList className="h-12 w-12 mx-auto mb-3 text-gray-300" />
-                    <p className="text-gray-500">No applications in queue</p>
-                    <p className="text-sm text-gray-400 mt-1">
-                        Applications assigned to you will appear here
-                    </p>
-                </div>
-            </div>
-        </div>
+  const { data, isLoading, error } = useOfficerApplications(statusFilter);
+
+  const applications = data?.applications ?? [];
+  const total = data?.total ?? 0;
+
+  const statusOptions = [
+    { value: "pending", label: "Pending" },
+    { value: "mine", label: "My Applications" },
+    { value: "submitted", label: "Submitted" },
+    { value: "under_review", label: "Under Review" },
+    { value: "approved", label: "Approved" },
+    { value: "rejected", label: "Rejected" },
+    { value: "disbursed", label: "Disbursed" },
+  ];
+
+  const getStatusBadgeVariant = (status: string) => {
+    switch (status) {
+      case "approved":
+        return "default";
+      case "rejected":
+        return "destructive";
+      case "under_review":
+        return "secondary";
+      case "disbursed":
+        return "outline";
+      default:
+        return "outline";
+    }
+  };
+
+  const getRiskBadgeVariant = (risk: string) => {
+    switch (risk?.toLowerCase()) {
+      case "low":
+        return "default";
+      case "medium":
+        return "secondary";
+      case "high":
+        return "destructive";
+      default:
+        return "outline";
+    }
+  };
+
+  const filteredApplications = applications.filter((app) => {
+    if (!searchQuery) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      app.id.toLowerCase().includes(query) ||
+      app.customer_id.toLowerCase().includes(query) ||
+      app.product_name.toLowerCase().includes(query)
     );
+  });
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-PH", {
+      style: "currency",
+      currency: "PHP",
+    }).format(amount);
+  };
+
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return "-";
+    return new Date(dateString).toLocaleDateString("en-PH", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Application Queue
+          </h1>
+          <p className="text-muted-foreground">
+            Review and manage assigned loan applications
+          </p>
+        </div>
+        <Card className="border-destructive">
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-3 text-destructive">
+              <AlertCircle className="h-5 w-5" />
+              <p>Failed to load applications. Please try again.</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Application Queue</h1>
+        <p className="text-muted-foreground">
+          Review and manage assigned loan applications
+        </p>
+      </div>
+
+      {/* Filters */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm"
+          >
+            {statusOptions.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search by ID, customer, or product..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+      </div>
+
+      {/* Applications Table */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Loan Applications</CardTitle>
+          <CardDescription>
+            {isLoading
+              ? "Loading..."
+              : `${filteredApplications.length} of ${total} applications`}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+          ) : filteredApplications.length === 0 ? (
+            <div className="text-center py-12">
+              <ClipboardList className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
+              <p className="text-muted-foreground">No applications found</p>
+              <p className="text-sm text-muted-foreground/70 mt-1">
+                Try changing the filter or search criteria
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b bg-muted/50">
+                    <th className="text-left py-3 px-4 font-medium text-muted-foreground">
+                      Application ID
+                    </th>
+                    <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden md:table-cell">
+                      Product
+                    </th>
+                    <th className="text-right py-3 px-4 font-medium text-muted-foreground">
+                      Amount
+                    </th>
+                    <th className="text-left py-3 px-4 font-medium text-muted-foreground">
+                      Status
+                    </th>
+                    <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden lg:table-cell">
+                      Risk
+                    </th>
+                    <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden lg:table-cell">
+                      Submitted
+                    </th>
+                    <th className="text-right py-3 px-4 font-medium text-muted-foreground">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredApplications.map((app) => (
+                    <tr
+                      key={app.id}
+                      className="border-b last:border-0 hover:bg-muted/50"
+                    >
+                      <td className="py-3 px-4">
+                        <span className="font-mono text-sm">
+                          {app.id.slice(-8)}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 hidden md:table-cell text-muted-foreground">
+                        {app.product_name}
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        {formatCurrency(app.requested_amount)}
+                      </td>
+                      <td className="py-3 px-4">
+                        <Badge variant={getStatusBadgeVariant(app.status)}>
+                          {app.status.replace("_", " ")}
+                        </Badge>
+                      </td>
+                      <td className="py-3 px-4 hidden lg:table-cell">
+                        <Badge variant={getRiskBadgeVariant(app.risk_category)}>
+                          {app.risk_category || "N/A"}
+                        </Badge>
+                      </td>
+                      <td className="py-3 px-4 hidden lg:table-cell text-muted-foreground">
+                        {formatDate(app.submitted_at)}
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        <Button variant="outline" size="sm" asChild>
+                          <Link to={`/officer/applications/${app.id}`}>
+                            View
+                          </Link>
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
 }
