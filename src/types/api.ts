@@ -283,6 +283,21 @@ export interface OfficerWorkload {
   active?: boolean;
 }
 
+/**
+ * Pending application summary for admin assignment view
+ */
+export interface PendingApplication {
+  id: string;
+  customer_id: string;
+  requested_amount: number;
+  term_months: number;
+  status: string;
+  eligibility_score: number | null;
+  risk_category: string | null;
+  assigned_officer: string | null;
+  submitted_at: string | null;
+}
+
 // ============================================================================
 // ADMIN - LOAN PRODUCTS TYPES
 // ============================================================================
@@ -342,6 +357,41 @@ export interface UpdateProductRequest {
 // LOAN OFFICER - APPLICATIONS TYPES
 // ============================================================================
 
+/**
+ * Application status values (from backend: loans/models/application.py)
+ * Flow: draft → submitted → under_review → approved/rejected → disbursed
+ */
+export type ApplicationStatus =
+  | "draft"
+  | "submitted"
+  | "under_review"
+  | "approved"
+  | "rejected"
+  | "disbursed"
+  | "cancelled";
+
+/**
+ * Risk category values (from backend: loans/services/qualification.py)
+ * - low: score 75-100
+ * - medium: score 50-74
+ * - high: score 0-49
+ */
+export type RiskCategory = "low" | "medium" | "high";
+
+/**
+ * AI Recommendation object structure returned by qualification service
+ */
+export interface AIRecommendation {
+  eligible: boolean;
+  eligibility_score: number;
+  risk_category: RiskCategory;
+  recommended_amount: number;
+  reasoning: string;
+  strengths: string[];
+  concerns: string[];
+  missing_requirements: string[];
+}
+
 export interface OfficerApplicationListItem {
   id: string;
   customer_id: string;
@@ -349,9 +399,9 @@ export interface OfficerApplicationListItem {
   requested_amount: number;
   recommended_amount: number;
   term_months: number;
-  status: string;
+  status: ApplicationStatus;
   eligibility_score: number;
-  risk_category: string;
+  risk_category: RiskCategory;
   submitted_at: string | null;
 }
 
@@ -367,10 +417,10 @@ export interface OfficerApplicationDetail {
   recommended_amount: number;
   term_months: number;
   purpose: string;
-  status: string;
+  status: ApplicationStatus;
   eligibility_score: number;
-  risk_category: string;
-  ai_recommendation: string | null;
+  risk_category: RiskCategory;
+  ai_recommendation: AIRecommendation | null;
   assigned_officer: string | null;
   officer_notes: string | null;
   rejection_reason: string | null;

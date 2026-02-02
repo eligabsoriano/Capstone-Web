@@ -249,10 +249,100 @@ export function OfficerApplicationDetailPage() {
                   AI Recommendation
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground whitespace-pre-wrap">
-                  {application.ai_recommendation}
-                </p>
+              <CardContent className="space-y-4">
+                {/* Eligibility Status */}
+                <div className="flex items-center gap-2">
+                  {application.ai_recommendation.eligible ? (
+                    <Badge variant="default" className="bg-green-600">
+                      <CheckCircle className="h-3 w-3 mr-1" />
+                      Eligible
+                    </Badge>
+                  ) : (
+                    <Badge variant="destructive">
+                      <XCircle className="h-3 w-3 mr-1" />
+                      Not Eligible
+                    </Badge>
+                  )}
+                  <span className="text-sm text-muted-foreground">
+                    Recommended:{" "}
+                    {formatCurrency(
+                      application.ai_recommendation.recommended_amount,
+                    )}
+                  </span>
+                </div>
+
+                {/* Reasoning */}
+                {application.ai_recommendation.reasoning && (
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground mb-1">
+                      Reasoning
+                    </p>
+                    <p className="text-sm">
+                      {application.ai_recommendation.reasoning}
+                    </p>
+                  </div>
+                )}
+
+                {/* Strengths */}
+                {application.ai_recommendation.strengths?.length > 0 && (
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground mb-2">
+                      Strengths
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {application.ai_recommendation.strengths.map(
+                        (strength) => (
+                          <Badge
+                            key={strength}
+                            variant="outline"
+                            className="border-green-500 text-green-700 dark:text-green-400"
+                          >
+                            <CheckCircle className="h-3 w-3 mr-1" />
+                            {strength}
+                          </Badge>
+                        ),
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Concerns */}
+                {application.ai_recommendation.concerns?.length > 0 && (
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground mb-2">
+                      Concerns
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {application.ai_recommendation.concerns.map((concern) => (
+                        <Badge
+                          key={concern}
+                          variant="outline"
+                          className="border-yellow-500 text-yellow-700 dark:text-yellow-400"
+                        >
+                          <AlertCircle className="h-3 w-3 mr-1" />
+                          {concern}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Missing Requirements */}
+                {application.ai_recommendation.missing_requirements?.length >
+                  0 && (
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground mb-2">
+                      Missing Requirements
+                    </p>
+                    <ul className="list-disc list-inside text-sm text-destructive space-y-1">
+                      {application.ai_recommendation.missing_requirements.map(
+                        (req) => (
+                          <li key={req}>{req}</li>
+                        ),
+                      )}
+                    </ul>
+                  </div>
+                )}
               </CardContent>
             </Card>
           )}
