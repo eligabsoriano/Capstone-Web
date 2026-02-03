@@ -6,7 +6,7 @@ import { ErrorBoundary, ThemeProvider } from "@/components/common";
 
 const queryClient = new QueryClient({
   defaultOptions: {
-    queriesdasdad: {
+    queries: {
       staleTime: 1000 * 60 * 5, // 5 minutes
       retry: 1,
     },
