@@ -351,7 +351,34 @@ The **Reference #** is **your proof of payment** that you create or receive:
 
 ---
 
-## Recent Updates (2026-02-02)
+## Recent Updates (2026-02-03)
+
+### Payment Recording UX Improvements
+
+| Feature | Before | After |
+|---------|--------|-------|
+| **Find Loan** | Manual Loan ID input | Search by customer name/phone |
+| **Reference #** | Required, manual entry | Auto-generated (`PAY-YYYYMMDD-NNNNNN`) |
+| **Installment** | Manual entry | Auto-filled from loan data |
+| **Amount** | Manual entry | Pre-filled with next due amount |
+
+### Disbursement Improvements
+
+| Feature | Before | After |
+|---------|--------|-------|
+| **Reference #** | Required, manual entry | Auto-generated (`DSB-YYYYMMDD-NNNNNN`) |
+| **External Ref** | Not supported | Store bank/check number separately |
+
+### New Backend Endpoints
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/loans/officer/active-loans/` | Search active loans by customer name/phone |
+
+### New Files
+
+- `backend/loans/utils/reference_generator.py` - Auto-generates unique references
+- `ActiveLoansView` in `officer_views.py` - Search disbursed loans
 
 ### Bug Fixes
 1. **AI Recommendation Rendering** - Fixed React crash when rendering ai_recommendation object
@@ -360,3 +387,4 @@ The **Reference #** is **your proof of payment** that you create or receive:
 
 ### New Components
 - `src/components/ErrorBoundary.tsx` - Graceful error handling for React rendering errors
+

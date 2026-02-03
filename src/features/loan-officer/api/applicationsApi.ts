@@ -63,3 +63,40 @@ export async function disburseApplication(
   );
   return response.data;
 }
+
+// ============================================================================
+// ACTIVE LOANS (for payment recording)
+// ============================================================================
+
+/**
+ * Active loan with repayment schedule info
+ */
+export interface ActiveLoan {
+  loan_id: string;
+  schedule_id: string;
+  customer_id: string;
+  customer_name: string;
+  customer_phone: string | null;
+  product_name: string;
+  disbursed_amount: number;
+  monthly_payment: number;
+  remaining_balance: number;
+  paid_installments: number;
+  total_installments: number;
+  next_due_installment: number | null;
+  next_due_date: string | null;
+  next_due_amount: number | null;
+}
+
+/**
+ * Search active (disbursed) loans for payment recording
+ * @param search - Customer name, phone, or ID
+ */
+export async function searchActiveLoans(
+  search: string,
+): Promise<ApiResponse<{ loans: ActiveLoan[]; total: number }>> {
+  const response = await apiClient.get("/api/loans/officer/active-loans/", {
+    params: { search },
+  });
+  return response.data;
+}
