@@ -3,8 +3,12 @@ import {
   ArrowLeft,
   Banknote,
   Brain,
+  Briefcase,
   CheckCircle,
+  Eye,
   FileText,
+  GraduationCap,
+  Home,
   Loader2,
   User,
   XCircle,
@@ -216,27 +220,354 @@ export function OfficerApplicationDetailPage() {
             </CardContent>
           </Card>
 
-          {/* Customer Profile */}
+          {/* Personal Profile */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <User className="h-5 w-5 text-primary" />
-                Customer Profile
+                Personal Profile
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <p className="text-sm text-muted-foreground">Customer ID</p>
-                  <p className="font-mono">{application.customer_id}</p>
+                  <p className="text-sm text-muted-foreground">Full Name</p>
+                  <p className="font-medium">
+                    {application.customer?.personal_profile?.first_name}{" "}
+                    {application.customer?.personal_profile?.last_name}
+                  </p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Submitted At</p>
+                  <p className="text-sm text-muted-foreground">Email</p>
                   <p className="font-medium">
-                    {formatDate(application.submitted_at)}
+                    {application.customer?.email || "-"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Phone</p>
+                  <p className="font-medium">
+                    {application.customer?.personal_profile?.phone_number ||
+                      "-"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Civil Status</p>
+                  <p className="font-medium capitalize">
+                    {application.customer?.personal_profile?.civil_status ||
+                      "-"}
+                  </p>
+                </div>
+                <div className="sm:col-span-2">
+                  <p className="text-sm text-muted-foreground">Address</p>
+                  <p className="font-medium">
+                    {[
+                      application.customer?.personal_profile?.street_address,
+                      application.customer?.personal_profile?.barangay,
+                      application.customer?.personal_profile?.city_municipality,
+                      application.customer?.personal_profile?.province,
+                    ]
+                      .filter(Boolean)
+                      .join(", ") || "-"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">
+                    Emergency Contact
+                  </p>
+                  <p className="font-medium">
+                    {application.customer?.personal_profile
+                      ?.emergency_contact_name || "-"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">
+                    Emergency Phone
+                  </p>
+                  <p className="font-medium">
+                    {application.customer?.personal_profile
+                      ?.emergency_contact_phone || "-"}
                   </p>
                 </div>
               </div>
+              <div className="mt-4 flex items-center gap-2">
+                <Badge
+                  variant={
+                    application.customer?.personal_profile?.profile_completed
+                      ? "default"
+                      : "secondary"
+                  }
+                >
+                  {application.customer?.personal_profile?.profile_completed
+                    ? "Complete"
+                    : `${application.customer?.personal_profile?.completion_percentage || 0}% Complete`}
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Business Profile */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Briefcase className="h-5 w-5 text-primary" />
+                Business Profile
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <p className="text-sm text-muted-foreground">Business Name</p>
+                  <p className="font-medium">
+                    {application.customer?.business_profile?.business_name ||
+                      "-"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Business Type</p>
+                  <p className="font-medium capitalize">
+                    {application.customer?.business_profile?.business_type ||
+                      "-"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">
+                    Years in Operation
+                  </p>
+                  <p className="font-medium">
+                    {application.customer?.business_profile
+                      ?.years_in_operation ?? "-"}{" "}
+                    years
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Registered</p>
+                  <Badge
+                    variant={
+                      application.customer?.business_profile?.is_registered
+                        ? "default"
+                        : "secondary"
+                    }
+                  >
+                    {application.customer?.business_profile?.is_registered
+                      ? "Yes"
+                      : "No"}
+                  </Badge>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Income Range</p>
+                  <p className="font-medium">
+                    {application.customer?.business_profile?.income_range ||
+                      "-"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">
+                    Est. Monthly Income
+                  </p>
+                  <p className="font-medium">
+                    {application.customer?.business_profile
+                      ?.estimated_monthly_income
+                      ? formatCurrency(
+                          application.customer.business_profile
+                            .estimated_monthly_income,
+                        )
+                      : "-"}
+                  </p>
+                </div>
+                <div className="sm:col-span-2">
+                  <p className="text-sm text-muted-foreground">
+                    Business Address
+                  </p>
+                  <p className="font-medium">
+                    {application.customer?.business_profile?.business_address ||
+                      "-"}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Alternative Data */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <GraduationCap className="h-5 w-5 text-primary" />
+                Alternative Data
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div>
+                  <p className="text-sm text-muted-foreground">
+                    Education Level
+                  </p>
+                  <p className="font-medium capitalize">
+                    {application.customer?.alternative_data?.education_level ||
+                      "-"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">
+                    Employment Status
+                  </p>
+                  <p className="font-medium capitalize">
+                    {application.customer?.alternative_data?.employment_status?.replace(
+                      /_/g,
+                      " ",
+                    ) || "-"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">
+                    <Home className="inline h-4 w-4 mr-1" />
+                    Housing Status
+                  </p>
+                  <p className="font-medium capitalize">
+                    {application.customer?.alternative_data?.housing_status ||
+                      "-"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Bank Account</p>
+                  <Badge
+                    variant={
+                      application.customer?.alternative_data?.has_bank_account
+                        ? "default"
+                        : "secondary"
+                    }
+                  >
+                    {application.customer?.alternative_data?.has_bank_account
+                      ? "Yes"
+                      : "No"}
+                  </Badge>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">E-Wallet</p>
+                  <Badge
+                    variant={
+                      application.customer?.alternative_data?.has_ewallet
+                        ? "default"
+                        : "secondary"
+                    }
+                  >
+                    {application.customer?.alternative_data?.has_ewallet
+                      ? "Yes"
+                      : "No"}
+                  </Badge>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">
+                    Existing Loans
+                  </p>
+                  <Badge
+                    variant={
+                      application.customer?.alternative_data?.has_existing_loans
+                        ? "destructive"
+                        : "default"
+                    }
+                  >
+                    {application.customer?.alternative_data?.has_existing_loans
+                      ? "Yes"
+                      : "No"}
+                  </Badge>
+                </div>
+              </div>
+              {application.customer?.alternative_data?.risk_score && (
+                <div className="mt-4 pt-4 border-t flex items-center gap-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Risk Score</p>
+                    <p className="font-bold text-lg">
+                      {application.customer.alternative_data.risk_score}
+                    </p>
+                  </div>
+                  <Badge
+                    variant={
+                      application.customer.alternative_data.risk_category ===
+                      "low"
+                        ? "default"
+                        : application.customer.alternative_data
+                              .risk_category === "medium"
+                          ? "secondary"
+                          : "destructive"
+                    }
+                  >
+                    {application.customer.alternative_data.risk_category?.toUpperCase()}{" "}
+                    RISK
+                  </Badge>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Customer Documents */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-primary" />
+                Customer Documents ({application.documents?.length || 0})
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {application.documents && application.documents.length > 0 ? (
+                <div className="space-y-3">
+                  {application.documents.map((doc) => (
+                    <div
+                      key={doc.id}
+                      className="flex items-center justify-between p-3 bg-muted rounded-lg"
+                    >
+                      <div className="flex items-center gap-3">
+                        <FileText className="h-4 w-4 text-muted-foreground" />
+                        <div>
+                          <p className="font-medium text-sm">
+                            {doc.document_type
+                              .replace(/_/g, " ")
+                              .replace(/\b\w/g, (l) => l.toUpperCase())}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {doc.filename}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {doc.ai_analysis?.quality_score !== undefined && (
+                          <Badge variant="outline" className="text-xs">
+                            AI:{" "}
+                            {Math.round(doc.ai_analysis.quality_score * 100)}%
+                          </Badge>
+                        )}
+                        <Badge
+                          variant={
+                            doc.status === "approved"
+                              ? "default"
+                              : doc.status === "rejected"
+                                ? "destructive"
+                                : "secondary"
+                          }
+                        >
+                          {doc.status.toUpperCase()}
+                        </Badge>
+                        {doc.file_url && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7"
+                            onClick={() =>
+                              doc.file_url &&
+                              window.open(doc.file_url, "_blank")
+                            }
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  No documents uploaded
+                </p>
+              )}
             </CardContent>
           </Card>
 
