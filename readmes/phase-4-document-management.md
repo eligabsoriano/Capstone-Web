@@ -16,7 +16,8 @@ Phase 4 provides document management capabilities for the loan application workf
 | Role | Access Level | Description |
 |------|-------------|-------------|
 | **Loan Officer** | ✅ Full Access | View, verify, reject, request re-upload |
-| **Admin** | ✅ Full Access | Same as Loan Officer (backend supports both) |
+| **Admin** | ✅ Full Access | Same as Loan Officer |
+| **Super Admin** | ✅ Full Access | Same as Loan Officer |
 | **Customer** | ❌ No Access | Customers upload via mobile app only |
 
 ---
