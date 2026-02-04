@@ -415,6 +415,7 @@ export interface OfficerApplicationDetail {
   };
   requested_amount: number;
   recommended_amount: number;
+  approved_amount?: number;
   term_months: number;
   purpose: string;
   status: ApplicationStatus;
@@ -426,6 +427,67 @@ export interface OfficerApplicationDetail {
   rejection_reason: string | null;
   submitted_at: string | null;
   decision_date: string | null;
+  // Complete customer data
+  customer?: {
+    customer_id: string;
+    email: string | null;
+    personal_profile: {
+      first_name: string | null;
+      last_name: string | null;
+      phone_number: string | null;
+      civil_status: string | null;
+      city_municipality: string | null;
+      province: string | null;
+      barangay: string | null;
+      street_address: string | null;
+      emergency_contact_name: string | null;
+      emergency_contact_phone: string | null;
+      profile_completed: boolean;
+      completion_percentage: number;
+    };
+    business_profile: {
+      business_name: string | null;
+      business_type: string | null;
+      business_address: string | null;
+      years_in_operation: number | null;
+      is_registered: boolean;
+      income_range: string | null;
+      estimated_monthly_income: number | null;
+      number_of_employees: number | null;
+      business_description: string | null;
+    };
+    alternative_data: {
+      education_level: string | null;
+      employment_status: string | null;
+      housing_status: string | null;
+      years_at_residence: number | null;
+      has_bank_account: boolean;
+      has_ewallet: boolean;
+      ewallet_usage: string | null;
+      has_existing_loans: boolean;
+      utility_payment_history: string | null;
+      risk_score: number | null;
+      risk_category: string | null;
+    };
+  };
+  // Customer documents
+  documents?: Array<{
+    id: string;
+    document_type: string;
+    filename: string;
+    file_url: string | null;
+    file_size: number | null;
+    status: string;
+    verified: boolean;
+    verified_at: string | null;
+    reupload_requested: boolean;
+    reupload_reason: string | null;
+    ai_analysis: {
+      quality_score?: number;
+      quality_issues?: string[];
+    } | null;
+    uploaded_at: string | null;
+  }>;
 }
 
 export interface ReviewApplicationRequest {
