@@ -22,6 +22,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import type { RecordPaymentRequest } from "@/types/api";
 import { type ActiveLoan, searchActiveLoans } from "../api/applicationsApi";
+import { PaymentHistoryCard, RepaymentScheduleCard } from "../components";
 import { useRecordPayment } from "../hooks/usePayments";
 
 const paymentMethods = [
@@ -92,7 +93,7 @@ export function OfficerPaymentsPage() {
           toast.info("No active loans found for this search");
         }
       }
-    } catch (err) {
+    } catch {
       toast.error("Failed to search loans");
     } finally {
       setIsSearching(false);
@@ -410,8 +411,24 @@ export function OfficerPaymentsPage() {
           </Card>
         </div>
 
-        {/* Right Column - Success and Tips */}
+        {/* Right Column - Schedule, History, Success and Tips */}
         <div className="space-y-4">
+          {/* Repayment Schedule - shows when loan selected */}
+          {selectedLoan && (
+            <RepaymentScheduleCard
+              loanId={selectedLoan.loan_id}
+              onRefresh={lastPayment ? 1 : 0}
+            />
+          )}
+
+          {/* Payment History - shows when loan selected */}
+          {selectedLoan && (
+            <PaymentHistoryCard
+              loanId={selectedLoan.loan_id}
+              onRefresh={lastPayment ? 1 : 0}
+            />
+          )}
+
           {lastPayment && (
             <Card className="border-green-200 bg-green-50 dark:bg-green-950/20 dark:border-green-800">
               <CardHeader>

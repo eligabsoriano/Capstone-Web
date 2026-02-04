@@ -545,3 +545,47 @@ export interface RecordPaymentResponse {
   remaining_balance: number;
   reference: string; // Auto-generated payment reference
 }
+
+// ============================================================================
+// REPAYMENT SCHEDULE & PAYMENT HISTORY
+// ============================================================================
+
+export interface Installment {
+  number: number;
+  due_date: string | null;
+  principal: number;
+  interest: number;
+  total_amount: number;
+  status: "pending" | "paid" | "overdue" | "partial";
+  paid_amount: number;
+}
+
+export interface RepaymentSchedule {
+  loan_id: string;
+  principal: number;
+  interest_rate: number;
+  term_months: number;
+  monthly_payment: number;
+  total_amount: number;
+  total_interest: number;
+  paid_count: number;
+  remaining_balance: number;
+  next_payment: Installment | null;
+  installments: Installment[];
+}
+
+export interface PaymentRecord {
+  id: string;
+  amount: number;
+  payment_method: string;
+  reference: string;
+  installment_number: number;
+  notes: string | null;
+  recorded_at: string;
+}
+
+export interface PaymentHistoryResponse {
+  payments: PaymentRecord[];
+  total_paid: number;
+  count: number;
+}
