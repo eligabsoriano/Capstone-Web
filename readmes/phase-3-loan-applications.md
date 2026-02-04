@@ -239,3 +239,152 @@ When creating a loan product, these fields affect the AI qualification system:
 
 ### Types
 - `src/types/api.ts` - LoanProduct, CreateProductRequest, RecordPayment types
+
+---
+
+## Application Status Definitions
+
+Source: `backend/loans/models/application.py`
+
+| Status | Description | Next States |
+|--------|-------------|-------------|
+| `draft` | Application started but not submitted | submitted, cancelled |
+| `submitted` | Waiting for officer assignment | under_review |
+| `under_review` | Assigned to loan officer for review | approved, rejected |
+| `approved` | Approved by loan officer | disbursed |
+| `rejected` | Rejected by loan officer | draft (via resubmit) |
+| `disbursed` | Loan amount transferred to customer | (final) |
+| `cancelled` | Cancelled by customer | (final) |
+
+**Status Flow:**
+```
+draft → submitted → under_review → approved → disbursed
+                              ↘ rejected → (resubmit) → draft
+```
+
+---
+
+## Risk Category Definitions
+
+Source: `backend/loans/services/qualification.py`
+
+| Category | Score Range | UI Color | Description |
+|----------|-------------|----------|-------------|
+| `low` | 75-100 | Green | Low risk, recommended for approval |
+| `medium` | 50-74 | Yellow | Moderate risk, review carefully |
+| `high` | 0-49 | Red | High risk, likely rejection |
+
+---
+
+## AI Recommendation Object Structure
+
+The backend returns a structured object (not string) for AI recommendations:
+
+```typescript
+interface AIRecommendation {
+  eligible: boolean;           // Overall eligibility
+  eligibility_score: number;   // 0-100
+  risk_category: "low" | "medium" | "high";
+  recommended_amount: number;  // Suggested loan amount
+  reasoning: string;           // AI explanation
+  strengths: string[];         // Positive factors
+  concerns: string[];          // Risk factors
+  missing_requirements: string[]; // Blocking issues
+}
+```
+
+---
+
+## Record Payment - Detailed Guide
+
+### What is "Record Payment"?
+
+This is for **face-to-face payment recording** when customers pay their loan installments. The Loan Officer records the payment manually after receiving payment from the customer.
+
+### Payment Flow
+
+1. Customer comes to branch (or pays via GCash/bank/Maya)
+2. Customer provides payment proof (receipt, transaction ID)
+3. Loan Officer opens "Record Payment" page
+4. Fills in the form and clicks "Record Payment"
+
+### Form Fields Explained
+
+| Field | Description | Example |
+|-------|-------------|---------|
+| **Loan ID** | The ID of the disbursed loan | `507f1f77bcf86cd799439011` |
+| **Installment #** | Which payment number (1st, 2nd, etc.) | `1` |
+| **Amount** | Amount the customer paid | `5000` |
+| **Payment Method** | Cash, GCash, Maya, Bank Transfer, Check | `cash` |
+| **Reference #** | Your proof of payment | See below |
+| **Notes** | Optional additional info | `Customer paid early` |
+
+### Reference Number Examples
+
+The **Reference #** is **your proof of payment** that you create or receive:
+
+| Payment Method | Reference Example | Where to Get It |
+|---------------|-------------------|-----------------|
+| **Cash** | `CASH-2026-001`, `REC-0123` | You create a receipt number |
+| **Bank Transfer** | `BTR-ABC123456` | Customer shows bank app transaction ID |
+| **GCash** | `GC-9876543210` | Customer shows GCash transaction reference |
+| **Maya** | `MAYA-1234567890` | Customer shows Maya transaction reference |
+| **Check** | `CHK-00012345` | Check number |
+
+### Testing Payment Recording
+
+**Prerequisites:**
+1. You need a **disbursed loan** (status = "disbursed")
+2. Get the Loan ID from Officer → Applications → click on a disbursed app → copy the Application ID
+
+**Test Steps:**
+| Step | Action |
+|------|--------|
+| 1 | Go to Officer → Record Payment |
+| 2 | Enter a valid Loan ID (from a disbursed application) |
+| 3 | Set Installment # to `1` |
+| 4 | Enter Amount (e.g., `5000`) |
+| 5 | Select Payment Method (e.g., Cash) |
+| 6 | Enter Reference # (e.g., `CASH-TEST-001`) |
+| 7 | Click "Record Payment" |
+| 8 | ✅ Should see success message and remaining balance |
+
+---
+
+## Recent Updates (2026-02-03)
+
+### Payment Recording UX Improvements
+
+| Feature | Before | After |
+|---------|--------|-------|
+| **Find Loan** | Manual Loan ID input | Search by customer name/phone |
+| **Reference #** | Required, manual entry | Auto-generated (`PAY-YYYYMMDD-NNNNNN`) |
+| **Installment** | Manual entry | Auto-filled from loan data |
+| **Amount** | Manual entry | Pre-filled with next due amount |
+
+### Disbursement Improvements
+
+| Feature | Before | After |
+|---------|--------|-------|
+| **Reference #** | Required, manual entry | Auto-generated (`DSB-YYYYMMDD-NNNNNN`) |
+| **External Ref** | Not supported | Store bank/check number separately |
+
+### New Backend Endpoints
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/loans/officer/active-loans/` | Search active loans by customer name/phone |
+
+### New Files
+
+- `backend/loans/utils/reference_generator.py` - Auto-generates unique references
+- `ActiveLoansView` in `officer_views.py` - Search disbursed loans
+
+### Bug Fixes
+1. **AI Recommendation Rendering** - Fixed React crash when rendering ai_recommendation object
+2. **Application ID Visibility** - Admin workload now shows pending applications for selection
+3. **TypeScript Types** - Added `AIRecommendation`, `ApplicationStatus`, `RiskCategory` types
+
+### New Components
+- `src/components/ErrorBoundary.tsx` - Graceful error handling for React rendering errors
+

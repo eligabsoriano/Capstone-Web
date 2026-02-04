@@ -36,19 +36,18 @@ export function DisbursementModal({
   const [reference, setReference] = useState("");
   const [amount, setAmount] = useState(approvedAmount.toString());
   const [error, setError] = useState("");
+  const [autoGenerateRef, setAutoGenerateRef] = useState(true);
 
   const handleSubmit = async () => {
-    if (!reference.trim()) {
-      setError("Reference number is required");
-      return;
-    }
     const amountNum = parseFloat(amount);
     if (isNaN(amountNum) || amountNum <= 0) {
       setError("Please enter a valid amount");
       return;
     }
     setError("");
-    await onConfirm(method, reference, amountNum);
+    // If auto-generate is on, send empty reference - backend will generate
+    const refToSend = autoGenerateRef ? "" : reference;
+    await onConfirm(method, refToSend, amountNum);
   };
 
   const formatCurrency = (value: number) => {
@@ -108,12 +107,31 @@ export function DisbursementModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="disbursement-reference">Reference Number</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="disbursement-reference">
+                Voucher/Reference #
+              </Label>
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={autoGenerateRef}
+                  onChange={(e) => setAutoGenerateRef(e.target.checked)}
+                  className="rounded"
+                />
+                Auto-generate
+              </label>
+            </div>
             <Input
               id="disbursement-reference"
               value={reference}
               onChange={(e) => setReference(e.target.value)}
-              placeholder="Enter transaction reference..."
+              placeholder={
+                autoGenerateRef
+                  ? "System will generate (e.g., DSB-20260203-000001)"
+                  : "Enter check/transaction number..."
+              }
+              disabled={autoGenerateRef}
+              className={autoGenerateRef ? "bg-muted" : ""}
             />
             {error && <p className="text-destructive text-sm">{error}</p>}
           </div>

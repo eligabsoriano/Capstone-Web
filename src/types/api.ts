@@ -481,4 +481,5 @@ export interface RecordPaymentResponse {
   amount: number;
   installment_status: string;
   remaining_balance: number;
+  reference: string; // Auto-generated payment reference
 }
