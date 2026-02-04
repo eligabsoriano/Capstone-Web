@@ -1,19 +1,70 @@
 # Phase 4: Document Management
 
-**Status:** [ ] Not Started  
+**Status:** [x] Complete (Backend) / [x] Complete (Frontend)  
 **Duration:** 2 days
 
 ---
 
-## Endpoints for Manual Testing
+## Overview
+
+Phase 4 provides document management capabilities for the loan application workflow. Loan officers can view, verify, and request re-uploads of customer-submitted documents through a dedicated dashboard page.
+
+---
+
+## Role Access Summary
+
+| Role | Access Level | Description |
+|------|-------------|-------------|
+| **Loan Officer** | ✅ Full Access | View, verify, reject, request re-upload |
+| **Admin** | ✅ Full Access | Same as Loan Officer (backend supports both) |
+| **Customer** | ❌ No Access | Customers upload via mobile app only |
+
+---
+
+## Implementation Status
+
+### Backend Implementation ✅
 
 | Feature | Method | Endpoint | Status |
 |---------|--------|----------|--------|
-| List Documents | GET | `/api/documents/` | [ ] |
-| Get Document | GET | `/api/documents/{id}/` | [ ] |
-| Verify Document | POST | `/api/documents/{id}/verify/` | [ ] |
-| Request Re-upload | POST | `/api/documents/{id}/request-reupload/` | [ ] |
-| Get Document Types | GET | `/api/documents/types/` | [ ] |
+| List Documents | GET | `/api/documents/` | ✅ |
+| Get Document | GET | `/api/documents/{id}/` | ✅ |
+| Verify Document | PUT | `/api/documents/{id}/verify/` | ✅ |
+| Request Re-upload | POST | `/api/documents/{id}/request-reupload/` | ✅ |
+| Get Document Types | GET | `/api/documents/types/` | ✅ |
+
+### Frontend Implementation ✅
+
+| Component | File | Status |
+|-----------|------|--------|
+| Documents Page | `OfficerDocumentsPage.tsx` | ✅ |
+| Verify Modal | `DocumentVerifyModal.tsx` | ✅ |
+| Re-upload Modal | `RequestReuploadModal.tsx` | ✅ |
+| API Functions | `documentsApi.ts` | ✅ |
+| Sidebar Navigation | OfficerSidebar.tsx | ✅ |
+| Route | `/officer/documents` | ✅ |
+
+---
+
+## Files Created/Modified
+
+### New Files
+
+| File | Description |
+|------|-------------|
+| `src/features/loan-officer/api/documentsApi.ts` | API layer with 5 endpoint functions |
+| `src/features/loan-officer/pages/OfficerDocumentsPage.tsx` | Main documents list page |
+| `src/features/loan-officer/components/DocumentVerifyModal.tsx` | Approve/reject modal |
+| `src/features/loan-officer/components/RequestReuploadModal.tsx` | Re-upload request modal |
+
+### Modified Files
+
+| File | Changes |
+|------|---------|
+| `src/features/loan-officer/pages/index.ts` | Added `OfficerDocumentsPage` export |
+| `src/features/loan-officer/components/index.ts` | Added modal exports |
+| `src/features/loan-officer/components/OfficerSidebar.tsx` | Added Documents nav link |
+| `src/app/router.tsx` | Added `/officer/documents` route |
 
 ---
 
@@ -56,7 +107,7 @@ Authorization: Bearer <access_token>
 ### Verify Document
 
 ```bash
-POST /api/documents/{id}/verify/
+PUT /api/documents/{id}/verify/
 Authorization: Bearer <access_token>
 Content-Type: application/json
 
@@ -119,12 +170,88 @@ Content-Type: application/json
 
 ---
 
-## Frontend Tasks
+## Testing Guide
 
-- [ ] Create document list component
-- [ ] Create document viewer (image/PDF)
-- [ ] Create verify document modal
-- [ ] Create request re-upload modal
-- [ ] Add document type badges
-- [ ] Add AI analysis display
-- [ ] Add verification status indicators
+### Prerequisites
+1. Backend server running at `http://localhost:8000`
+2. Frontend dev server running (`npm run dev`)
+3. Logged in as Loan Officer
+
+### Test 1: Access Documents Page
+
+1. Login as loan officer
+2. Navigate to `/officer/documents` via sidebar
+3. **Expected:** Document list page loads with table
+
+### Test 2: Filter Documents
+
+1. On Documents page, select "Pending Review" from dropdown
+2. **Expected:** Only pending documents shown
+3. Type a customer ID in search box
+4. **Expected:** Filtered results by customer
+
+### Test 3: Verify a Document
+
+1. Find a pending document in the table
+2. Click the green checkmark (✓) icon
+3. Modal opens showing document details and AI quality score
+4. Add optional notes
+5. Click "Approve"
+6. **Expected:** Document status changes to "APPROVED"
+
+### Test 4: Reject a Document
+
+1. Find a pending document
+2. Click the green checkmark icon
+3. Add reason in notes field
+4. Click "Reject" (red button)
+5. **Expected:** Document status changes to "REJECTED"
+
+### Test 5: Request Re-upload
+
+1. Find a pending document
+2. Click the orange refresh (↻) icon
+3. Modal opens with reason field
+4. Use quick-select buttons or type custom reason
+5. Click "Request Re-upload"
+6. **Expected:** Document shows "Reupload" badge
+
+### Test 6: View Document (External)
+
+1. Find any document with a file_url
+2. Click the eye (👁) icon
+3. **Expected:** Document opens in new browser tab
+
+---
+
+## AI Quality Analysis
+
+The documents page displays AI analysis results:
+
+| Quality Score | Color | Meaning |
+|--------------|-------|---------|
+| ≥ 80% | Green | High quality, likely valid |
+| 50-79% | Yellow | Moderate quality, review needed |
+| < 50% | Red | Low quality, likely needs re-upload |
+
+### Quality Issues Displayed
+
+- Image too small
+- Image appears blurry
+- Image too dark/bright
+- Unusual aspect ratio
+
+---
+
+## Frontend Tasks (Completed)
+
+- [x] Create document list component
+- [x] Create document viewer (opens in new tab)
+- [x] Create verify document modal
+- [x] Create request re-upload modal
+- [x] Add document type badges
+- [x] Add AI analysis display (quality score)
+- [x] Add verification status indicators
+- [x] Add sidebar navigation link
+- [x] Add route to router
+
