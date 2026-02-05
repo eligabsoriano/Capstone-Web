@@ -15,16 +15,17 @@
 
 ### Super Admin
 ```
-✅ Everything an Admin can do, PLUS:
+✅ Everything a Regular Admin can do, PLUS:
 ✅ Create/edit/deactivate other Admins
-✅ System configuration
+✅ Manage admin permissions
+✅ Full system control
 
 ❌ Process individual loan applications (that's for officers)
 ```
 
-### Admin
+### Regular Admin
 ```
-✅ Dashboard with aggregate stats
+✅ Dashboard with aggregate stats (SAME as Super Admin)
 ✅ Manage Loan Officers (create, edit, deactivate)
 ✅ Manage Loan Products (create, edit, deactivate)
 ✅ View Officer Workload
@@ -33,8 +34,12 @@
 ✅ Account Settings (2FA, password)
 
 ❌ Manage other Admins
+❌ Create new admins
+❌ Edit admin accounts
 ❌ Process individual loan applications
 ```
+
+**Important:** Admin and Super Admin see the **exact same dashboard** in Phase 6. The only UI difference is the "Admins" menu item in the sidebar.
 
 ### Loan Officer
 ```

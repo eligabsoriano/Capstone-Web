@@ -191,10 +191,13 @@ export interface AdminDashboardData {
   };
   loans: {
     total: number;
+    draft: number;
     pending: number;
     under_review: number;
     approved: number;
     rejected: number;
+    disbursed: number;
+    cancelled: number;
   };
   documents: {
     total: number;
@@ -588,4 +591,25 @@ export interface PaymentHistoryResponse {
   payments: PaymentRecord[];
   total_paid: number;
   count: number;
+}
+
+// ============================================================================
+// LOAN OFFICER ANALYTICS/DASHBOARD TYPES
+// ============================================================================
+
+export interface OfficerDashboardData {
+  my_reviews: {
+    total_approved: number;
+    total_rejected: number;
+    approved_today: number;
+    rejected_today: number;
+  };
+  queue: {
+    pending_total: number;
+    assigned_to_me: number;
+  };
+  performance: {
+    total_reviewed: number;
+    approval_rate: string;
+  };
 }

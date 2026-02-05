@@ -1,148 +1,275 @@
 import {
-    CheckCircle,
-    ClipboardList,
-    TrendingUp,
-    UserCheck,
+  AlertCircle,
+  CheckCircle,
+  ClipboardList,
+  RefreshCw,
+  TrendingUp,
+  UserCheck,
+  XCircle,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { useOfficerDashboard } from "../hooks";
 
 interface StatCardProps {
-    title: string;
-    value: string | number;
-    subtitle?: string;
-    icon: React.ElementType;
-    trend?: {
-        value: number;
-        label: string;
-    };
+  title: string;
+  value: string | number;
+  subtitle?: string;
+  icon: React.ElementType;
+  trend?: {
+    value: number;
+    label: string;
+  };
 }
 
-function StatCard({ title, value, subtitle, icon: Icon, trend }: StatCardProps) {
-    return (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-start justify-between">
-                <div className="space-y-2">
-                    <p className="text-sm font-medium text-gray-500">{title}</p>
-                    <p className="text-3xl font-bold text-gray-900">{value}</p>
-                    {subtitle && (
-                        <p className="text-sm text-gray-500">{subtitle}</p>
-                    )}
-                    {trend && (
-                        <div className="flex items-center gap-1 text-sm">
-                            <TrendingUp className="h-4 w-4 text-teal-600" />
-                            <span className="text-teal-600 font-medium">{trend.value}%</span>
-                            <span className="text-gray-500">{trend.label}</span>
-                        </div>
-                    )}
-                </div>
-                <div className="p-3 rounded-lg bg-teal-50">
-                    <Icon className="h-6 w-6 text-teal-600" />
-                </div>
+function StatCard({
+  title,
+  value,
+  subtitle,
+  icon: Icon,
+  trend,
+}: StatCardProps) {
+  return (
+    <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+      <div className="flex items-start justify-between">
+        <div className="space-y-2">
+          <p className="text-sm font-medium text-gray-500">{title}</p>
+          <p className="text-3xl font-bold text-gray-900">{value}</p>
+          {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
+          {trend && (
+            <div className="flex items-center gap-1 text-sm">
+              <TrendingUp className="h-4 w-4 text-teal-600" />
+              <span className="text-teal-600 font-medium">{trend.value}%</span>
+              <span className="text-gray-500">{trend.label}</span>
             </div>
+          )}
         </div>
-    );
+        <div className="p-3 rounded-lg bg-teal-50">
+          <Icon className="h-6 w-6 text-teal-600" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LoadingSkeleton() {
+  return (
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+          Dashboard
+        </h1>
+        <p className="text-gray-500 mt-1">Loading your analytics...</p>
+      </div>
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {[1, 2, 3, 4].map((i) => (
+          <div
+            key={i}
+            className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm"
+          >
+            <div className="flex items-start justify-between">
+              <div className="space-y-2">
+                <div className="h-4 w-24 bg-gray-200 animate-pulse rounded" />
+                <div className="h-8 w-16 bg-gray-200 animate-pulse rounded" />
+                <div className="h-3 w-32 bg-gray-200 animate-pulse rounded" />
+              </div>
+              <div className="h-12 w-12 bg-gray-100 animate-pulse rounded-lg" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export function OfficerDashboardPage() {
-    // TODO: Replace with actual data from API (GET /api/analytics/officer/)
-    const stats = {
-        totalApproved: 156,
-        assignedToMe: 12,
-        approvedToday: 5,
-        approvalRate: 94.2,
-    };
+  const { data, isLoading, error, refetch } = useOfficerDashboard();
 
+  if (isLoading) {
+    return <LoadingSkeleton />;
+  }
+
+  if (error) {
     return (
-        <div className="space-y-8">
-            {/* Page Header */}
-            <div>
-                <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-                    Dashboard
-                </h1>
-                <p className="text-gray-500 mt-1">
-                    Welcome back! Here's an overview of your activity.
-                </p>
-            </div>
-
-            {/* Stats Grid */}
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                <StatCard
-                    title="Total Approved"
-                    value={stats.totalApproved}
-                    subtitle="All-time approvals"
-                    icon={CheckCircle}
-                />
-                <StatCard
-                    title="Assigned to Me"
-                    value={stats.assignedToMe}
-                    subtitle="Pending review"
-                    icon={ClipboardList}
-                />
-                <StatCard
-                    title="Approved Today"
-                    value={stats.approvedToday}
-                    subtitle="Keep up the great work!"
-                    icon={UserCheck}
-                />
-                <StatCard
-                    title="Approval Rate"
-                    value={`${stats.approvalRate}%`}
-                    icon={TrendingUp}
-                    trend={{
-                        value: 2.5,
-                        label: "vs last month",
-                    }}
-                />
-            </div>
-
-            {/* Quick Actions / Recent Activity Section */}
-            <div className="grid gap-6 lg:grid-cols-2">
-                {/* Recent Applications */}
-                <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-                    <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                        Recent Applications
-                    </h2>
-                    <div className="text-center py-8 text-gray-500">
-                        <ClipboardList className="h-12 w-12 mx-auto mb-3 text-gray-300" />
-                        <p>No recent applications to display</p>
-                        <p className="text-sm mt-1">
-                            Applications assigned to you will appear here
-                        </p>
-                    </div>
-                </div>
-
-                {/* Quick Actions */}
-                <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-                    <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                        Quick Actions
-                    </h2>
-                    <div className="space-y-3">
-                        <button
-                            type="button"
-                            className="w-full flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-teal-200 hover:bg-teal-50 transition-colors text-left"
-                        >
-                            <div className="p-2 rounded-lg bg-teal-50">
-                                <ClipboardList className="h-5 w-5 text-teal-600" />
-                            </div>
-                            <div>
-                                <p className="font-medium text-gray-900">View Application Queue</p>
-                                <p className="text-sm text-gray-500">Review pending loan applications</p>
-                            </div>
-                        </button>
-                        <button
-                            type="button"
-                            className="w-full flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-teal-200 hover:bg-teal-50 transition-colors text-left"
-                        >
-                            <div className="p-2 rounded-lg bg-teal-50">
-                                <CheckCircle className="h-5 w-5 text-teal-600" />
-                            </div>
-                            <div>
-                                <p className="font-medium text-gray-900">Record Payment</p>
-                                <p className="text-sm text-gray-500">Log a new customer payment</p>
-                            </div>
-                        </button>
-                    </div>
-                </div>
-            </div>
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+            Dashboard
+          </h1>
+          <p className="text-gray-500 mt-1">Overview of your activity</p>
         </div>
+        <Card className="border-red-200 bg-red-50">
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-3 text-red-600">
+              <AlertCircle className="h-5 w-5" />
+              <p>Failed to load dashboard data. Please try again.</p>
+            </div>
+            <Button
+              variant="outline"
+              className="mt-4"
+              onClick={() => refetch()}
+            >
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Retry
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     );
+  }
+
+  const dashboardData = data!;
+
+  return (
+    <div className="space-y-8">
+      {/* Page Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+            Dashboard
+          </h1>
+          <p className="text-gray-500 mt-1">
+            Welcome back! Here's an overview of your activity.
+          </p>
+        </div>
+        <Button variant="outline" size="sm" onClick={() => refetch()}>
+          <RefreshCw className="h-4 w-4 mr-2" />
+          Refresh
+        </Button>
+      </div>
+
+      {/* Stats Grid */}
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard
+          title="Total Approved"
+          value={dashboardData.my_reviews.total_approved}
+          subtitle="All-time approvals"
+          icon={CheckCircle}
+        />
+        <StatCard
+          title="Assigned to Me"
+          value={dashboardData.queue.assigned_to_me}
+          subtitle={`${dashboardData.queue.pending_total} total pending`}
+          icon={ClipboardList}
+        />
+        <StatCard
+          title="Approved Today"
+          value={dashboardData.my_reviews.approved_today}
+          subtitle="Keep up the great work!"
+          icon={UserCheck}
+        />
+        <StatCard
+          title="Approval Rate"
+          value={dashboardData.performance.approval_rate}
+          icon={TrendingUp}
+          subtitle={`${dashboardData.performance.total_reviewed} total reviewed`}
+        />
+      </div>
+
+      {/* Performance Summary */}
+      <div className="grid gap-6 sm:grid-cols-2">
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            Today's Activity
+          </h2>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-green-600" />
+                <span className="text-gray-600">Approved</span>
+              </div>
+              <span className="font-semibold text-gray-900">
+                {dashboardData.my_reviews.approved_today}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <XCircle className="h-5 w-5 text-red-600" />
+                <span className="text-gray-600">Rejected</span>
+              </div>
+              <span className="font-semibold text-gray-900">
+                {dashboardData.my_reviews.rejected_today}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            All-Time Stats
+          </h2>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-gray-600">Total Reviewed</span>
+              <span className="font-semibold text-gray-900">
+                {dashboardData.performance.total_reviewed}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-600">Total Rejected</span>
+              <span className="font-semibold text-gray-900">
+                {dashboardData.my_reviews.total_rejected}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Actions / Recent Activity Section */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* Recent Applications */}
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            Recent Applications
+          </h2>
+          <div className="text-center py-8 text-gray-500">
+            <ClipboardList className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+            <p>No recent applications to display</p>
+            <p className="text-sm mt-1">
+              Applications assigned to you will appear here
+            </p>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            Quick Actions
+          </h2>
+          <div className="space-y-3">
+            <button
+              type="button"
+              className="w-full flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-teal-200 hover:bg-teal-50 transition-colors text-left"
+            >
+              <div className="p-2 rounded-lg bg-teal-50">
+                <ClipboardList className="h-5 w-5 text-teal-600" />
+              </div>
+              <div>
+                <p className="font-medium text-gray-900">
+                  View Application Queue
+                </p>
+                <p className="text-sm text-gray-500">
+                  Review pending loan applications
+                </p>
+              </div>
+            </button>
+            <button
+              type="button"
+              className="w-full flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-teal-200 hover:bg-teal-50 transition-colors text-left"
+            >
+              <div className="p-2 rounded-lg bg-teal-50">
+                <CheckCircle className="h-5 w-5 text-teal-600" />
+              </div>
+              <div>
+                <p className="font-medium text-gray-900">Record Payment</p>
+                <p className="text-sm text-gray-500">
+                  Log a new customer payment
+                </p>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
