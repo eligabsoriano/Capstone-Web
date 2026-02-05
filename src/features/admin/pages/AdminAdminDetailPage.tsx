@@ -3,6 +3,7 @@ import {
   ArrowLeft,
   Calendar,
   Edit,
+  Key,
   KeyRound,
   Mail,
   Save,
@@ -12,6 +13,41 @@ import {
   X,
 } from "lucide-react";
 import { useState } from "react";
+
+// Available permissions from backend
+const ADMIN_PERMISSIONS = [
+  {
+    key: "create_loan_officer",
+    label: "Create Loan Officer",
+    description: "Can create new loan officer accounts",
+  },
+  {
+    key: "manage_loan_officers",
+    label: "Manage Loan Officers",
+    description: "Can edit/deactivate loan officers",
+  },
+  {
+    key: "manage_users",
+    label: "Manage Users",
+    description: "Can lock/unlock any user account",
+  },
+  {
+    key: "view_analytics",
+    label: "View Analytics",
+    description: "Can access system-wide analytics",
+  },
+  {
+    key: "view_logs",
+    label: "View Logs",
+    description: "Can access audit logs",
+  },
+  {
+    key: "manage_system",
+    label: "Manage System",
+    description: "Can modify system configurations",
+  },
+] as const;
+
 import { useNavigate, useParams } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -32,6 +68,8 @@ export function AdminAdminDetailPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [showDeactivateConfirm, setShowDeactivateConfirm] = useState(false);
   const [showPromoteConfirm, setShowPromoteConfirm] = useState(false);
+  const [isEditingPermissions, setIsEditingPermissions] = useState(false);
+  const [editPermissions, setEditPermissions] = useState<string[]>([]);
 
   const { data: admin, isLoading, error } = useAdminDetail(adminId || "");
   const updateMutation = useUpdateAdmin(adminId || "");
@@ -286,13 +324,15 @@ export function AdminAdminDetailPage() {
             </div>
 
             <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-              <Shield className="h-5 w-5 text-muted-foreground" />
+              <Key className="h-5 w-5 text-muted-foreground" />
               <div>
                 <p className="text-sm text-muted-foreground">Permissions</p>
                 <p className="font-medium">
                   {admin.super_admin
-                    ? "Full Access"
-                    : `${admin.permissions.length} permissions`}
+                    ? "Full Access (Super Admin)"
+                    : admin.permissions.length > 0
+                      ? `${admin.permissions.length} of ${ADMIN_PERMISSIONS.length}`
+                      : "No permissions"}
                 </p>
               </div>
             </div>
@@ -302,6 +342,123 @@ export function AdminAdminDetailPage() {
             <p className="text-destructive text-sm mt-4">
               Failed to update admin. Please try again.
             </p>
+          )}
+
+          {/* Granular Permissions Card */}
+          {!admin.super_admin && (
+            <div className="mt-6 p-4 border rounded-lg">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-semibold flex items-center gap-2">
+                  <Key className="h-4 w-4" />
+                  Permissions
+                </h3>
+                {!isOwnAccount && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      if (isEditingPermissions) {
+                        setIsEditingPermissions(false);
+                      } else {
+                        setEditPermissions(admin.permissions);
+                        setIsEditingPermissions(true);
+                      }
+                    }}
+                  >
+                    {isEditingPermissions ? (
+                      <>
+                        <X className="h-4 w-4 mr-1" />
+                        Cancel
+                      </>
+                    ) : (
+                      <>
+                        <Edit className="h-4 w-4 mr-1" />
+                        Edit
+                      </>
+                    )}
+                  </Button>
+                )}
+              </div>
+              <div className="space-y-2">
+                {ADMIN_PERMISSIONS.map((perm) => {
+                  const hasPermission = isEditingPermissions
+                    ? editPermissions.includes(perm.key)
+                    : admin.permissions.includes(perm.key);
+                  return (
+                    <div key={perm.key} className="flex items-start gap-2">
+                      {isEditingPermissions ? (
+                        <input
+                          type="checkbox"
+                          id={`edit-perm-${perm.key}`}
+                          checked={hasPermission}
+                          onChange={(e) => {
+                            const newPerms = e.target.checked
+                              ? [...editPermissions, perm.key]
+                              : editPermissions.filter((p) => p !== perm.key);
+                            setEditPermissions(newPerms);
+                          }}
+                          className="h-4 w-4 rounded border-gray-300 mt-1"
+                        />
+                      ) : (
+                        <div
+                          className={`h-4 w-4 rounded-full mt-1 flex items-center justify-center ${hasPermission ? "bg-green-500" : "bg-muted border"}`}
+                        >
+                          {hasPermission && (
+                            <span className="text-white text-xs">✓</span>
+                          )}
+                        </div>
+                      )}
+                      <label
+                        htmlFor={
+                          isEditingPermissions
+                            ? `edit-perm-${perm.key}`
+                            : undefined
+                        }
+                        className="text-sm"
+                      >
+                        <span
+                          className={`font-medium ${!hasPermission && !isEditingPermissions ? "text-muted-foreground" : ""}`}
+                        >
+                          {perm.label}
+                        </span>
+                        <span className="block text-xs text-muted-foreground">
+                          {perm.description}
+                        </span>
+                      </label>
+                    </div>
+                  );
+                })}
+              </div>
+              {isEditingPermissions && (
+                <div className="mt-4 flex justify-end gap-2">
+                  <Button
+                    size="sm"
+                    onClick={async () => {
+                      try {
+                        await permissionsMutation.mutateAsync({
+                          permissions: editPermissions,
+                        });
+                        setIsEditingPermissions(false);
+                      } catch (err) {
+                        console.error("Failed to update permissions:", err);
+                      }
+                    }}
+                    disabled={permissionsMutation.isPending}
+                  >
+                    <Save className="h-4 w-4 mr-1" />
+                    {permissionsMutation.isPending
+                      ? "Saving..."
+                      : "Save Permissions"}
+                  </Button>
+                </div>
+              )}
+              {admin.permissions.length === 0 && !isEditingPermissions && (
+                <p className="text-sm text-muted-foreground mt-2 italic">
+                  No specific permissions assigned. This admin may have limited
+                  access.
+                </p>
+              )}
+            </div>
           )}
         </div>
 

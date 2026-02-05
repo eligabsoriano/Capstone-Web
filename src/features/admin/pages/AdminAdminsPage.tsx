@@ -1,6 +1,7 @@
 import {
   AlertCircle,
   Eye,
+  Key,
   Plus,
   Search,
   Shield,
@@ -8,6 +9,41 @@ import {
   UserCog,
 } from "lucide-react";
 import { useState } from "react";
+
+// Available permissions from backend
+const ADMIN_PERMISSIONS = [
+  {
+    key: "create_loan_officer",
+    label: "Create Loan Officer",
+    description: "Can create new loan officer accounts",
+  },
+  {
+    key: "manage_loan_officers",
+    label: "Manage Loan Officers",
+    description: "Can edit/deactivate loan officers",
+  },
+  {
+    key: "manage_users",
+    label: "Manage Users",
+    description: "Can lock/unlock any user account",
+  },
+  {
+    key: "view_analytics",
+    label: "View Analytics",
+    description: "Can access system-wide analytics",
+  },
+  {
+    key: "view_logs",
+    label: "View Logs",
+    description: "Can access audit logs",
+  },
+  {
+    key: "manage_system",
+    label: "Manage System",
+    description: "Can modify system configurations",
+  },
+] as const;
+
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -339,6 +375,9 @@ export function AdminAdminsPage() {
                     setCreateForm({
                       ...createForm,
                       super_admin: e.target.checked,
+                      permissions: e.target.checked
+                        ? []
+                        : createForm.permissions,
                     })
                   }
                   className="h-4 w-4 rounded border-gray-300"
@@ -355,6 +394,47 @@ export function AdminAdminsPage() {
                 Super Admins have full access to all features including managing
                 other administrators.
               </p>
+
+              {/* Granular Permissions (shown when NOT super admin) */}
+              {!createForm.super_admin && (
+                <div className="space-y-3 border rounded-lg p-3">
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                    <Key className="h-4 w-4" />
+                    Permissions
+                  </div>
+                  <div className="space-y-2">
+                    {ADMIN_PERMISSIONS.map((perm) => (
+                      <div key={perm.key} className="flex items-start gap-2">
+                        <input
+                          type="checkbox"
+                          id={`perm-${perm.key}`}
+                          checked={
+                            createForm.permissions?.includes(perm.key) || false
+                          }
+                          onChange={(e) => {
+                            const newPerms = e.target.checked
+                              ? [...(createForm.permissions || []), perm.key]
+                              : (createForm.permissions || []).filter(
+                                  (p) => p !== perm.key,
+                                );
+                            setCreateForm({
+                              ...createForm,
+                              permissions: newPerms,
+                            });
+                          }}
+                          className="h-4 w-4 rounded border-gray-300 mt-0.5"
+                        />
+                        <label htmlFor={`perm-${perm.key}`} className="text-sm">
+                          <span className="font-medium">{perm.label}</span>
+                          <span className="block text-xs text-muted-foreground">
+                            {perm.description}
+                          </span>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
             {createAdminMutation.error && (
               <p className="text-destructive text-sm mt-4">
