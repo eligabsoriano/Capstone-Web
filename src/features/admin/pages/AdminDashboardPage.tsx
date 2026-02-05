@@ -1,14 +1,18 @@
 import {
+  AlertCircle,
+  BarChart3,
   ClipboardList,
   FileCheck,
-  TrendingUp,
-  Users,
-  UserCog,
-  Shield,
-  RefreshCw,
   Package,
-  AlertCircle
+  PieChartIcon,
+  RefreshCw,
+  Shield,
+  TrendingUp,
+  UserCog,
+  Users,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -16,8 +20,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { ProductsPieChart, StatusBarChart } from "../components/charts";
 import { useAdminDashboard } from "../hooks";
 
 /**
@@ -65,7 +68,11 @@ export function AdminDashboardPage() {
               <AlertCircle className="h-5 w-5" />
               <p>Failed to load dashboard data. Please try again.</p>
             </div>
-            <Button variant="outline" className="mt-4" onClick={() => refetch()}>
+            <Button
+              variant="outline"
+              className="mt-4"
+              onClick={() => refetch()}
+            >
               <RefreshCw className="h-4 w-4 mr-2" />
               Retry
             </Button>
@@ -102,21 +109,24 @@ export function AdminDashboardPage() {
     {
       title: "Total Applications",
       value: dashboardData.loans.total.toLocaleString(),
-      description: "All time",
+      description: "All time submissions",
       icon: ClipboardList,
     },
     {
       title: "Pending Review",
-      value: (dashboardData.loans.pending + dashboardData.loans.under_review).toString(),
-      description: `${dashboardData.loans.pending} pending, ${dashboardData.loans.under_review} in review`,
+      value: (
+        dashboardData.loans.pending + dashboardData.loans.under_review
+      ).toString(),
+      description: `${dashboardData.loans.pending} submitted, ${dashboardData.loans.under_review} in review`,
       icon: FileCheck,
     },
     {
       title: "Approval Rate",
-      value: dashboardData.loans.total > 0
-        ? `${((dashboardData.loans.approved / dashboardData.loans.total) * 100).toFixed(1)}%`
-        : "0%",
-      description: `${dashboardData.loans.approved} approved, ${dashboardData.loans.rejected} rejected`,
+      value:
+        dashboardData.loans.approved + dashboardData.loans.rejected > 0
+          ? `${((dashboardData.loans.approved / (dashboardData.loans.approved + dashboardData.loans.rejected)) * 100).toFixed(1)}%`
+          : "0%",
+      description: `${dashboardData.loans.approved} approved, ${dashboardData.loans.rejected} rejected (of decisions)`,
       icon: TrendingUp,
     },
   ];
@@ -189,6 +199,39 @@ export function AdminDashboardPage() {
         </div>
       </div>
 
+      {/* Charts Section */}
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5" />
+              Applications by Status
+            </CardTitle>
+            <CardDescription>
+              Breakdown of loan applications by current status
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <StatusBarChart data={dashboardData.loans} />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <PieChartIcon className="h-5 w-5" />
+              Applications by Product
+            </CardTitle>
+            <CardDescription>
+              Distribution of applications across loan products
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ProductsPieChart data={dashboardData.products} />
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Product Performance */}
       <Card>
         <CardHeader>
@@ -202,26 +245,40 @@ export function AdminDashboardPage() {
         </CardHeader>
         <CardContent>
           {dashboardData.products.length === 0 ? (
-            <p className="text-muted-foreground text-center py-4">No products data available</p>
+            <p className="text-muted-foreground text-center py-4">
+              No products data available
+            </p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b">
-                    <th className="text-left py-2 font-medium text-muted-foreground">Product</th>
-                    <th className="text-right py-2 font-medium text-muted-foreground">Applications</th>
-                    <th className="text-right py-2 font-medium text-muted-foreground">Approved</th>
-                    <th className="text-right py-2 font-medium text-muted-foreground">Approval Rate</th>
+                    <th className="text-left py-2 font-medium text-muted-foreground">
+                      Product
+                    </th>
+                    <th className="text-right py-2 font-medium text-muted-foreground">
+                      Applications
+                    </th>
+                    <th className="text-right py-2 font-medium text-muted-foreground">
+                      Approved
+                    </th>
+                    <th className="text-right py-2 font-medium text-muted-foreground">
+                      Approval Rate
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {dashboardData.products.map((product) => (
                     <tr key={product.name} className="border-b last:border-0">
                       <td className="py-3 font-medium">{product.name}</td>
-                      <td className="py-3 text-right">{product.applications}</td>
+                      <td className="py-3 text-right">
+                        {product.applications}
+                      </td>
                       <td className="py-3 text-right">{product.approved}</td>
                       <td className="py-3 text-right">
-                        <Badge variant="secondary">{product.approval_rate}</Badge>
+                        <Badge variant="secondary">
+                          {product.approval_rate}
+                        </Badge>
                       </td>
                     </tr>
                   ))}
@@ -236,27 +293,30 @@ export function AdminDashboardPage() {
       <Card>
         <CardHeader>
           <CardTitle>Recent Activity</CardTitle>
-          <CardDescription>
-            Latest actions from the audit log
-          </CardDescription>
+          <CardDescription>Latest actions from the audit log</CardDescription>
         </CardHeader>
         <CardContent>
           {dashboardData.recent_activity.length === 0 ? (
-            <p className="text-muted-foreground text-center py-4">No recent activity</p>
+            <p className="text-muted-foreground text-center py-4">
+              No recent activity
+            </p>
           ) : (
             <div className="space-y-3">
-              {dashboardData.recent_activity.map((activity, index) => (
+              {dashboardData.recent_activity.map((activity) => (
                 <div
-                  key={index}
+                  key={`${activity.action}-${activity.timestamp}`}
                   className="flex items-center justify-between py-2 border-b last:border-0"
                 >
                   <div>
                     <p className="font-medium">{activity.description}</p>
                     <p className="text-sm text-muted-foreground">
-                      By {activity.user_type} • {new Date(activity.timestamp).toLocaleString()}
+                      By {activity.user_type} •{" "}
+                      {new Date(activity.timestamp).toLocaleString()}
                     </p>
                   </div>
-                  <Badge variant="outline">{activity.action.replace(/_/g, " ")}</Badge>
+                  <Badge variant="outline">
+                    {activity.action.replace(/_/g, " ")}
+                  </Badge>
                 </div>
               ))}
             </div>

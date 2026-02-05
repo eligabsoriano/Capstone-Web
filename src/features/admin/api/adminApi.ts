@@ -119,6 +119,8 @@ export async function deactivateOfficer(
 export async function getAuditLogs(params?: {
   action?: string;
   limit?: number;
+  date_from?: string;
+  date_to?: string;
 }): Promise<ApiResponse<AuditLogsResponse>> {
   const response = await apiClient.get<ApiResponse<AuditLogsResponse>>(
     "/api/analytics/audit-logs/",
