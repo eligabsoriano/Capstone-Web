@@ -1,9 +1,10 @@
-export { AdminDashboardPage } from "./AdminDashboardPage";
-export { AdminOfficersPage } from "./AdminOfficersPage";
-export { AdminOfficerDetailPage } from "./AdminOfficerDetailPage";
+export { AdminAdminDetailPage } from "./AdminAdminDetailPage";
 export { AdminAdminsPage } from "./AdminAdminsPage";
 export { AdminApplicationsPage } from "./AdminApplicationsPage";
-export { AdminProductsPage } from "./AdminProductsPage";
-export { AdminWorkloadPage } from "./AdminWorkloadPage";
 export { AdminAuditLogsPage } from "./AdminAuditLogsPage";
+export { AdminDashboardPage } from "./AdminDashboardPage";
+export { AdminOfficerDetailPage } from "./AdminOfficerDetailPage";
+export { AdminOfficersPage } from "./AdminOfficersPage";
+export { AdminProductsPage } from "./AdminProductsPage";
 export { AdminSettingsPage } from "./AdminSettingsPage";
+export { AdminWorkloadPage } from "./AdminWorkloadPage";

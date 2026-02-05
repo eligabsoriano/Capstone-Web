@@ -1,10 +1,14 @@
 import apiClient from "@/shared/api/client";
 import type {
   AdminDashboardData,
+  AdminDetail,
+  AdminListItem,
   ApiResponse,
   AssignApplicationRequest,
   AssignApplicationResponse,
   AuditLogsResponse,
+  CreateAdminRequest,
+  CreateAdminResponse,
   CreateOfficerRequest,
   CreateOfficerResponse,
   CreateProductRequest,
@@ -12,7 +16,9 @@ import type {
   LoanOfficerListItem,
   LoanProduct,
   OfficerWorkload,
+  UpdateAdminRequest,
   UpdateOfficerRequest,
+  UpdatePermissionsRequest,
   UpdateProductRequest,
 } from "@/types/api";
 
@@ -232,6 +238,93 @@ export async function deleteProduct(
 ): Promise<ApiResponse<null>> {
   const response = await apiClient.delete<ApiResponse<null>>(
     `/api/loans/admin/products/${productId}/`,
+  );
+  return response.data;
+}
+
+// ============================================================================
+// ADMIN MANAGEMENT (Super Admin Only)
+// ============================================================================
+
+/**
+ * List all admins
+ * GET /api/auth/admin/admins/
+ */
+export async function getAdminsList(params?: {
+  active?: boolean;
+}): Promise<ApiResponse<{ admins: AdminListItem[]; total: number }>> {
+  const response = await apiClient.get<
+    ApiResponse<{ admins: AdminListItem[]; total: number }>
+  >("/api/auth/admin/admins/", { params });
+  return response.data;
+}
+
+/**
+ * Get admin details
+ * GET /api/auth/admin/admins/:id/
+ */
+export async function getAdminDetail(
+  adminId: string,
+): Promise<ApiResponse<AdminDetail>> {
+  const response = await apiClient.get<ApiResponse<AdminDetail>>(
+    `/api/auth/admin/admins/${adminId}/`,
+  );
+  return response.data;
+}
+
+/**
+ * Create a new admin
+ * POST /api/auth/admin/admins/
+ */
+export async function createAdmin(
+  data: CreateAdminRequest,
+): Promise<ApiResponse<CreateAdminResponse>> {
+  const response = await apiClient.post<ApiResponse<CreateAdminResponse>>(
+    "/api/auth/admin/admins/",
+    data,
+  );
+  return response.data;
+}
+
+/**
+ * Update admin details
+ * PUT /api/auth/admin/admins/:id/
+ */
+export async function updateAdmin(
+  adminId: string,
+  data: UpdateAdminRequest,
+): Promise<ApiResponse<{ id: string }>> {
+  const response = await apiClient.put<ApiResponse<{ id: string }>>(
+    `/api/auth/admin/admins/${adminId}/`,
+    data,
+  );
+  return response.data;
+}
+
+/**
+ * Deactivate admin (soft delete)
+ * DELETE /api/auth/admin/admins/:id/
+ */
+export async function deactivateAdmin(
+  adminId: string,
+): Promise<ApiResponse<null>> {
+  const response = await apiClient.delete<ApiResponse<null>>(
+    `/api/auth/admin/admins/${adminId}/`,
+  );
+  return response.data;
+}
+
+/**
+ * Update admin permissions
+ * PUT /api/auth/admin/admins/:id/permissions/
+ */
+export async function updateAdminPermissions(
+  adminId: string,
+  data: UpdatePermissionsRequest,
+): Promise<ApiResponse<{ id: string }>> {
+  const response = await apiClient.put<ApiResponse<{ id: string }>>(
+    `/api/auth/admin/admins/${adminId}/permissions/`,
+    data,
   );
   return response.data;
 }
