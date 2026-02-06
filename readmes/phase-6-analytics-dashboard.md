@@ -251,6 +251,16 @@ Authorization: Bearer <access_token>
 
 > **Important:** Both Admin and Super Admin roles see the same analytics dashboard in Phase 6. The "Admins" management page is visible in the sidebar for Super Admin but is not yet fully implemented (Phase 7).
 
+
+
+
+
+
+
+
+
+
+# NOT TESTED
 ### Admin Tests - Audit Logs
 
 | Test ID | Test Case | Steps | Expected Result |

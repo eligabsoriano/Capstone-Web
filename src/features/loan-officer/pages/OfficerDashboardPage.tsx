@@ -30,22 +30,26 @@ function StatCard({
   trend,
 }: StatCardProps) {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+    <div className="bg-card rounded-xl border border-border p-6 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between">
         <div className="space-y-2">
-          <p className="text-sm font-medium text-gray-500">{title}</p>
-          <p className="text-3xl font-bold text-gray-900">{value}</p>
-          {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
+          <p className="text-sm font-medium text-muted-foreground">{title}</p>
+          <p className="text-3xl font-bold text-foreground">{value}</p>
+          {subtitle && (
+            <p className="text-sm text-muted-foreground">{subtitle}</p>
+          )}
           {trend && (
             <div className="flex items-center gap-1 text-sm">
-              <TrendingUp className="h-4 w-4 text-teal-600" />
-              <span className="text-teal-600 font-medium">{trend.value}%</span>
-              <span className="text-gray-500">{trend.label}</span>
+              <TrendingUp className="h-4 w-4 text-emerald-600" />
+              <span className="text-emerald-600 font-medium">
+                {trend.value}%
+              </span>
+              <span className="text-muted-foreground">{trend.label}</span>
             </div>
           )}
         </div>
-        <div className="p-3 rounded-lg bg-teal-50">
-          <Icon className="h-6 w-6 text-teal-600" />
+        <div className="p-3 rounded-lg bg-primary/10">
+          <Icon className="h-6 w-6 text-primary" />
         </div>
       </div>
     </div>
@@ -56,24 +60,24 @@ function LoadingSkeleton() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">
           Dashboard
         </h1>
-        <p className="text-gray-500 mt-1">Loading your analytics...</p>
+        <p className="text-muted-foreground mt-1">Loading your analytics...</p>
       </div>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm"
+            className="bg-card rounded-xl border border-border p-6 shadow-sm"
           >
             <div className="flex items-start justify-between">
               <div className="space-y-2">
-                <div className="h-4 w-24 bg-gray-200 animate-pulse rounded" />
-                <div className="h-8 w-16 bg-gray-200 animate-pulse rounded" />
-                <div className="h-3 w-32 bg-gray-200 animate-pulse rounded" />
+                <div className="h-4 w-24 bg-muted animate-pulse rounded" />
+                <div className="h-8 w-16 bg-muted animate-pulse rounded" />
+                <div className="h-3 w-32 bg-muted animate-pulse rounded" />
               </div>
-              <div className="h-12 w-12 bg-gray-100 animate-pulse rounded-lg" />
+              <div className="h-12 w-12 bg-muted animate-pulse rounded-lg" />
             </div>
           </div>
         ))}
@@ -93,10 +97,12 @@ export function OfficerDashboardPage() {
     return (
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
             Dashboard
           </h1>
-          <p className="text-gray-500 mt-1">Overview of your activity</p>
+          <p className="text-muted-foreground mt-1">
+            Overview of your activity
+          </p>
         </div>
         <Card className="border-red-200 bg-red-50">
           <CardContent className="pt-6">
@@ -125,10 +131,10 @@ export function OfficerDashboardPage() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
             Dashboard
           </h1>
-          <p className="text-gray-500 mt-1">
+          <p className="text-muted-foreground mt-1">
             Welcome back! Here's an overview of your activity.
           </p>
         </div>
