@@ -63,18 +63,20 @@ export function DocumentVerifyModal({
         <div className="space-y-4 py-4">
           {/* Document Info */}
           <div className="grid gap-3 p-4 bg-muted rounded-lg">
-            <div className="flex justify-between">
+            <div className="space-y-1">
               <span className="text-sm text-muted-foreground">Filename</span>
-              <span className="font-medium text-sm">{document.filename}</span>
+              <p className="font-medium text-sm break-all">
+                {document.filename}
+              </p>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">Type</span>
               <Badge variant="outline">
                 {formatDocumentType(document.document_type)}
               </Badge>
             </div>
             {document.ai_analysis && (
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">
                   AI Quality Score
                 </span>
@@ -93,11 +95,11 @@ export function DocumentVerifyModal({
             )}
             {document.ai_analysis?.quality_issues &&
               document.ai_analysis.quality_issues.length > 0 && (
-                <div>
+                <div className="space-y-1">
                   <span className="text-sm text-muted-foreground">
                     Quality Issues
                   </span>
-                  <ul className="mt-1 text-sm text-amber-600">
+                  <ul className="mt-1 text-sm text-amber-600 space-y-1">
                     {document.ai_analysis.quality_issues.map((issue) => (
                       <li key={issue}>• {issue}</li>
                     ))}
@@ -119,34 +121,42 @@ export function DocumentVerifyModal({
           </div>
         </div>
 
-        <DialogFooter className="gap-2">
+        <DialogFooter className="flex-col gap-2 sm:flex-row sm:justify-end">
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={isLoading}
+            className="w-full sm:w-auto"
           >
             Cancel
           </Button>
-          <Button
-            variant="destructive"
-            onClick={handleReject}
-            disabled={isLoading}
-          >
-            {isLoading && action === "rejected" ? (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            ) : (
-              <XCircle className="h-4 w-4 mr-2" />
-            )}
-            Reject
-          </Button>
-          <Button onClick={handleApprove} disabled={isLoading}>
-            {isLoading && action === "approved" ? (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            ) : (
-              <CheckCircle className="h-4 w-4 mr-2" />
-            )}
-            Approve
-          </Button>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <Button
+              variant="destructive"
+              onClick={handleReject}
+              disabled={isLoading}
+              className="flex-1 sm:flex-initial"
+            >
+              {isLoading && action === "rejected" ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <XCircle className="h-4 w-4 mr-2" />
+              )}
+              Reject
+            </Button>
+            <Button
+              onClick={handleApprove}
+              disabled={isLoading}
+              className="flex-1 sm:flex-initial"
+            >
+              {isLoading && action === "approved" ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <CheckCircle className="h-4 w-4 mr-2" />
+              )}
+              Approve
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

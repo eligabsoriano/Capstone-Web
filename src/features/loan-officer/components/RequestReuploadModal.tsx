@@ -62,11 +62,13 @@ export function RequestReuploadModal({
         <div className="space-y-4 py-4">
           {/* Document Info */}
           <div className="grid gap-3 p-4 bg-muted rounded-lg">
-            <div className="flex justify-between">
+            <div className="space-y-1">
               <span className="text-sm text-muted-foreground">Filename</span>
-              <span className="font-medium text-sm">{document.filename}</span>
+              <p className="font-medium text-sm break-all">
+                {document.filename}
+              </p>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">Type</span>
               <Badge variant="outline">
                 {formatDocumentType(document.document_type)}
@@ -116,18 +118,19 @@ export function RequestReuploadModal({
           </div>
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="flex-col gap-2 sm:flex-row sm:justify-end">
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={isLoading}
+            className="w-full sm:w-auto"
           >
             Cancel
           </Button>
           <Button
             onClick={handleSubmit}
             disabled={isLoading}
-            className="bg-amber-600 hover:bg-amber-700"
+            className="bg-amber-600 hover:bg-amber-700 w-full sm:w-auto"
           >
             {isLoading ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
