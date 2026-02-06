@@ -58,13 +58,21 @@ export function OfficerDocumentsPage() {
       documentId,
       status,
       notes,
+      rejectionReason,
     }: {
       documentId: string;
       status: "approved" | "rejected";
       notes?: string;
-    }) => verifyDocument(documentId, { status, notes }),
+      rejectionReason?: string;
+    }) =>
+      verifyDocument(documentId, {
+        status,
+        notes,
+        rejection_reason: rejectionReason,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["officer-documents"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "audit-logs"] });
       setVerifyModalOpen(false);
       setSelectedDocument(null);
     },
@@ -81,6 +89,7 @@ export function OfficerDocumentsPage() {
     }) => requestReupload(documentId, { reason }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["officer-documents"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "audit-logs"] });
       setReuploadModalOpen(false);
       setSelectedDocument(null);
     },
@@ -150,12 +159,14 @@ export function OfficerDocumentsPage() {
   const handleConfirmVerify = async (
     status: "approved" | "rejected",
     notes: string,
+    rejectionReason?: string,
   ) => {
     if (!selectedDocument) return;
     await verifyMutation.mutateAsync({
       documentId: selectedDocument.id,
       status,
       notes,
+      rejectionReason,
     });
   };
 

@@ -128,9 +128,16 @@ export async function getAuditLogs(params?: {
   date_from?: string;
   date_to?: string;
 }): Promise<ApiResponse<AuditLogsResponse>> {
+  // Filter out undefined values to ensure clean query params
+  const cleanParams = params
+    ? Object.fromEntries(
+        Object.entries(params).filter(([_, value]) => value !== undefined),
+      )
+    : {};
+
   const response = await apiClient.get<ApiResponse<AuditLogsResponse>>(
     "/api/analytics/audit-logs/",
-    { params },
+    { params: cleanParams },
   );
   return response.data;
 }

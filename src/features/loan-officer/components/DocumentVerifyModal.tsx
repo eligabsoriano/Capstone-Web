@@ -1,4 +1,4 @@
-import { CheckCircle, Loader2, XCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle, Loader2, XCircle } from "lucide-react";
 import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +19,11 @@ interface DocumentVerifyModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   document: Document;
-  onConfirm: (status: "approved" | "rejected", notes: string) => Promise<void>;
+  onConfirm: (
+    status: "approved" | "rejected",
+    notes: string,
+    rejectionReason?: string,
+  ) => Promise<void>;
   isLoading: boolean;
 }
 
@@ -30,38 +34,94 @@ export function DocumentVerifyModal({
   onConfirm,
   isLoading,
 }: DocumentVerifyModalProps) {
+  const [showApprovalForm, setShowApprovalForm] = useState(false);
+  const [showRejectionForm, setShowRejectionForm] = useState(false);
   const [notes, setNotes] = useState("");
+  const [rejectionReason, setRejectionReason] = useState("");
+  const [error, setError] = useState("");
   const [action, setAction] = useState<"approved" | "rejected" | null>(null);
 
   const formatDocumentType = (type: string) => {
     return type.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
   };
 
-  const handleApprove = () => {
+  const handleApproveClick = () => {
+    setShowApprovalForm(true);
+  };
+
+  const handleRejectClick = () => {
+    setShowRejectionForm(true);
+  };
+
+  const handleBackToReview = () => {
+    setShowApprovalForm(false);
+    setShowRejectionForm(false);
+    setRejectionReason("");
+    setNotes("");
+    setError("");
+  };
+
+  const handleConfirmApprove = () => {
     setAction("approved");
+    setError("");
     onConfirm("approved", notes);
   };
 
-  const handleReject = () => {
+  const handleConfirmReject = () => {
+    if (!rejectionReason.trim()) {
+      setError("Rejection reason is required");
+      return;
+    }
     setAction("rejected");
-    onConfirm("rejected", notes);
+    setError("");
+    onConfirm("rejected", notes, rejectionReason);
+  };
+
+  const handleClose = (open: boolean) => {
+    if (!open) {
+      setShowApprovalForm(false);
+      setShowRejectionForm(false);
+      setRejectionReason("");
+      setNotes("");
+      setError("");
+      setAction(null);
+    }
+    onOpenChange(open);
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <CheckCircle className="h-5 w-5 text-primary" />
-            Verify Document
+            {showApprovalForm ? (
+              <>
+                <CheckCircle className="h-5 w-5 text-primary" />
+                Approve Document
+              </>
+            ) : showRejectionForm ? (
+              <>
+                <XCircle className="h-5 w-5 text-destructive" />
+                Reject Document
+              </>
+            ) : (
+              <>
+                <CheckCircle className="h-5 w-5 text-primary" />
+                Verify Document
+              </>
+            )}
           </DialogTitle>
           <DialogDescription>
-            Review and approve or reject this document
+            {showApprovalForm
+              ? "Add any notes about this document approval"
+              : showRejectionForm
+                ? "Provide a reason for rejecting this document"
+                : "Review and approve or reject this document"}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          {/* Document Info */}
+          {/* Document Info - Always visible */}
           <div className="grid gap-3 p-4 bg-muted rounded-lg">
             <div className="space-y-1">
               <span className="text-sm text-muted-foreground">Filename</span>
@@ -108,55 +168,142 @@ export function DocumentVerifyModal({
               )}
           </div>
 
-          {/* Notes */}
-          <div className="space-y-2">
-            <Label htmlFor="verification-notes">Notes (optional)</Label>
-            <Textarea
-              id="verification-notes"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Add any notes about this verification..."
-              rows={3}
-            />
-          </div>
+          {/* Approval Form - Only shown after clicking Approve */}
+          {showApprovalForm && (
+            <div className="space-y-2">
+              <Label htmlFor="approval-notes">Notes (optional)</Label>
+              <Textarea
+                id="approval-notes"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Add any notes about this document..."
+                rows={3}
+                autoFocus
+              />
+            </div>
+          )}
+
+          {/* Rejection Form - Only shown after clicking Reject */}
+          {showRejectionForm && (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="rejection-reason">
+                  Rejection Reason <span className="text-destructive">*</span>
+                </Label>
+                <Textarea
+                  id="rejection-reason"
+                  value={rejectionReason}
+                  onChange={(e) => {
+                    setRejectionReason(e.target.value);
+                    setError("");
+                  }}
+                  placeholder="e.g., Image is blurry, document is expired, wrong document type..."
+                  rows={3}
+                  autoFocus
+                />
+                {error && <p className="text-sm text-destructive">{error}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="rejection-notes">
+                  Additional Notes (optional)
+                </Label>
+                <Textarea
+                  id="rejection-notes"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Add any additional notes..."
+                  rows={2}
+                />
+              </div>
+            </>
+          )}
         </div>
 
         <DialogFooter className="flex-col gap-2 sm:flex-row sm:justify-end">
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={isLoading}
-            className="w-full sm:w-auto"
-          >
-            Cancel
-          </Button>
-          <div className="flex gap-2 w-full sm:w-auto">
-            <Button
-              variant="destructive"
-              onClick={handleReject}
-              disabled={isLoading}
-              className="flex-1 sm:flex-initial"
-            >
-              {isLoading && action === "rejected" ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              ) : (
-                <XCircle className="h-4 w-4 mr-2" />
-              )}
-              Reject
-            </Button>
-            <Button
-              onClick={handleApprove}
-              disabled={isLoading}
-              className="flex-1 sm:flex-initial"
-            >
-              {isLoading && action === "approved" ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              ) : (
-                <CheckCircle className="h-4 w-4 mr-2" />
-              )}
-              Approve
-            </Button>
-          </div>
+          {showApprovalForm ? (
+            <>
+              {/* Approval Form Buttons */}
+              <Button
+                variant="outline"
+                onClick={handleBackToReview}
+                disabled={isLoading}
+                className="w-full sm:w-auto"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back
+              </Button>
+              <Button
+                onClick={handleConfirmApprove}
+                disabled={isLoading}
+                className="w-full sm:w-auto"
+              >
+                {isLoading && action === "approved" ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                )}
+                Confirm Approval
+              </Button>
+            </>
+          ) : showRejectionForm ? (
+            <>
+              {/* Rejection Form Buttons */}
+              <Button
+                variant="outline"
+                onClick={handleBackToReview}
+                disabled={isLoading}
+                className="w-full sm:w-auto"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleConfirmReject}
+                disabled={isLoading}
+                className="w-full sm:w-auto"
+              >
+                {isLoading && action === "rejected" ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <XCircle className="h-4 w-4 mr-2" />
+                )}
+                Confirm Rejection
+              </Button>
+            </>
+          ) : (
+            <>
+              {/* Initial Review Buttons */}
+              <Button
+                variant="outline"
+                onClick={() => handleClose(false)}
+                disabled={isLoading}
+                className="w-full sm:w-auto"
+              >
+                Cancel
+              </Button>
+              <div className="flex gap-2 w-full sm:w-auto">
+                <Button
+                  variant="destructive"
+                  onClick={handleRejectClick}
+                  disabled={isLoading}
+                  className="flex-1 sm:flex-initial"
+                >
+                  <XCircle className="h-4 w-4 mr-2" />
+                  Reject
+                </Button>
+                <Button
+                  onClick={handleApproveClick}
+                  disabled={isLoading}
+                  className="flex-1 sm:flex-initial"
+                >
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  Approve
+                </Button>
+              </div>
+            </>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

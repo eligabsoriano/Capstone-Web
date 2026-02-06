@@ -111,6 +111,7 @@ export function useCreateOfficer() {
     mutationFn: (data: CreateOfficerRequest) => createOfficer(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: adminQueryKeys.officers() });
+      queryClient.invalidateQueries({ queryKey: adminQueryKeys.auditLogs() });
     },
   });
 }
@@ -125,6 +126,7 @@ export function useUpdateOfficer(officerId: string) {
       queryClient.invalidateQueries({
         queryKey: adminQueryKeys.officerDetail(officerId),
       });
+      queryClient.invalidateQueries({ queryKey: adminQueryKeys.auditLogs() });
     },
   });
 }
@@ -136,6 +138,7 @@ export function useDeactivateOfficer() {
     mutationFn: (officerId: string) => deactivateOfficer(officerId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: adminQueryKeys.officers() });
+      queryClient.invalidateQueries({ queryKey: adminQueryKeys.auditLogs() });
     },
   });
 }
@@ -197,6 +200,7 @@ export function useAssignApplication() {
     onSuccess: () => {
       // Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: adminQueryKeys.workload() });
+      queryClient.invalidateQueries({ queryKey: adminQueryKeys.auditLogs() });
     },
   });
 }
@@ -239,6 +243,7 @@ export function useCreateAdmin() {
     mutationFn: (data: CreateAdminRequest) => createAdmin(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: adminQueryKeys.admins() });
+      queryClient.invalidateQueries({ queryKey: adminQueryKeys.auditLogs() });
     },
   });
 }
@@ -253,6 +258,7 @@ export function useUpdateAdmin(adminId: string) {
       queryClient.invalidateQueries({
         queryKey: adminQueryKeys.adminDetail(adminId),
       });
+      queryClient.invalidateQueries({ queryKey: adminQueryKeys.auditLogs() });
     },
   });
 }
@@ -264,6 +270,7 @@ export function useDeactivateAdmin() {
     mutationFn: (adminId: string) => deactivateAdmin(adminId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: adminQueryKeys.admins() });
+      queryClient.invalidateQueries({ queryKey: adminQueryKeys.auditLogs() });
     },
   });
 }
@@ -279,6 +286,7 @@ export function useUpdateAdminPermissions(adminId: string) {
       queryClient.invalidateQueries({
         queryKey: adminQueryKeys.adminDetail(adminId),
       });
+      queryClient.invalidateQueries({ queryKey: adminQueryKeys.auditLogs() });
     },
   });
 }

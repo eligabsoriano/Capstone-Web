@@ -91,7 +91,11 @@ export async function getDocumentTypes(): Promise<
  */
 export async function verifyDocument(
   documentId: string,
-  data: { status: "approved" | "rejected"; notes?: string },
+  data: {
+    status: "approved" | "rejected";
+    notes?: string;
+    rejection_reason?: string;
+  },
 ): Promise<ApiResponse<{ document: Document }>> {
   const response = await apiClient.put(
     `/api/documents/${documentId}/verify/`,

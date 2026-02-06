@@ -55,6 +55,7 @@ export function useReviewApplication() {
       // Invalidate both list and detail queries
       queryClient.invalidateQueries({ queryKey: ["officer-applications"] });
       queryClient.invalidateQueries({ queryKey: ["officer-application"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "audit-logs"] });
     },
   });
 }
@@ -76,6 +77,7 @@ export function useDisburseApplication() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["officer-applications"] });
       queryClient.invalidateQueries({ queryKey: ["officer-application"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "audit-logs"] });
     },
   });
 }
