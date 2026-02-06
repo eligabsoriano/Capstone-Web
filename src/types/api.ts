@@ -179,6 +179,53 @@ export interface UpdateOfficerRequest {
 }
 
 // ============================================================================
+// ADMIN - ADMIN MANAGEMENT TYPES (Super Admin Only)
+// ============================================================================
+
+export interface AdminListItem {
+  id: string;
+  username: string;
+  email: string;
+  full_name: string;
+  super_admin: boolean;
+  permissions: string[];
+  active: boolean;
+  two_factor_enabled: boolean;
+  created_at: string;
+}
+
+export interface AdminDetail extends AdminListItem {
+  first_name: string;
+  last_name: string;
+}
+
+export interface CreateAdminRequest {
+  username: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  super_admin?: boolean;
+  permissions?: string[];
+}
+
+export interface CreateAdminResponse {
+  admin: AdminListItem;
+  temporary_password: string;
+  message: string;
+}
+
+export interface UpdateAdminRequest {
+  first_name?: string;
+  last_name?: string;
+  active?: boolean;
+}
+
+export interface UpdatePermissionsRequest {
+  super_admin?: boolean;
+  permissions?: string[];
+}
+
+// ============================================================================
 // ADMIN - DASHBOARD TYPES
 // ============================================================================
 

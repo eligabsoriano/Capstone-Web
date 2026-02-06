@@ -1,18 +1,27 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type {
   AssignApplicationRequest,
+  CreateAdminRequest,
   CreateOfficerRequest,
+  UpdateAdminRequest,
   UpdateOfficerRequest,
+  UpdatePermissionsRequest,
 } from "@/types/api";
 import {
   assignApplication,
+  createAdmin,
   createOfficer,
+  deactivateAdmin,
   deactivateOfficer,
   getAdminDashboard,
+  getAdminDetail,
+  getAdminsList,
   getAuditLogs,
   getOfficerDetail,
   getOfficersList,
   getOfficerWorkload,
+  updateAdmin,
+  updateAdminPermissions,
   updateOfficer,
 } from "../api/adminApi";
 
@@ -28,6 +37,12 @@ export const adminQueryKeys = {
     [...adminQueryKeys.officers(), "list", filters] as const,
   officerDetail: (id: string) =>
     [...adminQueryKeys.officers(), "detail", id] as const,
+  // Admin management keys (Super Admin only)
+  admins: () => [...adminQueryKeys.all, "admins"] as const,
+  adminsList: (filters?: { active?: boolean }) =>
+    [...adminQueryKeys.admins(), "list", filters] as const,
+  adminDetail: (id: string) =>
+    [...adminQueryKeys.admins(), "detail", id] as const,
   auditLogs: (filters?: {
     action?: string;
     limit?: number;
@@ -182,6 +197,88 @@ export function useAssignApplication() {
     onSuccess: () => {
       // Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: adminQueryKeys.workload() });
+    },
+  });
+}
+
+// ============================================================================
+// ADMIN MANAGEMENT HOOKS (Super Admin Only)
+// ============================================================================
+
+export function useAdminsList(filters?: { active?: boolean }) {
+  return useQuery({
+    queryKey: adminQueryKeys.adminsList(filters),
+    queryFn: async () => {
+      const response = await getAdminsList(filters);
+      if (response.status === "error") {
+        throw new Error(response.message || "Failed to fetch admins");
+      }
+      return response.data!;
+    },
+  });
+}
+
+export function useAdminDetail(adminId: string) {
+  return useQuery({
+    queryKey: adminQueryKeys.adminDetail(adminId),
+    queryFn: async () => {
+      const response = await getAdminDetail(adminId);
+      if (response.status === "error") {
+        throw new Error(response.message || "Failed to fetch admin details");
+      }
+      return response.data!;
+    },
+    enabled: !!adminId,
+  });
+}
+
+export function useCreateAdmin() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: CreateAdminRequest) => createAdmin(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: adminQueryKeys.admins() });
+    },
+  });
+}
+
+export function useUpdateAdmin(adminId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: UpdateAdminRequest) => updateAdmin(adminId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: adminQueryKeys.admins() });
+      queryClient.invalidateQueries({
+        queryKey: adminQueryKeys.adminDetail(adminId),
+      });
+    },
+  });
+}
+
+export function useDeactivateAdmin() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (adminId: string) => deactivateAdmin(adminId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: adminQueryKeys.admins() });
+    },
+  });
+}
+
+export function useUpdateAdminPermissions(adminId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: UpdatePermissionsRequest) =>
+      updateAdminPermissions(adminId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: adminQueryKeys.admins() });
+      queryClient.invalidateQueries({
+        queryKey: adminQueryKeys.adminDetail(adminId),
+      });
     },
   });
 }

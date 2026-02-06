@@ -94,20 +94,29 @@ export function AdminAuditLogsPage() {
 
   const actionTypes = [
     { value: undefined, label: "All Actions" },
-    { value: "login", label: "Login" },
-    { value: "logout", label: "Logout" },
-    { value: "officer_created", label: "Officer Created" },
+    { value: "user_login", label: "Login" },
+    { value: "user_logout", label: "Logout" },
+    { value: "user_registered", label: "User Registered" },
+    { value: "profile_updated", label: "Profile Updated" },
+    { value: "document_uploaded", label: "Document Uploaded" },
+    { value: "document_verified", label: "Document Verified" },
+    { value: "document_rejected", label: "Document Rejected" },
+    { value: "loan_submitted", label: "Loan Submitted" },
     { value: "loan_approved", label: "Loan Approved" },
     { value: "loan_rejected", label: "Loan Rejected" },
-    { value: "document_verified", label: "Document Verified" },
+    { value: "loan_disbursed", label: "Loan Disbursed" },
+    { value: "payment_recorded", label: "Payment Recorded" },
+    { value: "admin_action", label: "Admin Action" },
   ];
 
   const limitOptions = [10, 25, 50, 100];
 
   const getActionBadgeVariant = (action: string) => {
-    if (action.includes("approved") || action === "login") return "default";
+    if (action.includes("approved") || action === "user_login")
+      return "default";
     if (action.includes("rejected")) return "destructive";
-    if (action.includes("created")) return "secondary";
+    if (action.includes("created") || action === "user_registered")
+      return "secondary";
     return "outline";
   };
 

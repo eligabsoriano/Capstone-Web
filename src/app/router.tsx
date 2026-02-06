@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { AdminLayout } from "@/features/admin/components";
 import {
+  AdminAdminDetailPage,
   AdminAdminsPage,
   AdminApplicationsPage,
   AdminAuditLogsPage,
@@ -152,6 +153,10 @@ export const router = createBrowserRouter([
               {
                 path: "admins",
                 element: <AdminAdminsPage />,
+              },
+              {
+                path: "admins/:adminId",
+                element: <AdminAdminDetailPage />,
               },
               {
                 path: "applications",
