@@ -7,6 +7,7 @@ import {
   UserCheck,
   XCircle,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useOfficerDashboard } from "../hooks";
@@ -88,6 +89,7 @@ function LoadingSkeleton() {
 
 export function OfficerDashboardPage() {
   const { data, isLoading, error, refetch } = useOfficerDashboard();
+  const navigate = useNavigate();
 
   if (isLoading) {
     return <LoadingSkeleton />;
@@ -174,46 +176,46 @@ export function OfficerDashboardPage() {
 
       {/* Performance Summary */}
       <div className="grid gap-6 sm:grid-cols-2">
-        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-card-foreground mb-4">
             Today's Activity
           </h2>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-5 w-5 text-green-600" />
-                <span className="text-gray-600">Approved</span>
+                <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
+                <span className="text-muted-foreground">Approved</span>
               </div>
-              <span className="font-semibold text-gray-900">
+              <span className="font-semibold text-card-foreground">
                 {dashboardData.my_reviews.approved_today}
               </span>
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <XCircle className="h-5 w-5 text-red-600" />
-                <span className="text-gray-600">Rejected</span>
+                <XCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
+                <span className="text-muted-foreground">Rejected</span>
               </div>
-              <span className="font-semibold text-gray-900">
+              <span className="font-semibold text-card-foreground">
                 {dashboardData.my_reviews.rejected_today}
               </span>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-card-foreground mb-4">
             All-Time Stats
           </h2>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-gray-600">Total Reviewed</span>
-              <span className="font-semibold text-gray-900">
+              <span className="text-muted-foreground">Total Reviewed</span>
+              <span className="font-semibold text-card-foreground">
                 {dashboardData.performance.total_reviewed}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-600">Total Rejected</span>
-              <span className="font-semibold text-gray-900">
+              <span className="text-muted-foreground">Total Rejected</span>
+              <span className="font-semibold text-card-foreground">
                 {dashboardData.my_reviews.total_rejected}
               </span>
             </div>
@@ -224,12 +226,12 @@ export function OfficerDashboardPage() {
       {/* Quick Actions / Recent Activity Section */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Recent Applications */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-card-foreground mb-4">
             Recent Applications
           </h2>
-          <div className="text-center py-8 text-gray-500">
-            <ClipboardList className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+          <div className="text-center py-8 text-muted-foreground">
+            <ClipboardList className="h-12 w-12 mx-auto mb-3 text-muted" />
             <p>No recent applications to display</p>
             <p className="text-sm mt-1">
               Applications assigned to you will appear here
@@ -238,37 +240,41 @@ export function OfficerDashboardPage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-card-foreground mb-4">
             Quick Actions
           </h2>
           <div className="space-y-3">
             <button
               type="button"
-              className="w-full flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-teal-200 hover:bg-teal-50 transition-colors text-left"
+              onClick={() => navigate("/officer/applications")}
+              className="w-full flex items-center gap-3 p-4 rounded-lg border border-border hover:border-primary/50 hover:bg-accent transition-colors text-left"
             >
-              <div className="p-2 rounded-lg bg-teal-50">
-                <ClipboardList className="h-5 w-5 text-teal-600" />
+              <div className="p-2 rounded-lg bg-primary/10">
+                <ClipboardList className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="font-medium text-gray-900">
+                <p className="font-medium text-card-foreground">
                   View Application Queue
                 </p>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-muted-foreground">
                   Review pending loan applications
                 </p>
               </div>
             </button>
             <button
               type="button"
-              className="w-full flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-teal-200 hover:bg-teal-50 transition-colors text-left"
+              onClick={() => navigate("/officer/payments")}
+              className="w-full flex items-center gap-3 p-4 rounded-lg border border-border hover:border-primary/50 hover:bg-accent transition-colors text-left"
             >
-              <div className="p-2 rounded-lg bg-teal-50">
-                <CheckCircle className="h-5 w-5 text-teal-600" />
+              <div className="p-2 rounded-lg bg-primary/10">
+                <CheckCircle className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="font-medium text-gray-900">Record Payment</p>
-                <p className="text-sm text-gray-500">
+                <p className="font-medium text-card-foreground">
+                  Record Payment
+                </p>
+                <p className="text-sm text-muted-foreground">
                   Log a new customer payment
                 </p>
               </div>

@@ -60,15 +60,17 @@ export function OfficerSidebar({
   };
 
   return (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex flex-col h-full bg-sidebar">
       {/* Logo / Brand */}
-      <div className="h-16 flex items-center px-4 border-b border-gray-200">
+      <div className="h-16 flex items-center px-4 border-b border-sidebar-border">
         {!collapsed ? (
-          <span className="text-lg font-semibold text-teal-700">
+          <span className="text-lg font-semibold text-sidebar-foreground">
             🏦 Loan Portal
           </span>
         ) : (
-          <span className="text-lg font-bold text-teal-700 mx-auto">🏦</span>
+          <span className="text-lg font-bold text-sidebar-foreground mx-auto">
+            🏦
+          </span>
         )}
       </div>
 
@@ -84,8 +86,9 @@ export function OfficerSidebar({
               className={({ isActive }) =>
                 cn(
                   "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                  "text-gray-600 hover:text-teal-700 hover:bg-teal-50",
-                  isActive && "bg-teal-50 text-teal-700 border border-teal-200",
+                  "text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent",
+                  isActive &&
+                    "bg-sidebar-accent text-sidebar-foreground border border-sidebar-border",
                   collapsed && "justify-center px-2",
                 )
               }
@@ -93,12 +96,12 @@ export function OfficerSidebar({
               <Icon className="h-5 w-5 shrink-0" />
               {!collapsed && <span className="flex-1">{item.label}</span>}
               {!collapsed && item.badge !== undefined && (
-                <span className="ml-auto inline-flex items-center justify-center px-2 py-0.5 text-xs font-medium rounded-full bg-teal-600 text-white">
+                <span className="ml-auto inline-flex items-center justify-center px-2 py-0.5 text-xs font-medium rounded-full bg-primary text-primary-foreground">
                   {item.badge}
                 </span>
               )}
               {collapsed && item.badge !== undefined && (
-                <span className="absolute -top-1 -right-1 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold rounded-full bg-teal-600 text-white">
+                <span className="absolute -top-1 -right-1 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold rounded-full bg-primary text-primary-foreground">
                   {item.badge > 9 ? "9+" : item.badge}
                 </span>
               )}
@@ -124,7 +127,7 @@ export function OfficerSidebar({
       </nav>
 
       {/* Bottom Section */}
-      <div className="border-t border-gray-200 p-2 space-y-1">
+      <div className="border-t border-sidebar-border p-2 space-y-1">
         {/* Settings */}
         {collapsed ? (
           <Tooltip delayDuration={0}>
@@ -135,9 +138,9 @@ export function OfficerSidebar({
                 className={({ isActive }) =>
                   cn(
                     "flex items-center justify-center px-2 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                    "text-gray-600 hover:text-teal-700 hover:bg-teal-50",
+                    "text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent",
                     isActive &&
-                      "bg-teal-50 text-teal-700 border border-teal-200",
+                      "bg-sidebar-accent text-sidebar-foreground border border-sidebar-border",
                   )
                 }
               >
@@ -153,8 +156,9 @@ export function OfficerSidebar({
             className={({ isActive }) =>
               cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                "text-gray-600 hover:text-teal-700 hover:bg-teal-50",
-                isActive && "bg-teal-50 text-teal-700 border border-teal-200",
+                "text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent",
+                isActive &&
+                  "bg-sidebar-accent text-sidebar-foreground border border-sidebar-border",
               )
             }
           >
@@ -170,7 +174,7 @@ export function OfficerSidebar({
             size="sm"
             onClick={onToggle}
             className={cn(
-              "w-full justify-start text-gray-600 hover:text-teal-700 hover:bg-teal-50",
+              "w-full justify-start text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent",
               collapsed && "justify-center",
             )}
           >
@@ -194,7 +198,7 @@ export function OfficerSidebar({
                 size="sm"
                 onClick={handleLogout}
                 disabled={isLoggingOut}
-                className="w-full justify-center text-gray-600 hover:text-red-600 hover:bg-red-50"
+                className="w-full justify-center text-sidebar-foreground/80 hover:text-destructive hover:bg-destructive/10"
               >
                 <LogOut className="h-5 w-5" />
               </Button>
@@ -207,7 +211,7 @@ export function OfficerSidebar({
             size="sm"
             onClick={handleLogout}
             disabled={isLoggingOut}
-            className="w-full justify-start text-gray-600 hover:text-red-600 hover:bg-red-50"
+            className="w-full justify-start text-sidebar-foreground/80 hover:text-destructive hover:bg-destructive/10"
           >
             <LogOut className="h-5 w-5 mr-2" />
             <span>Logout</span>
