@@ -178,6 +178,26 @@ export interface UpdateOfficerRequest {
   active?: boolean;
 }
 
+// Search params for officers list
+export interface OfficerSearchParams {
+  search?: string;
+  active?: boolean;
+  department?: string;
+  page?: number;
+  page_size?: number;
+  sort_by?: "created_at" | "full_name" | "email" | "employee_id" | "department";
+  sort_order?: "asc" | "desc";
+}
+
+// Response type for officers list with pagination
+export interface OfficersListResponse {
+  loan_officers: LoanOfficerListItem[];
+  total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+}
+
 // ============================================================================
 // ADMIN - ADMIN MANAGEMENT TYPES (Super Admin Only)
 // ============================================================================
@@ -223,6 +243,25 @@ export interface UpdateAdminRequest {
 export interface UpdatePermissionsRequest {
   super_admin?: boolean;
   permissions?: string[];
+}
+
+// Search params for admins list
+export interface AdminSearchParams {
+  search?: string;
+  active?: boolean;
+  page?: number;
+  page_size?: number;
+  sort_by?: "created_at" | "full_name" | "email" | "username";
+  sort_order?: "asc" | "desc";
+}
+
+// Response type for admins list with pagination
+export interface AdminsListResponse {
+  admins: AdminListItem[];
+  total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
 }
 
 // ============================================================================

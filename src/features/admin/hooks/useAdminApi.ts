@@ -1,8 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type {
+  AdminSearchParams,
   AssignApplicationRequest,
   CreateAdminRequest,
   CreateOfficerRequest,
+  OfficerSearchParams,
   UpdateAdminRequest,
   UpdateOfficerRequest,
   UpdatePermissionsRequest,
@@ -33,14 +35,14 @@ export const adminQueryKeys = {
   all: ["admin"] as const,
   dashboard: () => [...adminQueryKeys.all, "dashboard"] as const,
   officers: () => [...adminQueryKeys.all, "officers"] as const,
-  officersList: (filters?: { active?: boolean; department?: string }) =>
-    [...adminQueryKeys.officers(), "list", filters] as const,
+  officersList: (params?: OfficerSearchParams) =>
+    [...adminQueryKeys.officers(), "list", params] as const,
   officerDetail: (id: string) =>
     [...adminQueryKeys.officers(), "detail", id] as const,
   // Admin management keys (Super Admin only)
   admins: () => [...adminQueryKeys.all, "admins"] as const,
-  adminsList: (filters?: { active?: boolean }) =>
-    [...adminQueryKeys.admins(), "list", filters] as const,
+  adminsList: (params?: AdminSearchParams) =>
+    [...adminQueryKeys.admins(), "list", params] as const,
   adminDetail: (id: string) =>
     [...adminQueryKeys.admins(), "detail", id] as const,
   auditLogs: (filters?: {
@@ -74,14 +76,11 @@ export function useAdminDashboard() {
 // OFFICERS HOOKS
 // ============================================================================
 
-export function useOfficersList(filters?: {
-  active?: boolean;
-  department?: string;
-}) {
+export function useOfficersList(params?: OfficerSearchParams) {
   return useQuery({
-    queryKey: adminQueryKeys.officersList(filters),
+    queryKey: adminQueryKeys.officersList(params),
     queryFn: async () => {
-      const response = await getOfficersList(filters);
+      const response = await getOfficersList(params);
       if (response.status === "error") {
         throw new Error(response.message || "Failed to fetch officers");
       }
@@ -209,11 +208,11 @@ export function useAssignApplication() {
 // ADMIN MANAGEMENT HOOKS (Super Admin Only)
 // ============================================================================
 
-export function useAdminsList(filters?: { active?: boolean }) {
+export function useAdminsList(params?: AdminSearchParams) {
   return useQuery({
-    queryKey: adminQueryKeys.adminsList(filters),
+    queryKey: adminQueryKeys.adminsList(params),
     queryFn: async () => {
-      const response = await getAdminsList(filters);
+      const response = await getAdminsList(params);
       if (response.status === "error") {
         throw new Error(response.message || "Failed to fetch admins");
       }

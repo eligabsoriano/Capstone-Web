@@ -2,7 +2,8 @@ import apiClient from "@/shared/api/client";
 import type {
   AdminDashboardData,
   AdminDetail,
-  AdminListItem,
+  AdminSearchParams,
+  AdminsListResponse,
   ApiResponse,
   AssignApplicationRequest,
   AssignApplicationResponse,
@@ -15,6 +16,8 @@ import type {
   LoanOfficerDetail,
   LoanOfficerListItem,
   LoanProduct,
+  OfficerSearchParams,
+  OfficersListResponse,
   OfficerWorkload,
   UpdateAdminRequest,
   UpdateOfficerRequest,
@@ -44,18 +47,23 @@ export async function getAdminDashboard(): Promise<
 // ============================================================================
 
 /**
- * List all loan officers
+ * List all loan officers with search, filtering, and pagination
  * GET /api/auth/admin/loan-officers/
  */
-export async function getOfficersList(params?: {
-  active?: boolean;
-  department?: string;
-}): Promise<
-  ApiResponse<{ loan_officers: LoanOfficerListItem[]; total: number }>
-> {
-  const response = await apiClient.get<
-    ApiResponse<{ loan_officers: LoanOfficerListItem[]; total: number }>
-  >("/api/auth/admin/loan-officers/", { params });
+export async function getOfficersList(
+  params?: OfficerSearchParams,
+): Promise<ApiResponse<OfficersListResponse>> {
+  // Filter out undefined values
+  const cleanParams = params
+    ? Object.fromEntries(
+        Object.entries(params).filter(([_, value]) => value !== undefined),
+      )
+    : {};
+
+  const response = await apiClient.get<ApiResponse<OfficersListResponse>>(
+    "/api/auth/admin/loan-officers/",
+    { params: cleanParams },
+  );
   return response.data;
 }
 
@@ -254,15 +262,23 @@ export async function deleteProduct(
 // ============================================================================
 
 /**
- * List all admins
+ * List all admins with search, filtering, and pagination
  * GET /api/auth/admin/admins/
  */
-export async function getAdminsList(params?: {
-  active?: boolean;
-}): Promise<ApiResponse<{ admins: AdminListItem[]; total: number }>> {
-  const response = await apiClient.get<
-    ApiResponse<{ admins: AdminListItem[]; total: number }>
-  >("/api/auth/admin/admins/", { params });
+export async function getAdminsList(
+  params?: AdminSearchParams,
+): Promise<ApiResponse<AdminsListResponse>> {
+  // Filter out undefined values
+  const cleanParams = params
+    ? Object.fromEntries(
+        Object.entries(params).filter(([_, value]) => value !== undefined),
+      )
+    : {};
+
+  const response = await apiClient.get<ApiResponse<AdminsListResponse>>(
+    "/api/auth/admin/admins/",
+    { params: cleanParams },
+  );
   return response.data;
 }
 

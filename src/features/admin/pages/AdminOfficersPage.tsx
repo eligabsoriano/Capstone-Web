@@ -1,19 +1,46 @@
-import { AlertCircle, Eye, Plus, Search, Users } from "lucide-react";
-import { useState } from "react";
+import {
+  AlertCircle,
+  ChevronLeft,
+  ChevronRight,
+  Eye,
+  Plus,
+  Search,
+  Users,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import type { CreateOfficerRequest } from "@/types/api";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import type { CreateOfficerRequest, OfficerSearchParams } from "@/types/api";
 import { useCreateOfficer, useOfficersList } from "../hooks";
+
+// Department options - can be configured as needed
+const DEPARTMENT_OPTIONS = [
+  "Loans Department",
+  "Credit Analysis",
+  "Collections",
+  "Customer Service",
+  "Risk Management",
+  "Operations",
+] as const;
 
 export function AdminOfficersPage() {
   const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState<
     "all" | "active" | "inactive"
   >("all");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState<{
     open: boolean;
@@ -30,26 +57,79 @@ export function AdminOfficersPage() {
     phone: "",
     department: "",
   });
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
-  // Determine active filter for API
-  const apiFilter =
-    activeFilter === "all" ? undefined : { active: activeFilter === "active" };
-  const { data, isLoading, error } = useOfficersList(apiFilter);
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchInput);
+      setCurrentPage(1); // Reset to first page on search
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  // Handler for filter changes - resets page
+  const handleFilterChange = (filter: "all" | "active" | "inactive") => {
+    setActiveFilter(filter);
+    setCurrentPage(1);
+  };
+
+  // Build search params for API
+  const searchParams: OfficerSearchParams = {
+    page: currentPage,
+    page_size: 20,
+    sort_by: "created_at",
+    sort_order: "desc",
+  };
+
+  // Only add search if not empty
+  if (debouncedSearch.trim()) {
+    searchParams.search = debouncedSearch.trim();
+  }
+
+  // Only add active filter if not "all"
+  if (activeFilter !== "all") {
+    searchParams.active = activeFilter === "active";
+  }
+
+  const { data, isLoading, error } = useOfficersList(searchParams);
   const createOfficerMutation = useCreateOfficer();
 
   const officers = data?.loan_officers ?? [];
+  const totalPages = data?.total_pages ?? 1;
+  const total = data?.total ?? 0;
 
-  const filteredOfficers = officers.filter((officer) => {
-    const matchesSearch =
-      searchQuery === "" ||
-      officer.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      officer.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      officer.employee_id.toLowerCase().includes(searchQuery.toLowerCase());
+  // Form validation
+  const validateForm = (): boolean => {
+    const errors: Record<string, string> = {};
 
-    return matchesSearch;
-  });
+    if (!createForm.employee_id.trim()) {
+      errors.employee_id = "Employee ID is required";
+    }
+
+    if (!createForm.first_name.trim()) {
+      errors.first_name = "First name is required";
+    }
+
+    if (!createForm.last_name.trim()) {
+      errors.last_name = "Last name is required";
+    }
+
+    if (!createForm.email.trim()) {
+      errors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(createForm.email)) {
+      errors.email = "Please enter a valid email address";
+    }
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleCreateOfficer = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
     try {
       const response = await createOfficerMutation.mutateAsync(createForm);
       if (response.status === "success" && response.data) {
@@ -66,6 +146,7 @@ export function AdminOfficersPage() {
           phone: "",
           department: "",
         });
+        setFormErrors({});
       }
     } catch (err) {
       console.error("Failed to create officer:", err);
@@ -115,21 +196,21 @@ export function AdminOfficersPage() {
           <Button
             variant={activeFilter === "all" ? "default" : "outline"}
             size="sm"
-            onClick={() => setActiveFilter("all")}
+            onClick={() => handleFilterChange("all")}
           >
             All
           </Button>
           <Button
             variant={activeFilter === "active" ? "default" : "outline"}
             size="sm"
-            onClick={() => setActiveFilter("active")}
+            onClick={() => handleFilterChange("active")}
           >
             Active
           </Button>
           <Button
             variant={activeFilter === "inactive" ? "default" : "outline"}
             size="sm"
-            onClick={() => setActiveFilter("inactive")}
+            onClick={() => handleFilterChange("inactive")}
           >
             Inactive
           </Button>
@@ -138,12 +219,19 @@ export function AdminOfficersPage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search by name, email, or ID..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
             className="pl-9"
           />
         </div>
       </div>
+
+      {/* Results count */}
+      {!isLoading && (
+        <div className="text-sm text-muted-foreground">
+          Showing {officers.length} of {total} officers
+        </div>
+      )}
 
       {/* Officers Table */}
       <div className="bg-card rounded-lg border">
@@ -160,7 +248,7 @@ export function AdminOfficersPage() {
               ))}
             </div>
           </div>
-        ) : filteredOfficers.length === 0 ? (
+        ) : officers.length === 0 ? (
           <div className="text-center py-12">
             <Users className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
             <p className="text-muted-foreground">No officers found</p>
@@ -191,7 +279,7 @@ export function AdminOfficersPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredOfficers.map((officer) => (
+                {officers.map((officer) => (
                   <tr
                     key={officer.id}
                     className="border-b last:border-0 hover:bg-muted/50 cursor-pointer"
@@ -234,6 +322,33 @@ export function AdminOfficersPage() {
         )}
       </div>
 
+      {/* Pagination Controls */}
+      {!isLoading && totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Previous
+          </Button>
+          <span className="text-sm text-muted-foreground">
+            Page {currentPage} of {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+          >
+            Next
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
+
       {/* Create Officer Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -257,7 +372,13 @@ export function AdminOfficersPage() {
                     })
                   }
                   placeholder="EMP-001"
+                  className={formErrors.employee_id ? "border-destructive" : ""}
                 />
+                {formErrors.employee_id && (
+                  <p className="text-destructive text-xs mt-1">
+                    {formErrors.employee_id}
+                  </p>
+                )}
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -277,7 +398,15 @@ export function AdminOfficersPage() {
                       })
                     }
                     placeholder="John"
+                    className={
+                      formErrors.first_name ? "border-destructive" : ""
+                    }
                   />
+                  {formErrors.first_name && (
+                    <p className="text-destructive text-xs mt-1">
+                      {formErrors.first_name}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label
@@ -296,7 +425,13 @@ export function AdminOfficersPage() {
                       })
                     }
                     placeholder="Doe"
+                    className={formErrors.last_name ? "border-destructive" : ""}
                   />
+                  {formErrors.last_name && (
+                    <p className="text-destructive text-xs mt-1">
+                      {formErrors.last_name}
+                    </p>
+                  )}
                 </div>
               </div>
               <div>
@@ -311,7 +446,13 @@ export function AdminOfficersPage() {
                     setCreateForm({ ...createForm, email: e.target.value })
                   }
                   placeholder="john.doe@company.com"
+                  className={formErrors.email ? "border-destructive" : ""}
                 />
+                {formErrors.email && (
+                  <p className="text-destructive text-xs mt-1">
+                    {formErrors.email}
+                  </p>
+                )}
               </div>
               <div>
                 <label htmlFor="officer-phone" className="text-sm font-medium">
@@ -333,14 +474,23 @@ export function AdminOfficersPage() {
                 >
                   Department
                 </label>
-                <Input
-                  id="officer-department"
+                <Select
                   value={createForm.department}
-                  onChange={(e) =>
-                    setCreateForm({ ...createForm, department: e.target.value })
+                  onValueChange={(value) =>
+                    setCreateForm({ ...createForm, department: value })
                   }
-                  placeholder="Loans Department"
-                />
+                >
+                  <SelectTrigger id="officer-department">
+                    <SelectValue placeholder="Select department..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DEPARTMENT_OPTIONS.map((dept) => (
+                      <SelectItem key={dept} value={dept}>
+                        {dept}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             {createOfficerMutation.error && (
@@ -351,19 +501,16 @@ export function AdminOfficersPage() {
             <div className="flex justify-end gap-2 mt-6">
               <Button
                 variant="outline"
-                onClick={() => setShowCreateModal(false)}
+                onClick={() => {
+                  setShowCreateModal(false);
+                  setFormErrors({});
+                }}
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleCreateOfficer}
-                disabled={
-                  createOfficerMutation.isPending ||
-                  !createForm.employee_id ||
-                  !createForm.first_name ||
-                  !createForm.last_name ||
-                  !createForm.email
-                }
+                disabled={createOfficerMutation.isPending}
               >
                 {createOfficerMutation.isPending
                   ? "Creating..."
