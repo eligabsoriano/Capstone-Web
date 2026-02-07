@@ -4,6 +4,7 @@ import type {
   ReviewApplicationRequest,
 } from "@/types/api";
 import {
+  type ApplicationSearchParams,
   disburseApplication,
   getOfficerApplicationDetail,
   getOfficerApplications,
@@ -11,16 +12,24 @@ import {
 } from "../api/applicationsApi";
 
 /**
- * Hook for fetching officer applications list
+ * Hook for fetching officer applications list with advanced search/filter
  */
-export function useOfficerApplications(status: string = "pending") {
+export function useOfficerApplications(
+  params: ApplicationSearchParams = { status: "pending" },
+) {
   return useQuery({
-    queryKey: ["officer-applications", status],
-    queryFn: () => getOfficerApplications(status),
+    queryKey: ["officer-applications", params],
+    queryFn: () => getOfficerApplications(params),
     select: (response) =>
       response.status === "success"
         ? response.data
-        : { applications: [], total: 0 },
+        : {
+            applications: [],
+            total: 0,
+            page: 1,
+            page_size: 20,
+            total_pages: 0,
+          },
   });
 }
 

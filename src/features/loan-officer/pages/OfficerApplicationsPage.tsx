@@ -1,5 +1,12 @@
-import { AlertCircle, ClipboardList, Loader2, Search } from "lucide-react";
-import { useState } from "react";
+import {
+  AlertCircle,
+  ChevronLeft,
+  ChevronRight,
+  ClipboardList,
+  Loader2,
+  Search,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { Badge } from "@/components/ui/badge";
@@ -12,16 +19,36 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import type { ApplicationSearchParams } from "../api/applicationsApi";
 import { useOfficerApplications } from "../hooks";
 
 export function OfficerApplicationsPage() {
-  const [statusFilter, setStatusFilter] = useState("pending");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchParams, setSearchParams] = useState<ApplicationSearchParams>({
+    status: "pending",
+    page: 1,
+    page_size: 20,
+  });
+  const [searchInput, setSearchInput] = useState("");
 
-  const { data, isLoading, error } = useOfficerApplications(statusFilter);
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchParams((prev) => ({
+        ...prev,
+        search: searchInput || undefined,
+        page: 1, // Reset to page 1 when search changes
+      }));
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  const { data, isLoading, error } = useOfficerApplications(searchParams);
 
   const applications = data?.applications ?? [];
   const total = data?.total ?? 0;
+  const currentPage = data?.page ?? 1;
+  const totalPages = data?.total_pages ?? 1;
 
   const statusOptions = [
     { value: "pending", label: "Pending" },
@@ -61,15 +88,13 @@ export function OfficerApplicationsPage() {
     }
   };
 
-  const filteredApplications = applications.filter((app) => {
-    if (!searchQuery) return true;
-    const query = searchQuery.toLowerCase();
-    return (
-      app.id.toLowerCase().includes(query) ||
-      app.customer_id.toLowerCase().includes(query) ||
-      app.product_name.toLowerCase().includes(query)
-    );
-  });
+  const handleStatusChange = (status: string) => {
+    setSearchParams((prev) => ({ ...prev, status, page: 1 }));
+  };
+
+  const handlePageChange = (page: number) => {
+    setSearchParams((prev) => ({ ...prev, page }));
+  };
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-PH", {
@@ -124,8 +149,8 @@ export function OfficerApplicationsPage() {
       <div className="flex flex-col sm:flex-row gap-4">
         <div>
           <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+            value={searchParams.status}
+            onChange={(e) => handleStatusChange(e.target.value)}
             className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm"
           >
             {statusOptions.map((opt) => (
@@ -138,9 +163,9 @@ export function OfficerApplicationsPage() {
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search by ID, customer, or product..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by customer name, ID, or product..."
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
             className="pl-9"
           />
         </div>
@@ -153,7 +178,7 @@ export function OfficerApplicationsPage() {
           <CardDescription>
             {isLoading
               ? "Loading..."
-              : `${filteredApplications.length} of ${total} applications`}
+              : `Showing ${applications.length} of ${total} applications`}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -161,7 +186,7 @@ export function OfficerApplicationsPage() {
             <div className="flex items-center justify-center py-12">
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
-          ) : filteredApplications.length === 0 ? (
+          ) : applications.length === 0 ? (
             <div className="text-center py-12">
               <ClipboardList className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
               <p className="text-muted-foreground">No applications found</p>
@@ -170,75 +195,115 @@ export function OfficerApplicationsPage() {
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b bg-muted/50">
-                    <th className="text-left py-3 px-4 font-medium text-muted-foreground">
-                      Application ID
-                    </th>
-                    <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden md:table-cell">
-                      Product
-                    </th>
-                    <th className="text-right py-3 px-4 font-medium text-muted-foreground">
-                      Amount
-                    </th>
-                    <th className="text-left py-3 px-4 font-medium text-muted-foreground">
-                      Status
-                    </th>
-                    <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden lg:table-cell">
-                      Risk
-                    </th>
-                    <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden lg:table-cell">
-                      Submitted
-                    </th>
-                    <th className="text-right py-3 px-4 font-medium text-muted-foreground">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredApplications.map((app) => (
-                    <tr
-                      key={app.id}
-                      className="border-b last:border-0 hover:bg-muted/50"
-                    >
-                      <td className="py-3 px-4">
-                        <span className="font-mono text-sm">
-                          {app.id.slice(-8)}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 hidden md:table-cell text-muted-foreground">
-                        {app.product_name}
-                      </td>
-                      <td className="py-3 px-4 text-right">
-                        {formatCurrency(app.requested_amount)}
-                      </td>
-                      <td className="py-3 px-4">
-                        <Badge variant={getStatusBadgeVariant(app.status)}>
-                          {app.status.replace("_", " ")}
-                        </Badge>
-                      </td>
-                      <td className="py-3 px-4 hidden lg:table-cell">
-                        <Badge variant={getRiskBadgeVariant(app.risk_category)}>
-                          {app.risk_category || "N/A"}
-                        </Badge>
-                      </td>
-                      <td className="py-3 px-4 hidden lg:table-cell text-muted-foreground">
-                        {formatDate(app.submitted_at)}
-                      </td>
-                      <td className="py-3 px-4 text-right">
-                        <Button variant="outline" size="sm" asChild>
-                          <Link to={`/officer/applications/${app.id}`}>
-                            View
-                          </Link>
-                        </Button>
-                      </td>
+            <>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b bg-muted/50">
+                      <th className="text-left py-3 px-4 font-medium text-muted-foreground">
+                        Application ID
+                      </th>
+                      <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden sm:table-cell">
+                        Customer
+                      </th>
+                      <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden md:table-cell">
+                        Product
+                      </th>
+                      <th className="text-right py-3 px-4 font-medium text-muted-foreground">
+                        Amount
+                      </th>
+                      <th className="text-left py-3 px-4 font-medium text-muted-foreground">
+                        Status
+                      </th>
+                      <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden lg:table-cell">
+                        Risk
+                      </th>
+                      <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden lg:table-cell">
+                        Submitted
+                      </th>
+                      <th className="text-right py-3 px-4 font-medium text-muted-foreground">
+                        Actions
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {applications.map((app) => (
+                      <tr
+                        key={app.id}
+                        className="border-b last:border-0 hover:bg-muted/50"
+                      >
+                        <td className="py-3 px-4">
+                          <span className="font-mono text-sm">
+                            {app.id.slice(-8)}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 hidden sm:table-cell text-muted-foreground">
+                          {(app as { customer_name?: string }).customer_name ||
+                            app.customer_id.slice(-6)}
+                        </td>
+                        <td className="py-3 px-4 hidden md:table-cell text-muted-foreground">
+                          {app.product_name}
+                        </td>
+                        <td className="py-3 px-4 text-right">
+                          {formatCurrency(app.requested_amount)}
+                        </td>
+                        <td className="py-3 px-4">
+                          <Badge variant={getStatusBadgeVariant(app.status)}>
+                            {app.status.replace("_", " ")}
+                          </Badge>
+                        </td>
+                        <td className="py-3 px-4 hidden lg:table-cell">
+                          <Badge
+                            variant={getRiskBadgeVariant(app.risk_category)}
+                          >
+                            {app.risk_category || "N/A"}
+                          </Badge>
+                        </td>
+                        <td className="py-3 px-4 hidden lg:table-cell text-muted-foreground">
+                          {formatDate(app.submitted_at)}
+                        </td>
+                        <td className="py-3 px-4 text-right">
+                          <Button variant="outline" size="sm" asChild>
+                            <Link to={`/officer/applications/${app.id}`}>
+                              View
+                            </Link>
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between mt-4 pt-4 border-t">
+                  <p className="text-sm text-muted-foreground">
+                    Page {currentPage} of {totalPages}
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage <= 1}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      Previous
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage >= totalPages}
+                    >
+                      Next
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>

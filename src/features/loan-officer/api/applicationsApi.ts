@@ -9,17 +9,51 @@ import type {
   ReviewApplicationResponse,
 } from "@/types/api";
 
+// ============================================================================
+// APPLICATION SEARCH TYPES
+// ============================================================================
+
 /**
- * Get list of applications for loan officer
- * @param status - Filter by status: 'pending', 'mine', or specific status
+ * Search/filter parameters for applications
+ */
+export interface ApplicationSearchParams {
+  status?: string;
+  search?: string;
+  min_amount?: number;
+  max_amount?: number;
+  start_date?: string; // YYYY-MM-DD
+  end_date?: string; // YYYY-MM-DD
+  risk_category?: "low" | "medium" | "high";
+  page?: number;
+  page_size?: number;
+  sort_by?: "submitted_at" | "requested_amount" | "eligibility_score";
+  sort_order?: "asc" | "desc";
+}
+
+/**
+ * Paginated response for applications
+ */
+export interface ApplicationSearchResponse {
+  applications: OfficerApplicationListItem[];
+  total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+}
+
+/**
+ * Get list of applications for loan officer with advanced search/filter
  */
 export async function getOfficerApplications(
-  status: string = "pending",
-): Promise<
-  ApiResponse<{ applications: OfficerApplicationListItem[]; total: number }>
-> {
+  params: ApplicationSearchParams = { status: "pending" },
+): Promise<ApiResponse<ApplicationSearchResponse>> {
+  // Clean undefined params
+  const cleanParams = Object.fromEntries(
+    Object.entries(params).filter(([, v]) => v !== undefined && v !== ""),
+  );
+
   const response = await apiClient.get("/api/loans/officer/applications/", {
-    params: { status },
+    params: cleanParams,
   });
   return response.data;
 }
