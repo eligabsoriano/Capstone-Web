@@ -430,13 +430,13 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| USER-021 | Admins Link Visible (Super Admin) | 1. Login as Super Admin <br> 2. Check sidebar | "Admins" link visible in sidebar | ✔️ |
-| USER-022 | Admins Link Hidden (Regular Admin) | 1. Login as Regular Admin <br> 2. Check sidebar | "Admins" link NOT visible | ✔️ |
-| USER-023 | List Admins | 1. Login as Super Admin <br> 2. Navigate to Admins | Table displays admins with pagination | ❌ |
-| USER-024 | Create Admin - Valid | 1. Click "Add Admin" <br> 2. Fill all fields <br> 3. Set role (Admin/Super Admin) <br> 4. Submit | Admin created | ✔️ |
-| USER-025 | Edit Admin | 1. Click edit on admin row <br> 2. Modify fields <br> 3. Save | Changes saved | ✔️ |
-| USER-026 | Deactivate Admin | 1. Deactivate another admin | Admin deactivated | ✔️ |
-| USER-027 | Cannot Deactivate Self | 1. Try to deactivate own account | Shows error or button disabled | ✔️ |
+| USER-021 | Admins Link Visible (Super Admin) | 1. Login as Super Admin <br> 2. Check sidebar | "Admins" link visible in sidebar | ✅ |
+| USER-022 | Admins Link Hidden (Regular Admin) | 1. Login as Regular Admin <br> 2. Check sidebar | "Admins" link NOT visible | ✅ |
+| USER-023 | List Admins | 1. Login as Super Admin <br> 2. Navigate to Admins | Table displays admins with pagination | ✅ |
+| USER-024 | Create Admin - Valid | 1. Click "Add Admin" <br> 2. Fill all fields <br> 3. Set role (Admin/Super Admin) <br> 4. Submit | Admin created | ✅ |
+| USER-025 | Edit Admin | 1. Click edit on admin row <br> 2. Modify fields <br> 3. Save | Changes saved | ✅ |
+| USER-026 | Deactivate Admin | 1. Deactivate another admin | Admin deactivated | ✅ |
+| USER-027 | Cannot Deactivate Self | 1. Try to deactivate own account | Shows error or button disabled | ✅ |
 
 #### 3.3 Officer Workload
 
