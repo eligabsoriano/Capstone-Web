@@ -478,20 +478,20 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| APP-005 | View Assigned Applications | 1. Login as Officer <br> 2. Navigate to Applications | Shows only assigned applications | ☐ |
-| APP-006 | Review Application | 1. Click on assigned application | Shows application details with review options | ☐ |
-| APP-007 | Approve Application | 1. Review application <br> 2. Click "Approve" <br> 3. Add notes (optional) <br> 4. Confirm | Application status changes to Approved | ☐ |
-| APP-008 | Reject Application | 1. Review application <br> 2. Click "Reject" <br> 3. Add rejection reason (required) <br> 4. Confirm | Application status changes to Rejected, reason saved | ☐ |
-| APP-009 | Request More Documents | 1. Review application <br> 2. Click "Request Documents" <br> 3. Specify what's needed | Request sent to customer, status updates | ☐ |
-| APP-010 | Add Review Notes | 1. Open application <br> 2. Add internal notes <br> 3. Save | Notes saved, visible to other officers/admins | ☐ |
+| APP-005 | View Assigned Applications | 1. Login as Officer <br> 2. Navigate to Applications | Shows only assigned applications | ✅ |
+| APP-006 | Review Application | 1. Click on assigned application | Shows application details with review options | ✅ |
+| APP-007 | Approve Application | 1. Review application <br> 2. Click "Approve" <br> 3. Add notes (optional) <br> 4. Confirm | Application status changes to Approved | ✅ |
+| APP-008 | Reject Application | 1. Review application <br> 2. Click "Reject" <br> 3. Add rejection reason (required) <br> 4. Confirm | Application status changes to Rejected, reason saved | ✅ |
+| APP-009 | Request More Documents | 1. Review application <br> 2. Click "Request Documents" <br> 3. Specify what's needed | Request sent to customer, status updates | ❌ |
+| APP-010 | Add Review Notes | 1. Open application <br> 2. Add internal notes <br> 3. Save | Notes saved, visible to other officers/admins | ⚠️ |
 
 #### 5.3 Disbursement
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| APP-011 | View Approved for Disbursement | 1. Navigate to Disbursement page | Shows approved applications pending disbursement | ☐ |
-| APP-012 | Process Disbursement | 1. Select approved application <br> 2. Enter disbursement details <br> 3. Confirm | Disbursement recorded, repayment schedule generated | ☐ |
-| APP-013 | Disbursement Receipt | 1. After disbursement <br> 2. View/print receipt | Receipt shows all disbursement details | ☐ |
+| APP-011 | View Approved for Disbursement | 1. Navigate to Disbursement page | Shows approved applications pending disbursement | ✅ |
+| APP-012 | Process Disbursement | 1. Select approved application <br> 2. Enter disbursement details <br> 3. Confirm | Disbursement recorded, repayment schedule generated | ✅  |
+| APP-013 | Disbursement Receipt | 1. After disbursement <br> 2. View/print receipt | Receipt shows all disbursement details | ❌ |
 
 ---
 
