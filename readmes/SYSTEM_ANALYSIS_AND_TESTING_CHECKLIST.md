@@ -497,16 +497,16 @@
 
 ### Module 6: Document Management
 
-| Test ID | Test Case | Steps | Expected Result | Status |
-|---------|-----------|-------|-----------------|--------|
-| DOC-001 | List Documents | 1. Navigate to Documents page | Shows all documents with status badges | ☐ |
-| DOC-002 | Filter by Type | 1. Select document type filter | Shows only selected type | ☐ |
-| DOC-003 | Filter by Status | 1. Select status filter (Pending/Verified/Rejected) | Shows matching documents | ☐ |
-| DOC-004 | View Document | 1. Click on document row | Opens document preview | ☐ |
-| DOC-005 | Verify Document | 1. Open pending document <br> 2. Review content <br> 3. Click "Verify" | Document status changes to Verified | ☐ |
-| DOC-006 | Reject Document | 1. Open pending document <br> 2. Click "Reject" <br> 3. Enter reason | Document status changes to Rejected, customer notified | ☐ |
-| DOC-007 | Request Re-upload | 1. Open document <br> 2. Click "Request Re-upload" <br> 3. Specify issue | Request sent to customer | ☐ |
-| DOC-008 | Document Status Badge | 1. View documents list | Status badges show correct colors (Pending=Yellow, Verified=Green, Rejected=Red) | ☐ |
+| Test ID | Test Case | Steps | Expected Result | Status | Notes |
+|---------|-----------|-------|-----------------|--------|-------|
+| DOC-001 | List Documents | 1. Navigate to Documents page | Shows all documents with status badges | ❌ | Backend `/api/documents/` endpoint error: "Failed to load documents" |
+| DOC-002 | Filter by Type | 1. Select document type filter | Shows only selected type | ⚠️ | Blocked: API endpoint not working |
+| DOC-003 | Filter by Status | 1. Select status filter (Pending/Verified/Rejected) | Shows matching documents | ⚠️ | Blocked: No documents to filter |
+| DOC-004 | View Document | 1. Click on document row | Opens document preview | ⚠️ | Blocked: API endpoint not working |
+| DOC-005 | Verify Document | 1. Open pending document <br> 2. Review content <br> 3. Click "Verify" | Document status changes to Verified | ⚠️ | Blocked: No test data available |
+| DOC-006 | Reject Document | 1. Open pending document <br> 2. Click "Reject" <br> 3. Enter reason | Document status changes to Rejected, customer notified | ⚠️ | Blocked: No test data available |
+| DOC-007 | Request Re-upload | 1. Open document <br> 2. Click "Request Re-upload" <br> 3. Specify issue | Request sent to customer | ⚠️ | Blocked: No test data available |
+| DOC-008 | Document Status Badge | 1. View documents list | Status badges show correct colors (Pending=Yellow, Verified=Green, Rejected=Red) | ⚠️ | Blocked: API error prevents data load |
 
 ---
 
@@ -516,32 +516,32 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| PAY-001 | Search Loans | 1. Navigate to Record Payment <br> 2. Search by customer name or loan ID | Shows matching active loans | ☐ |
-| PAY-002 | Select Loan | 1. Search for loan <br> 2. Click on loan result | Shows loan details and payment form | ☐ |
-| PAY-003 | Record Full Payment | 1. Select loan <br> 2. Enter full installment amount <br> 3. Select payment method <br> 4. Submit | Payment recorded, schedule updated | ☐ |
-| PAY-004 | Record Partial Payment | 1. Select loan <br> 2. Enter partial amount <br> 3. Submit | Partial payment recorded, remaining balance shown | ☐ |
-| PAY-005 | Payment Methods | 1. Open payment form <br> 2. Check available methods | Shows Cash, Bank Transfer, Mobile Money, etc. | ☐ |
-| PAY-006 | Reference Number | 1. Select bank transfer <br> 2. Enter reference number | Reference number saved with payment | ☐ |
-| PAY-007 | Payment Confirmation | 1. Submit payment | Shows confirmation with details | ☐ |
-| PAY-008 | Duplicate Payment Prevention | 1. Try to record same payment twice | Shows warning or prevents duplicate | ☐ |
+| PAY-001 | Search Loans | 1. Navigate to Record Payment <br> 2. Search by customer name or loan ID | Shows matching active loans | ⚠️ |
+| PAY-002 | Select Loan | 1. Search for loan <br> 2. Click on loan result | Shows loan details and payment form | ✅  |
+| PAY-003 | Record Full Payment | 1. Select loan <br> 2. Enter full installment amount <br> 3. Select payment method <br> 4. Submit | Payment recorded, schedule updated | ✅  |
+| PAY-004 | Record Partial Payment | 1. Select loan <br> 2. Enter partial amount <br> 3. Submit | Partial payment recorded, remaining balance shown | ✅  |
+| PAY-005 | Payment Methods | 1. Open payment form <br> 2. Check available methods | Shows Cash, Bank Transfer, Mobile Money, etc. | ✅ |
+| PAY-006 | Reference Number | 1. Select bank transfer <br> 2. Enter reference number | Reference number saved with payment | ✅ |
+| PAY-007 | Payment Confirmation | 1. Submit payment | Shows confirmation with details | ✅  |
+| PAY-008 | Duplicate Payment Prevention | 1. Try to record same payment twice | Shows warning or prevents duplicate | ⚠️   |
 
 #### 7.2 Repayment Schedule
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| PAY-009 | View Schedule | 1. Navigate to loan <br> 2. View repayment schedule | Shows all installments with dates and amounts | ☐ |
-| PAY-010 | Overdue Indicator | 1. View schedule with overdue payment | Overdue row highlighted in red | ☐ |
-| PAY-011 | Paid Indicator | 1. View schedule after payment | Paid rows marked with checkmark | ☐ |
-| PAY-012 | Remaining Balance | 1. View schedule | Shows correct remaining balance | ☐ |
+| PAY-009 | View Schedule | 1. Navigate to loan <br> 2. View repayment schedule | Shows all installments with dates and amounts | ✅ |
+| PAY-010 | Overdue Indicator | 1. View schedule with overdue payment | Overdue row highlighted in red | ✅  |
+| PAY-011 | Paid Indicator | 1. View schedule after payment | Paid rows marked with checkmark | ✅  |
+| PAY-012 | Remaining Balance | 1. View schedule | Shows correct remaining balance | ✅  |
 
 #### 7.3 Payment History
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| PAY-013 | View History | 1. Navigate to Payment History | Shows all payments with pagination | ☐ |
-| PAY-014 | Filter by Date | 1. Select date range | Shows payments in range | ☐ |
-| PAY-015 | Filter by Status | 1. Filter by On-time/Late payments | Shows matching payments | ☐ |
-| PAY-016 | Export History | 1. Click Export <br> 2. Select format | Downloads payment history file | ☐ |
+| PAY-013 | View History | 1. Navigate to Payment History | Shows all payments with pagination | ✅ |
+| PAY-014 | Filter by Date | 1. Select date range | Shows payments in range | ⚠️  |
+| PAY-015 | Filter by Status | 1. Filter by On-time/Late payments | Shows matching payments | ⚠️  |
+| PAY-016 | Export History | 1. Click Export <br> 2. Select format | Downloads payment history file | ❌ |
 
 ---
 
