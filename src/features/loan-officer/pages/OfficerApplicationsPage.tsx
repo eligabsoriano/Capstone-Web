@@ -1,5 +1,8 @@
 import {
   AlertCircle,
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
   ChevronLeft,
   ChevronRight,
   ClipboardList,
@@ -22,6 +25,9 @@ import { Input } from "@/components/ui/input";
 import type { ApplicationSearchParams } from "../api/applicationsApi";
 import { useOfficerApplications } from "../hooks";
 
+type SortField = "customer_name" | "submitted_at" | "requested_amount";
+type SortOrder = "asc" | "desc";
+
 export function OfficerApplicationsPage() {
   const [searchParams, setSearchParams] = useState<ApplicationSearchParams>({
     status: "pending",
@@ -29,6 +35,8 @@ export function OfficerApplicationsPage() {
     page_size: 20,
   });
   const [searchInput, setSearchInput] = useState("");
+  const [sortField, setSortField] = useState<SortField | null>(null);
+  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
 
   // Debounce search input
   useEffect(() => {
@@ -94,6 +102,29 @@ export function OfficerApplicationsPage() {
 
   const handlePageChange = (page: number) => {
     setSearchParams((prev) => ({ ...prev, page }));
+  };
+
+  const handleSort = (field: SortField) => {
+    const newOrder: SortOrder =
+      sortField === field && sortOrder === "asc" ? "desc" : "asc";
+    setSortField(field);
+    setSortOrder(newOrder);
+    setSearchParams((prev) => ({
+      ...prev,
+      sort_by: field as ApplicationSearchParams["sort_by"],
+      sort_order: newOrder,
+      page: 1,
+    }));
+  };
+
+  const renderSortIcon = (field: SortField) => {
+    if (sortField !== field)
+      return <ArrowUpDown className="h-3.5 w-3.5 ml-1 opacity-50" />;
+    return sortOrder === "asc" ? (
+      <ArrowUp className="h-3.5 w-3.5 ml-1" />
+    ) : (
+      <ArrowDown className="h-3.5 w-3.5 ml-1" />
+    );
   };
 
   const formatCurrency = (amount: number) => {
@@ -204,7 +235,14 @@ export function OfficerApplicationsPage() {
                         Application ID
                       </th>
                       <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden sm:table-cell">
-                        Customer
+                        <button
+                          type="button"
+                          className="flex items-center hover:text-foreground transition-colors cursor-pointer"
+                          onClick={() => handleSort("customer_name")}
+                        >
+                          Customer
+                          {renderSortIcon("customer_name")}
+                        </button>
                       </th>
                       <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden md:table-cell">
                         Product
@@ -219,7 +257,14 @@ export function OfficerApplicationsPage() {
                         Risk
                       </th>
                       <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden lg:table-cell">
-                        Submitted
+                        <button
+                          type="button"
+                          className="flex items-center hover:text-foreground transition-colors cursor-pointer"
+                          onClick={() => handleSort("submitted_at")}
+                        >
+                          Submitted
+                          {renderSortIcon("submitted_at")}
+                        </button>
                       </th>
                       <th className="text-right py-3 px-4 font-medium text-muted-foreground">
                         Actions

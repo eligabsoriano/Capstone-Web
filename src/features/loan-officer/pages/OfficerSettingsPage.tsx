@@ -17,12 +17,14 @@ export function OfficerSettingsPage() {
   const officerUser = user as LoanOfficerUser | null;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-hidden">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">
           Settings
         </h1>
-        <p className="text-gray-500">Your account and security preferences</p>
+        <p className="text-muted-foreground">
+          Your account and security preferences
+        </p>
       </div>
 
       {/* Account Information */}

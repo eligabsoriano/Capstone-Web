@@ -144,6 +144,7 @@ export function ForgotPasswordPage() {
         email,
         otp,
         new_password: data.new_password,
+        confirm_password: data.confirm_password,
       });
       if (response.status === "success") {
         setStep("success");

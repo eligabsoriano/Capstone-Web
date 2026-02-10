@@ -62,6 +62,24 @@ export function OfficerApplicationDetailPage() {
     });
   };
 
+  /**
+   * Safely format an address that may be a string or an object
+   * with keys like {street, barangay, city, province, postal_code}
+   */
+  const formatAddress = (address: unknown): string => {
+    if (!address) return "-";
+    if (typeof address === "string") return address;
+    if (typeof address === "object" && address !== null) {
+      const addr = address as Record<string, unknown>;
+      return (
+        [addr.street, addr.barangay, addr.city, addr.province, addr.postal_code]
+          .filter(Boolean)
+          .join(", ") || "-"
+      );
+    }
+    return "-";
+  };
+
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
       case "approved":
@@ -379,8 +397,9 @@ export function OfficerApplicationDetailPage() {
                     Business Address
                   </p>
                   <p className="font-medium">
-                    {application.customer?.business_profile?.business_address ||
-                      "-"}
+                    {formatAddress(
+                      application.customer?.business_profile?.business_address,
+                    )}
                   </p>
                 </div>
               </div>

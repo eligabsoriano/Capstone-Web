@@ -8,9 +8,10 @@ import {
   XCircle,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useOfficerDashboard } from "../hooks";
+import { useOfficerApplications, useOfficerDashboard } from "../hooks";
 
 interface StatCardProps {
   title: string;
@@ -90,6 +91,37 @@ function LoadingSkeleton() {
 export function OfficerDashboardPage() {
   const { data, isLoading, error, refetch } = useOfficerDashboard();
   const navigate = useNavigate();
+
+  // Fetch recent pending applications for the dashboard
+  const { data: recentAppsData, isLoading: recentAppsLoading } =
+    useOfficerApplications({
+      status: "pending",
+      page: 1,
+      page_size: 5,
+      sort_by: "submitted_at",
+      sort_order: "desc",
+    });
+
+  const recentApplications = recentAppsData?.applications ?? [];
+
+  const formatCurrency = (amount: number) =>
+    new Intl.NumberFormat("en-PH", {
+      style: "currency",
+      currency: "PHP",
+    }).format(amount);
+
+  const getRiskBadgeVariant = (risk: string) => {
+    switch (risk?.toLowerCase()) {
+      case "low":
+        return "default" as const;
+      case "medium":
+        return "secondary" as const;
+      case "high":
+        return "destructive" as const;
+      default:
+        return "outline" as const;
+    }
+  };
 
   if (isLoading) {
     return <LoadingSkeleton />;
@@ -227,16 +259,70 @@ export function OfficerDashboardPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Recent Applications */}
         <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-card-foreground mb-4">
-            Recent Applications
-          </h2>
-          <div className="text-center py-8 text-muted-foreground">
-            <ClipboardList className="h-12 w-12 mx-auto mb-3 text-muted" />
-            <p>No recent applications to display</p>
-            <p className="text-sm mt-1">
-              Applications assigned to you will appear here
-            </p>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-card-foreground">
+              Recent Applications
+            </h2>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/officer/applications")}
+            >
+              View All
+            </Button>
           </div>
+          {recentAppsLoading ? (
+            <div className="space-y-3">
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="flex items-center justify-between p-3 bg-muted/50 rounded-lg animate-pulse"
+                >
+                  <div className="space-y-1.5">
+                    <div className="h-4 w-32 bg-muted rounded" />
+                    <div className="h-3 w-20 bg-muted rounded" />
+                  </div>
+                  <div className="h-5 w-16 bg-muted rounded" />
+                </div>
+              ))}
+            </div>
+          ) : recentApplications.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <ClipboardList className="h-12 w-12 mx-auto mb-3 text-muted" />
+              <p>No recent applications to display</p>
+              <p className="text-sm mt-1">
+                Applications assigned to you will appear here
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {recentApplications.map((app) => (
+                <button
+                  key={app.id}
+                  type="button"
+                  className="w-full flex items-center justify-between p-3 rounded-lg border border-border hover:border-primary/50 hover:bg-accent transition-colors text-left cursor-pointer"
+                  onClick={() => navigate(`/officer/applications/${app.id}`)}
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-card-foreground text-sm truncate">
+                      {(app as { customer_name?: string }).customer_name ||
+                        `Application ${app.id.slice(-8)}`}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatCurrency(app.requested_amount)} ·{" "}
+                      {app.product_name}
+                    </p>
+                  </div>
+                  <Badge
+                    variant={getRiskBadgeVariant(app.risk_category)}
+                    className="ml-2 shrink-0"
+                  >
+                    {app.risk_category || "N/A"}
+                  </Badge>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Quick Actions */}

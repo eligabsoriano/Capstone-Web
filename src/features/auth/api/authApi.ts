@@ -288,6 +288,7 @@ export async function resetPassword(data: {
   email: string;
   otp: string;
   new_password: string;
+  confirm_password: string;
 }): Promise<ApiResponse<null>> {
   const response = await apiClient.post<ApiResponse<null>>(
     "/api/auth/reset-password/",
