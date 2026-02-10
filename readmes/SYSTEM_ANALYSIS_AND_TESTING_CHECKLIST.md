@@ -551,23 +551,23 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| ANLY-001 | Stats Cards Accuracy | 1. View dashboard stats <br> 2. Compare with database | Numbers match actual counts | ☐ |
-| ANLY-002 | Loan Status Chart | 1. View StatusBarChart | Shows correct distribution of loan statuses | ☐ |
-| ANLY-003 | Products Chart | 1. View ProductsPieChart | Shows loan distribution by product type | ☐ |
-| ANLY-004 | Chart Interactivity | 1. Hover over chart sections | Shows tooltips with details | ☐ |
+| ANLY-001 | Stats Cards Accuracy | 1. View dashboard stats <br> 2. Compare with database | Numbers match actual counts | ✅ |
+| ANLY-002 | Loan Status Chart | 1. View StatusBarChart | Shows correct distribution of loan statuses | ✅ |
+| ANLY-003 | Products Chart | 1. View ProductsPieChart | Shows loan distribution by product type | ✅ |
+| ANLY-004 | Chart Interactivity | 1. Hover over chart sections | Shows tooltips with details | ✅ |
 
 #### 8.2 Audit Logs
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| ANLY-005 | View Audit Logs | 1. Navigate to Audit Logs | Shows all system audit entries | ☐ |
-| ANLY-006 | Filter by Action | 1. Filter by action type (Login, Create, Update, Delete) | Shows matching logs | ☐ |
-| ANLY-007 | Filter by User | 1. Select specific user | Shows only that user's actions | ☐ |
+| ANLY-005 | View Audit Logs | 1. Navigate to Audit Logs | Shows all system audit entries | ✅ |
+| ANLY-006 | Filter by Action | 1. Filter by action type (Login, Create, Update, Delete) | Shows matching logs | ✅  |
+| ANLY-007 | Filter by User | 1. Select specific user | Shows only that user's actions | ❌ |
 | ANLY-008 | Filter by Date Range | 1. Select date range | Shows logs within range | ☐ |
-| ANLY-009 | Search Logs | 1. Enter search term | Finds matching log entries | ☐ |
-| ANLY-010 | Export Logs CSV | 1. Click Export <br> 2. Select CSV | Downloads audit logs as CSV | ☐ |
-| ANLY-011 | Export Logs Excel | 1. Click Export <br> 2. Select Excel | Downloads audit logs as Excel | ☐ |
-| ANLY-012 | Log Details | 1. Click on log entry | Shows full details including IP, timestamp, changes | ☐ |
+| ANLY-009 | Search Logs | 1. Enter search term | Finds matching log entries | ✅ |
+| ANLY-010 | Export Logs CSV | 1. Click Export <br> 2. Select CSV | Downloads audit logs as CSV | ✅ |
+| ANLY-011 | Export Logs Excel | 1. Click Export <br> 2. Select Excel | Downloads audit logs as Excel | ❌ |
+| ANLY-012 | Log Details | 1. Click on log entry | Shows full details including IP, timestamp, changes | ❌ |
 
 ---
 
@@ -575,14 +575,14 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| AI-001 | Open Chat | 1. Click AI Assistant button | Chat interface opens | ☐ |
-| AI-002 | Send Message | 1. Type message <br> 2. Press Enter or click Send | Message sent, shows in chat | ☐ |
-| AI-003 | Receive Response | 1. Send message <br> 2. Wait for response | AI response appears | ☐ |
-| AI-004 | Chat History | 1. Close and reopen chat | Previous messages preserved | ☐ |
-| AI-005 | Clear History | 1. Click "Clear conversation" | Chat history cleared | ☐ |
-| AI-006 | Suggestions | 1. Open chat | Shows suggested questions/actions | ☐ |
-| AI-007 | FAQ Queries | 1. Ask common question (e.g., "How to apply for loan?") | Returns relevant FAQ answer | ☐ |
-| AI-008 | Educational Content | 1. Ask about financial terms | Returns educational explanation | ☐ |
+| AI-001 | Open Chat | 1. Click AI Assistant button | Chat interface opens | ⁉️ |
+| AI-002 | Send Message | 1. Type message <br> 2. Press Enter or click Send | Message sent, shows in chat | ⁉️ |
+| AI-003 | Receive Response | 1. Send message <br> 2. Wait for response | AI response appears | ⁉️ |
+| AI-004 | Chat History | 1. Close and reopen chat | Previous messages preserved | ⁉️ |
+| AI-005 | Clear History | 1. Click "Clear conversation" | Chat history cleared | ⁉️ |
+| AI-006 | Suggestions | 1. Open chat | Shows suggested questions/actions | ⁉️ |
+| AI-007 | FAQ Queries | 1. Ask common question (e.g., "How to apply for loan?") | Returns relevant FAQ answer | ⁉️ |
+| AI-008 | Educational Content | 1. Ask about financial terms | Returns educational explanation | ⁉️ |
 
 ---
 
