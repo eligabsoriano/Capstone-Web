@@ -13,6 +13,7 @@ import {
   AdminWorkloadPage,
 } from "@/features/admin/pages";
 import {
+  ForgotPasswordPage,
   GuestOnlyRoute,
   LoginPage,
   ProtectedRoute,
@@ -73,6 +74,10 @@ export const router = createBrowserRouter([
       {
         path: "/verify-2fa",
         element: <Verify2FAPage />,
+      },
+      {
+        path: "/forgot-password",
+        element: <ForgotPasswordPage />,
       },
     ],
   },

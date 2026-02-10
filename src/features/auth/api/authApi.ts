@@ -250,3 +250,48 @@ export async function changePassword(data: {
   );
   return response.data;
 }
+
+/**
+ * Initiate forgot password flow - sends OTP to email
+ * POST /api/auth/forgot-password/
+ */
+export async function forgotPassword(data: {
+  email: string;
+}): Promise<ApiResponse<null>> {
+  const response = await apiClient.post<ApiResponse<null>>(
+    "/api/auth/forgot-password/",
+    data,
+  );
+  return response.data;
+}
+
+/**
+ * Verify the password reset OTP
+ * POST /api/auth/verify-reset-otp/
+ */
+export async function verifyResetOTP(data: {
+  email: string;
+  otp: string;
+}): Promise<ApiResponse<null>> {
+  const response = await apiClient.post<ApiResponse<null>>(
+    "/api/auth/verify-reset-otp/",
+    data,
+  );
+  return response.data;
+}
+
+/**
+ * Reset password using verified OTP
+ * POST /api/auth/reset-password/
+ */
+export async function resetPassword(data: {
+  email: string;
+  otp: string;
+  new_password: string;
+}): Promise<ApiResponse<null>> {
+  const response = await apiClient.post<ApiResponse<null>>(
+    "/api/auth/reset-password/",
+    data,
+  );
+  return response.data;
+}

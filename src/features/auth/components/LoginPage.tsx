@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { Link } from "react-router-dom";
 import { z } from "zod";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -213,6 +214,15 @@ function LoanOfficerLoginForm({
           "Sign in as Loan Officer"
         )}
       </Button>
+
+      <div className="text-center">
+        <Link
+          to="/forgot-password"
+          className="text-sm text-primary hover:underline"
+        >
+          Forgot your password?
+        </Link>
+      </div>
     </form>
   );
 }
@@ -299,6 +309,15 @@ function AdminLoginForm({ onSubmit, isLoading }: AdminLoginFormProps) {
           "Sign in as Admin"
         )}
       </Button>
+
+      <div className="text-center">
+        <Link
+          to="/forgot-password"
+          className="text-sm text-primary hover:underline"
+        >
+          Forgot your password?
+        </Link>
+      </div>
     </form>
   );
 }

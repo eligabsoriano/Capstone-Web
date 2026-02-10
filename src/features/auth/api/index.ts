@@ -2,6 +2,7 @@ export {
   changePassword,
   confirm2FASetup,
   disable2FA,
+  forgotPassword,
   generateBackupCodes,
   get2FAStatus,
   loginAdmin,
@@ -10,6 +11,8 @@ export {
   logoutAdmin,
   logoutLoanOfficer,
   refreshAccessToken,
+  resetPassword,
   setup2FA,
   verify2FA,
+  verifyResetOTP,
 } from "./authApi";

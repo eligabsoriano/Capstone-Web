@@ -40,13 +40,30 @@ const processQueue = (error: Error | null, token: string | null = null) => {
   failedQueue = [];
 };
 
+// URLs that should NOT trigger token refresh on 401
+// These are unauthenticated endpoints where a 401 means "invalid credentials",
+// not "expired token". Also includes 2FA disable/backup which use password validation.
+const AUTH_URLS = [
+  "/api/auth/login/",
+  "/api/auth/loan-officer/login/",
+  "/api/auth/admin/login/",
+  "/api/auth/2fa/verify/",
+  "/api/auth/2fa/disable/",
+  "/api/auth/2fa/backup-codes/",
+  "/api/auth/forgot-password/",
+  "/api/auth/verify-reset-otp/",
+  "/api/auth/reset-password/",
+];
+
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    const requestUrl = originalRequest?.url || "";
+    const isAuthUrl = AUTH_URLS.some((url) => requestUrl.includes(url));
 
-    // If error is not 401 or request already retried, reject immediately
-    if (error.response?.status !== 401 || originalRequest._retry) {
+    // If error is not 401, request already retried, or it's an auth endpoint, reject immediately
+    if (error.response?.status !== 401 || originalRequest._retry || isAuthUrl) {
       return Promise.reject(error);
     }
 
