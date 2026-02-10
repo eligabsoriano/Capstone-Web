@@ -3,7 +3,6 @@ import { AdminLayout } from "@/features/admin/components";
 import {
   AdminAdminDetailPage,
   AdminAdminsPage,
-  AdminApplicationsPage,
   AdminAuditLogsPage,
   AdminDashboardPage,
   AdminOfficerDetailPage,
@@ -17,7 +16,9 @@ import {
   GuestOnlyRoute,
   LoginPage,
   ProtectedRoute,
+  RequirePermission,
   RequireRole,
+  RequireSuperAdmin,
   Verify2FAPage,
 } from "@/features/auth/components";
 import { useAuthStore } from "@/features/auth/store/authStore";
@@ -135,6 +136,7 @@ export const router = createBrowserRouter([
 
       // ========================================================================
       // ADMIN ONLY ROUTES - With AdminLayout
+      // Permission-based access control per route
       // ========================================================================
       {
         element: <RequireRole allowedRoles={["admin"]} />,
@@ -143,42 +145,73 @@ export const router = createBrowserRouter([
             path: "/admin",
             element: <AdminLayout />,
             children: [
+              // Dashboard - All admins can access
               {
                 index: true,
                 element: <AdminDashboardPage />,
               },
+              // Loan Officers Management - requires manage_loan_officers
               {
                 path: "officers",
-                element: <AdminOfficersPage />,
+                element: (
+                  <RequirePermission permission="manage_loan_officers">
+                    <AdminOfficersPage />
+                  </RequirePermission>
+                ),
               },
               {
                 path: "officers/:id",
-                element: <AdminOfficerDetailPage />,
+                element: (
+                  <RequirePermission permission="manage_loan_officers">
+                    <AdminOfficerDetailPage />
+                  </RequirePermission>
+                ),
               },
+              // Admin Management - Super Admin ONLY
               {
                 path: "admins",
-                element: <AdminAdminsPage />,
+                element: (
+                  <RequireSuperAdmin>
+                    <AdminAdminsPage />
+                  </RequireSuperAdmin>
+                ),
               },
               {
                 path: "admins/:adminId",
-                element: <AdminAdminDetailPage />,
+                element: (
+                  <RequireSuperAdmin>
+                    <AdminAdminDetailPage />
+                  </RequireSuperAdmin>
+                ),
               },
-              {
-                path: "applications",
-                element: <AdminApplicationsPage />,
-              },
+              // Officer Workload - requires view_analytics
               {
                 path: "workload",
-                element: <AdminWorkloadPage />,
+                element: (
+                  <RequirePermission permission="view_analytics">
+                    <AdminWorkloadPage />
+                  </RequirePermission>
+                ),
               },
+              // Loan Products - requires manage_system
               {
                 path: "products",
-                element: <AdminProductsPage />,
+                element: (
+                  <RequirePermission permission="manage_system">
+                    <AdminProductsPage />
+                  </RequirePermission>
+                ),
               },
+              // Audit Logs - requires view_logs
               {
                 path: "audit-logs",
-                element: <AdminAuditLogsPage />,
+                element: (
+                  <RequirePermission permission="view_logs">
+                    <AdminAuditLogsPage />
+                  </RequirePermission>
+                ),
               },
+              // Settings - All admins can access
               {
                 path: "settings",
                 element: <AdminSettingsPage />,

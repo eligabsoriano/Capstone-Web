@@ -33,22 +33,45 @@ interface NavItem {
   icon: React.ElementType;
   href: string;
   superAdminOnly?: boolean;
+  requiredPermission?: string;
 }
 
-// Simplified nav - no granular permissions, only superAdminOnly distinction
+// Nav items with permission-based visibility
+// Matches ADMIN_PERMISSIONS from backend:
+// 'create_loan_officer', 'manage_loan_officers', 'manage_users',
+// 'view_analytics', 'view_logs', 'manage_system'
 const navItems: NavItem[] = [
   { label: "Dashboard", icon: LayoutDashboard, href: "/admin" },
-  { label: "Loan Officers", icon: Users, href: "/admin/officers" },
+  {
+    label: "Loan Officers",
+    icon: Users,
+    href: "/admin/officers",
+    requiredPermission: "manage_loan_officers",
+  },
   {
     label: "Admins",
     icon: UserCog,
     href: "/admin/admins",
     superAdminOnly: true,
   },
-  // NOTE: "Applications" removed - Loan Officers handle applications, not admins
-  { label: "Officer Workload", icon: BarChart3, href: "/admin/workload" },
-  { label: "Loan Products", icon: Package, href: "/admin/products" },
-  { label: "Audit Logs", icon: FileText, href: "/admin/audit-logs" },
+  {
+    label: "Officer Workload",
+    icon: BarChart3,
+    href: "/admin/workload",
+    requiredPermission: "view_analytics",
+  },
+  {
+    label: "Loan Products",
+    icon: Package,
+    href: "/admin/products",
+    requiredPermission: "manage_system",
+  },
+  {
+    label: "Audit Logs",
+    icon: FileText,
+    href: "/admin/audit-logs",
+    requiredPermission: "view_logs",
+  },
   { label: "Settings", icon: Settings, href: "/admin/settings" },
 ];
 
@@ -60,14 +83,29 @@ export function AdminSidebar({
   const { user } = useAuthStore();
   const { handleLogout, isLoading: isLoggingOut } = useLogout();
 
-  // Simplified filter: Super Admin sees everything, regular Admin sees all except superAdminOnly
+  // Filter based on permissions
   const visibleNavItems = navItems.filter((item) => {
+    if (user?.role !== "admin") return false;
+
+    const adminUser = user as { superAdmin?: boolean; permissions?: string[] };
+
     // Super admin sees everything
-    if (user?.role === "admin" && "superAdmin" in user && user.superAdmin) {
+    if (adminUser.superAdmin) {
       return true;
     }
+
     // Regular admin: hide superAdminOnly items
-    return !item.superAdminOnly;
+    if (item.superAdminOnly) {
+      return false;
+    }
+
+    // Check permission-based access
+    if (item.requiredPermission) {
+      return adminUser.permissions?.includes(item.requiredPermission) ?? false;
+    }
+
+    // Items without requiredPermission are visible to all admins (Dashboard, Settings)
+    return true;
   });
 
   const handleNavClick = () => {
@@ -77,17 +115,15 @@ export function AdminSidebar({
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-sidebar">
       {/* Logo / Brand */}
-      <div className="h-16 flex items-center px-4 border-b border-sidebar-border">
+      <div className="h-16 flex items-center justify-center px-4 border-b border-sidebar-border">
         {!collapsed ? (
           <span className="text-lg font-semibold text-sidebar-foreground">
             MSME Portal
           </span>
         ) : (
-          <span className="text-lg font-bold text-sidebar-foreground mx-auto">
-            M
-          </span>
+          <span className="text-lg font-bold text-sidebar-foreground">M</span>
         )}
       </div>
 
@@ -117,7 +153,9 @@ export function AdminSidebar({
           if (collapsed) {
             return (
               <Tooltip key={item.href} delayDuration={0}>
-                <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
+                <TooltipTrigger asChild>
+                  <div className="relative">{linkContent}</div>
+                </TooltipTrigger>
                 <TooltipContent side="right">{item.label}</TooltipContent>
               </Tooltip>
             );

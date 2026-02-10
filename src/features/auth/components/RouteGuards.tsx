@@ -110,7 +110,7 @@ interface RequirePermissionProps {
 export function RequirePermission({
   permission,
   children,
-  fallbackPath = "/",
+  fallbackPath = "/admin",
 }: RequirePermissionProps) {
   const { isAdmin, hasPermission } = useAuth();
 
@@ -121,6 +121,37 @@ export function RequirePermission({
 
   // Check if user has the required permission
   if (!hasPermission(permission)) {
+    return <Navigate to={fallbackPath} replace />;
+  }
+
+  return children ? children : <Outlet />;
+}
+
+// ============================================================================
+// REQUIRE SUPER ADMIN - Only for super admins
+// ============================================================================
+
+interface RequireSuperAdminProps {
+  children?: React.ReactNode;
+  fallbackPath?: string;
+}
+
+/**
+ * Route guard that requires the user to be a super admin.
+ */
+export function RequireSuperAdmin({
+  children,
+  fallbackPath = "/admin",
+}: RequireSuperAdminProps) {
+  const { isSuperAdmin, isAdmin } = useAuth();
+
+  // Must be an admin
+  if (!isAdmin) {
+    return <Navigate to="/" replace />;
+  }
+
+  // Must be a super admin
+  if (!isSuperAdmin) {
     return <Navigate to={fallbackPath} replace />;
   }
 

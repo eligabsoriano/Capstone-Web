@@ -345,11 +345,11 @@
 | 2FA-001 | Enable 2FA | 1. Go to Settings <br> 2. Click "Enable 2FA" <br> 3. Scan QR code with authenticator app | QR code displayed, setup instructions shown | ✔️ |
 | 2FA-002 | Verify 2FA Setup | 1. Enable 2FA <br> 2. Enter 6-digit code from app <br> 3. Submit | 2FA enabled, backup codes displayed | ☐ |
 | 2FA-003 | 2FA Setup - Wrong Code | 1. Enable 2FA <br> 2. Enter wrong 6-digit code | Shows "Invalid code" error | ✔️ |
-| 2FA-004 | Login with 2FA | 1. Login with email/password (2FA enabled) <br> 2. Enter 2FA code | Successfully logged in | ⁉️ |
-| 2FA-005 | Login with 2FA - Wrong Code | 1. Login with email/password <br> 2. Enter wrong 2FA code | Shows "Invalid code" error | ⁉️ |
-| 2FA-006 | Login with Backup Code | 1. Login with email/password <br> 2. Click "Use backup code" <br> 3. Enter backup code | Successfully logged in, backup code consumed | ⁉️ |
-| 2FA-007 | Disable 2FA | 1. Go to Settings <br> 2. Click "Disable 2FA" <br> 3. Confirm action | 2FA disabled, login no longer requires code | ⁉️ |
-| 2FA-008 | Regenerate Backup Codes | 1. Go to Settings <br> 2. Click "Generate new backup codes" | Old codes invalidated, new codes shown | ⁉️ |
+| 2FA-004 | Login with 2FA | 1. Login with email/password (2FA enabled) <br> 2. Enter 2FA code | Successfully logged in | ✔️ |
+| 2FA-005 | Login with 2FA - Wrong Code | 1. Login with email/password <br> 2. Enter wrong 2FA code | Shows "Invalid code" error | ✔️ |
+| 2FA-006 | Login with Backup Code | 1. Login with email/password <br> 2. Click "Use backup code" <br> 3. Enter backup code | Successfully logged in, backup code consumed | ✔️ |
+| 2FA-007 | Disable 2FA | 1. Go to Settings <br> 2. Click "Disable 2FA" <br> 3. Confirm action | 2FA disabled, login no longer requires code | ✔️ |
+| 2FA-008 | Regenerate Backup Codes | 1. Go to Settings <br> 2. Click "Generate new backup codes" | Old codes invalidated, new codes shown | ✔️ |
 
 #### 1.3 Password Management
 
@@ -359,9 +359,9 @@
 | PWD-002 | Change Password - Wrong Current | 1. Go to Settings <br> 2. Enter wrong current password <br> 3. Enter new password | Shows "Current password incorrect" error | ✔️ |
 | PWD-003 | Change Password - Mismatch | 1. Go to Settings <br> 2. Enter different values for new and confirm | Shows "Passwords don't match" error | ✔️ |
 | PWD-004 | Change Password - Weak Password | 1. Go to Settings <br> 2. Enter password without special char | Shows password requirement errors "An error occurred. Please try again." | ✔️ |
-| PWD-005 | Request Password Reset | 1. Go to Login page <br> 2. Click "Forgot Password" <br> 3. Enter registered email | Shows "Reset link sent" message | ❌ |
-| PWD-006 | Reset Password - Valid Link | 1. Click reset link from email <br> 2. Enter new password <br> 3. Confirm | Password reset, redirects to login | ❌ |
-| PWD-007 | Reset Password - Expired Link | 1. Click expired reset link | Shows "Link expired" error | ❌ |
+| PWD-005 | Request Password Reset | 1. Go to Login page <br> 2. Click "Forgot Password" <br> 3. Enter registered email | Shows "Reset link sent" message | ✔️ |
+| PWD-006 | Reset Password - Valid Link | 1. Click reset link from email <br> 2. Enter new password <br> 3. Confirm | Password reset, redirects to login | ✔️ |
+| PWD-007 | Reset Password - Expired Link | 1. Click expired reset link | Shows "Link expired" error | ✔️ |
 
 ---
 

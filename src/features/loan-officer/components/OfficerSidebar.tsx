@@ -51,6 +51,7 @@ export function OfficerSidebar({
     },
     { label: "Documents", icon: FileText, href: "/officer/documents" },
     { label: "Payments", icon: CreditCard, href: "/officer/payments" },
+    { label: "Settings", icon: Settings, href: "/officer/settings" },
   ];
 
   const handleNavClick = () => {
@@ -62,15 +63,13 @@ export function OfficerSidebar({
   return (
     <div className="flex flex-col h-full bg-sidebar">
       {/* Logo / Brand */}
-      <div className="h-16 flex items-center px-4 border-b border-sidebar-border">
+      <div className="h-16 flex items-center justify-center px-4 border-b border-sidebar-border">
         {!collapsed ? (
           <span className="text-lg font-semibold text-sidebar-foreground">
-            🏦 Loan Portal
+            MSME Portal
           </span>
         ) : (
-          <span className="text-lg font-bold text-sidebar-foreground mx-auto">
-            🏦
-          </span>
+          <span className="text-lg font-bold text-sidebar-foreground">M</span>
         )}
       </div>
 
@@ -85,10 +84,9 @@ export function OfficerSidebar({
               onClick={handleNavClick}
               className={({ isActive }) =>
                 cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                  "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
                   "text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent",
-                  isActive &&
-                    "bg-sidebar-accent text-sidebar-foreground border border-sidebar-border",
+                  isActive && "bg-sidebar-accent text-sidebar-foreground",
                   collapsed && "justify-center px-2",
                 )
               }
@@ -128,45 +126,6 @@ export function OfficerSidebar({
 
       {/* Bottom Section */}
       <div className="border-t border-sidebar-border p-2 space-y-1">
-        {/* Settings */}
-        {collapsed ? (
-          <Tooltip delayDuration={0}>
-            <TooltipTrigger asChild>
-              <NavLink
-                to="/officer/settings"
-                onClick={handleNavClick}
-                className={({ isActive }) =>
-                  cn(
-                    "flex items-center justify-center px-2 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                    "text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent",
-                    isActive &&
-                      "bg-sidebar-accent text-sidebar-foreground border border-sidebar-border",
-                  )
-                }
-              >
-                <Settings className="h-5 w-5" />
-              </NavLink>
-            </TooltipTrigger>
-            <TooltipContent side="right">Settings</TooltipContent>
-          </Tooltip>
-        ) : (
-          <NavLink
-            to="/officer/settings"
-            onClick={handleNavClick}
-            className={({ isActive }) =>
-              cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                "text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent",
-                isActive &&
-                  "bg-sidebar-accent text-sidebar-foreground border border-sidebar-border",
-              )
-            }
-          >
-            <Settings className="h-5 w-5" />
-            <span>Settings</span>
-          </NavLink>
-        )}
-
         {/* Collapse Toggle (Desktop only) */}
         <div className="hidden lg:block">
           <Button
