@@ -3,6 +3,7 @@ import {
   ArrowLeft,
   Building,
   Calendar,
+  CheckCircle,
   Edit,
   Mail,
   Phone,
@@ -45,6 +46,7 @@ export function AdminOfficerDetailPage() {
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [showDeactivateConfirm, setShowDeactivateConfirm] = useState(false);
+  const [showActivateConfirm, setShowActivateConfirm] = useState(false);
 
   const { data: officer, isLoading, error } = useOfficerDetail(id || "");
   const updateMutation = useUpdateOfficer(id || "");
@@ -87,6 +89,16 @@ export function AdminOfficerDetailPage() {
       navigate("/admin/officers");
     } catch (err) {
       console.error("Failed to deactivate officer:", err);
+    }
+  };
+
+  const handleActivate = async () => {
+    if (!id) return;
+    try {
+      await updateMutation.mutateAsync({ active: true });
+      setShowActivateConfirm(false);
+    } catch (err) {
+      console.error("Failed to activate officer:", err);
     }
   };
 
@@ -357,8 +369,8 @@ export function AdminOfficerDetailPage() {
             </div>
           </div>
 
-          {/* Danger Zone */}
-          {officer.active && (
+          {/* Danger Zone or Activation */}
+          {officer.active ? (
             <div className="bg-card rounded-lg border border-destructive/20 p-4">
               <h3 className="font-semibold mb-3 text-destructive flex items-center gap-2">
                 <UserX className="h-4 w-4" />
@@ -373,6 +385,23 @@ export function AdminOfficerDetailPage() {
                 onClick={() => setShowDeactivateConfirm(true)}
               >
                 Deactivate Officer
+              </Button>
+            </div>
+          ) : (
+            <div className="bg-card rounded-lg border border-green-500/20 p-4">
+              <h3 className="font-semibold mb-3 text-green-600 flex items-center gap-2">
+                <CheckCircle className="h-4 w-4" />
+                Activate Officer
+              </h3>
+              <p className="text-sm text-muted-foreground mb-3">
+                Activating this officer will allow them to log in to the system.
+              </p>
+              <Button
+                variant="default"
+                className="w-full bg-green-600 hover:bg-green-700"
+                onClick={() => setShowActivateConfirm(true)}
+              >
+                Activate Officer
               </Button>
             </div>
           )}
@@ -410,6 +439,41 @@ export function AdminOfficerDetailPage() {
                 {deactivateMutation.isPending
                   ? "Deactivating..."
                   : "Deactivate"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Activate Confirmation Modal */}
+      {showActivateConfirm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-card rounded-lg border p-6 w-full max-w-md mx-4">
+            <h2 className="text-xl font-semibold mb-2">Confirm Activation</h2>
+            <p className="text-muted-foreground mb-4">
+              Are you sure you want to activate{" "}
+              <strong>{officer.full_name}</strong>? They will be able to log in
+              to the system.
+            </p>
+            {updateMutation.error && (
+              <p className="text-destructive text-sm mb-4">
+                Failed to activate. Please try again.
+              </p>
+            )}
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setShowActivateConfirm(false)}
+                disabled={updateMutation.isPending}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="bg-green-600 hover:bg-green-700"
+                onClick={handleActivate}
+                disabled={updateMutation.isPending}
+              >
+                {updateMutation.isPending ? "Activating..." : "Activate"}
               </Button>
             </div>
           </div>

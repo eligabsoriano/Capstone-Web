@@ -2,6 +2,7 @@ import {
   AlertCircle,
   ArrowLeft,
   Calendar,
+  CheckCircle,
   Edit,
   Key,
   KeyRound,
@@ -67,6 +68,7 @@ export function AdminAdminDetailPage() {
   const { user: currentUser } = useAuthStore();
   const [isEditing, setIsEditing] = useState(false);
   const [showDeactivateConfirm, setShowDeactivateConfirm] = useState(false);
+  const [showActivateConfirm, setShowActivateConfirm] = useState(false);
   const [showPromoteConfirm, setShowPromoteConfirm] = useState(false);
   const [isEditingPermissions, setIsEditingPermissions] = useState(false);
   const [editPermissions, setEditPermissions] = useState<string[]>([]);
@@ -113,6 +115,15 @@ export function AdminAdminDetailPage() {
       navigate("/admin/admins");
     } catch (err) {
       console.error("Failed to deactivate admin:", err);
+    }
+  };
+
+  const handleActivate = async () => {
+    try {
+      await updateMutation.mutateAsync({ active: true });
+      setShowActivateConfirm(false);
+    } catch (err) {
+      console.error("Failed to activate admin:", err);
     }
   };
 
@@ -518,24 +529,45 @@ export function AdminAdminDetailPage() {
             </div>
           )}
 
-          {/* Danger Zone */}
-          {admin.active && !isOwnAccount && (
-            <div className="bg-card rounded-lg border border-destructive/20 p-4">
-              <h3 className="font-semibold mb-3 text-destructive flex items-center gap-2">
-                <UserX className="h-4 w-4" />
-                Danger Zone
-              </h3>
-              <p className="text-sm text-muted-foreground mb-3">
-                Deactivating this admin will prevent them from logging in.
-              </p>
-              <Button
-                variant="destructive"
-                className="w-full"
-                onClick={() => setShowDeactivateConfirm(true)}
-              >
-                Deactivate Admin
-              </Button>
-            </div>
+          {/* Danger Zone / Activation */}
+          {!isOwnAccount && (
+            <>
+              {admin.active ? (
+                <div className="bg-card rounded-lg border border-destructive/20 p-4">
+                  <h3 className="font-semibold mb-3 text-destructive flex items-center gap-2">
+                    <UserX className="h-4 w-4" />
+                    Danger Zone
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Deactivating this admin will prevent them from logging in.
+                  </p>
+                  <Button
+                    variant="destructive"
+                    className="w-full"
+                    onClick={() => setShowDeactivateConfirm(true)}
+                  >
+                    Deactivate Admin
+                  </Button>
+                </div>
+              ) : (
+                <div className="bg-card rounded-lg border border-green-500/20 p-4">
+                  <h3 className="font-semibold mb-3 text-green-600 flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4" />
+                    Activate Admin
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Reactivate this admin to allow them to log in again.
+                  </p>
+                  <Button
+                    variant="outline"
+                    className="w-full border-green-500 text-green-600 hover:bg-green-50"
+                    onClick={() => setShowActivateConfirm(true)}
+                  >
+                    Activate Admin
+                  </Button>
+                </div>
+              )}
+            </>
           )}
 
           {isOwnAccount && (
@@ -579,6 +611,41 @@ export function AdminAdminDetailPage() {
                 {deactivateMutation.isPending
                   ? "Deactivating..."
                   : "Deactivate"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Activate Confirmation Modal */}
+      {showActivateConfirm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-card rounded-lg border p-6 w-full max-w-md mx-4">
+            <h2 className="text-xl font-semibold mb-2">Confirm Activation</h2>
+            <p className="text-muted-foreground mb-4">
+              Are you sure you want to activate{" "}
+              <strong>{admin.full_name}</strong>? They will be able to log in to
+              the system.
+            </p>
+            {updateMutation.error && (
+              <p className="text-destructive text-sm mb-4">
+                Failed to activate. Please try again.
+              </p>
+            )}
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setShowActivateConfirm(false)}
+                disabled={updateMutation.isPending}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="bg-green-600 hover:bg-green-700 text-white"
+                onClick={handleActivate}
+                disabled={updateMutation.isPending}
+              >
+                {updateMutation.isPending ? "Activating..." : "Activate"}
               </Button>
             </div>
           </div>

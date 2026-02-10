@@ -405,26 +405,26 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| USER-001 | List Officers | 1. Login as Admin <br> 2. Navigate to Loan Officers | Table displays officers with pagination | |
-| USER-002 | Search Officers - Name | 1. Type officer name in search box | Table filters to matching officers | ✔️ |
-| USER-003 | Search Officers - Email | 1. Type officer email in search box | Table filters to matching officers | ✔️ |
-| USER-004 | Search Officers - No Results | 1. Search for non-existent name | Shows "No officers found" message | ✔️ |
-| USER-005 | Filter - All | 1. Select "All" from filter dropdown | Shows both active and inactive officers | ✔️ |
-| USER-006 | Filter - Active | 1. Select "Active" from filter dropdown | Shows only active officers | ✔️ |
-| USER-007 | Filter - Inactive | 1. Select "Inactive" from filter dropdown | Shows only inactive officers | ✔️ |
-| USER-008 | Sort by Name (Asc) | 1. Click "Name" column header | Officers sorted A-Z by name | ❌ |
-| USER-009 | Sort by Name (Desc) | 1. Click "Name" column header twice | Officers sorted Z-A by name | ❌ |
-| USER-010 | Sort by Date | 1. Click "Date Created" column header | Officers sorted by creation date | ❌ |
-| USER-011 | Pagination - Next | 1. Click "Next" button | Shows next page of officers | ❌ |
-| USER-012 | Pagination - Previous | 1. Go to page 2 <br> 2. Click "Previous" | Shows previous page | ❌ |
-| USER-013 | Pagination - Direct | 1. Click page number button | Jumps to selected page | ❌ |
-| USER-014 | Create Officer - Valid | 1. Click "Add Officer" <br> 2. Fill all fields correctly <br> 3. Submit | Officer created, appears in list | ✔️ |
-| USER-015 | Create Officer - Duplicate Email | 1. Click "Add Officer" <br> 2. Enter existing email | Shows "Email already exists" error | ✔️ |
-| USER-016 | Create Officer - Invalid Email | 1. Click "Add Officer" <br> 2. Enter invalid email format | Shows email validation error | ✔️ |
-| USER-017 | Create Officer - Missing Required | 1. Click "Add Officer" <br> 2. Leave required fields empty <br> 3. Submit | Shows validation errors for each field | ✔️ |
-| USER-018 | Edit Officer | 1. Click edit icon on officer row <br> 2. Modify fields <br> 3. Save | Changes saved, reflected in list | ✔️ |
-| USER-019 | Deactivate Officer | 1. Click deactivate button on active officer <br> 2. Confirm | Officer status changes to inactive | ✔️ |
-| USER-020 | Activate Officer | 1. Click activate button on inactive officer | Officer status changes to active | ❌ |
+| USER-001 | List Officers | 1. Login as Admin <br> 2. Navigate to Loan Officers | Table displays officers with pagination | ✅ |
+| USER-002 | Search Officers - Name | 1. Type officer name in search box | Table filters to matching officers | ✅ |
+| USER-003 | Search Officers - Email | 1. Type officer email in search box | Table filters to matching officers | ✅ |
+| USER-004 | Search Officers - No Results | 1. Search for non-existent name | Shows "No officers found" message | ✅ |
+| USER-005 | Filter - All | 1. Select "All" from filter dropdown | Shows both active and inactive officers | ✅ |
+| USER-006 | Filter - Active | 1. Select "Active" from filter dropdown | Shows only active officers | ✅ |
+| USER-007 | Filter - Inactive | 1. Select "Inactive" from filter dropdown | Shows only inactive officers | ✅ |
+| USER-008 | Sort by Name (Asc) | 1. Click "Name" column header | Officers sorted A-Z by name | ✅ |
+| USER-009 | Sort by Name (Desc) | 1. Click "Name" column header twice | Officers sorted Z-A by name | ✅ |
+| USER-010 | Sort by Date | 1. Click "Date Created" column header | Officers sorted by creation date | ✅ |
+| USER-011 | Pagination - Next | 1. Click "Next" button | Shows next page of officers | ✅ |
+| USER-012 | Pagination - Previous | 1. Go to page 2 <br> 2. Click "Previous" | Shows previous page | ✅ |
+| USER-013 | Pagination - Direct | 1. Click page number button | Jumps to selected page | ✅ |
+| USER-014 | Create Officer - Valid | 1. Click "Add Officer" <br> 2. Fill all fields correctly <br> 3. Submit | Officer created, appears in list | ✅ |
+| USER-015 | Create Officer - Duplicate Email | 1. Click "Add Officer" <br> 2. Enter existing email | Shows "Email already exists" error | ✅ |
+| USER-016 | Create Officer - Invalid Email | 1. Click "Add Officer" <br> 2. Enter invalid email format | Shows email validation error | ✅ |
+| USER-017 | Create Officer - Missing Required | 1. Click "Add Officer" <br> 2. Leave required fields empty <br> 3. Submit | Shows validation errors for each field | ✅ |
+| USER-018 | Edit Officer | 1. Click edit icon on officer row <br> 2. Modify fields <br> 3. Save | Changes saved, reflected in list | ✅ |
+| USER-019 | Deactivate Officer | 1. Click deactivate button on active officer <br> 2. Confirm | Officer status changes to inactive | ✅ |
+| USER-020 | Activate Officer | 1. Click activate button on inactive officer | Officer status changes to active | ✅ |
 
 #### 3.2 Admin Management (Super Admin Only)
 

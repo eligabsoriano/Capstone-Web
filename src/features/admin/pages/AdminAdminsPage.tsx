@@ -1,5 +1,7 @@
 import {
   AlertCircle,
+  ArrowDown,
+  ArrowUp,
   ChevronLeft,
   ChevronRight,
   Eye,
@@ -62,6 +64,10 @@ export function AdminAdminsPage() {
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortBy, setSortBy] = useState<"full_name" | "email" | "created_at">(
+    "created_at",
+  );
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState<{
     open: boolean;
@@ -95,12 +101,25 @@ export function AdminAdminsPage() {
     setCurrentPage(1);
   };
 
+  // Handler for column sorting
+  const handleSort = (column: "full_name" | "email" | "created_at") => {
+    if (sortBy === column) {
+      // Toggle order if same column
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      // Set new column with ascending order
+      setSortBy(column);
+      setSortOrder("asc");
+    }
+    setCurrentPage(1);
+  };
+
   // Build search params for API
   const searchParams: AdminSearchParams = {
     page: currentPage,
     page_size: 20,
-    sort_by: "created_at",
-    sort_order: "desc",
+    sort_by: sortBy,
+    sort_order: sortOrder,
   };
 
   // Only add search if not empty
@@ -291,14 +310,50 @@ export function AdminAdminsPage() {
                   <th className="text-left py-3 px-4 font-medium text-muted-foreground">
                     Username
                   </th>
-                  <th className="text-left py-3 px-4 font-medium text-muted-foreground">
-                    Name
+                  <th
+                    className="text-left py-3 px-4 font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
+                    onClick={() => handleSort("full_name")}
+                  >
+                    <div className="flex items-center gap-1">
+                      Name
+                      {sortBy === "full_name" &&
+                        (sortOrder === "asc" ? (
+                          <ArrowUp className="h-4 w-4" />
+                        ) : (
+                          <ArrowDown className="h-4 w-4" />
+                        ))}
+                    </div>
                   </th>
-                  <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden sm:table-cell">
-                    Email
+                  <th
+                    className="text-left py-3 px-4 font-medium text-muted-foreground hidden sm:table-cell cursor-pointer hover:text-foreground transition-colors"
+                    onClick={() => handleSort("email")}
+                  >
+                    <div className="flex items-center gap-1">
+                      Email
+                      {sortBy === "email" &&
+                        (sortOrder === "asc" ? (
+                          <ArrowUp className="h-4 w-4" />
+                        ) : (
+                          <ArrowDown className="h-4 w-4" />
+                        ))}
+                    </div>
                   </th>
                   <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden md:table-cell">
                     Role
+                  </th>
+                  <th
+                    className="text-left py-3 px-4 font-medium text-muted-foreground hidden lg:table-cell cursor-pointer hover:text-foreground transition-colors"
+                    onClick={() => handleSort("created_at")}
+                  >
+                    <div className="flex items-center gap-1">
+                      Created
+                      {sortBy === "created_at" &&
+                        (sortOrder === "asc" ? (
+                          <ArrowUp className="h-4 w-4" />
+                        ) : (
+                          <ArrowDown className="h-4 w-4" />
+                        ))}
+                    </div>
                   </th>
                   <th className="text-left py-3 px-4 font-medium text-muted-foreground">
                     Status
@@ -334,6 +389,9 @@ export function AdminAdminsPage() {
                           Admin
                         </Badge>
                       )}
+                    </td>
+                    <td className="py-3 px-4 text-sm text-muted-foreground hidden lg:table-cell">
+                      {new Date(admin.created_at).toLocaleDateString()}
                     </td>
                     <td className="py-3 px-4">
                       <Badge variant={admin.active ? "default" : "secondary"}>
