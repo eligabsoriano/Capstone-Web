@@ -1,12 +1,15 @@
 import {
   AlertCircle,
   Calendar,
+  ChevronLeft,
+  ChevronRight,
   Clock,
   Download,
   FileText,
   Filter,
   Globe,
   RefreshCw,
+  Search as SearchIcon,
   User,
 } from "lucide-react";
 import { useState } from "react";
@@ -79,18 +82,34 @@ export function AdminAuditLogsPage() {
   const [actionFilter, setActionFilter] = useState<string | undefined>(
     undefined,
   );
-  const [limit, setLimit] = useState<number>(25);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
   const [dateFrom, setDateFrom] = useState<string>("");
   const [dateTo, setDateTo] = useState<string>("");
 
+  // Handler for search changes - resets page
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    setCurrentPage(1); // Reset to first page on search
+  };
+
+  // Handler for filter changes - resets page
+  const handleFilterChange = (value: string | undefined) => {
+    setActionFilter(value);
+    setCurrentPage(1);
+  };
+
   const { data, isLoading, error, refetch } = useAuditLogs({
     action: actionFilter,
-    limit,
+    page: currentPage,
+    page_size: 20,
     date_from: dateFrom || undefined,
     date_to: dateTo || undefined,
+    search: searchQuery || undefined,
   });
 
   const logs = data?.logs ?? [];
+  const totalPages = data?.total_pages ?? 1;
 
   const actionTypes = [
     { value: undefined, label: "All Actions" },
@@ -108,8 +127,6 @@ export function AdminAuditLogsPage() {
     { value: "payment_recorded", label: "Payment Recorded" },
     { value: "admin_action", label: "Admin Action" },
   ];
-
-  const limitOptions = [10, 25, 50, 100];
 
   const getActionBadgeVariant = (action: string) => {
     if (action.includes("approved") || action === "user_login")
@@ -192,6 +209,22 @@ export function AdminAuditLogsPage() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-4">
+            <div className="flex-1 min-w-[200px]">
+              <label
+                htmlFor="search"
+                className="text-sm text-muted-foreground mb-1 block flex items-center gap-1"
+              >
+                <SearchIcon className="h-3 w-3" />
+                Search
+              </label>
+              <Input
+                id="search"
+                placeholder="Search description, action, user..."
+                value={searchQuery}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                className="h-9"
+              />
+            </div>
             <div>
               <label
                 htmlFor="action-filter"
@@ -202,32 +235,14 @@ export function AdminAuditLogsPage() {
               <select
                 id="action-filter"
                 value={actionFilter ?? ""}
-                onChange={(e) => setActionFilter(e.target.value || undefined)}
+                onChange={(e) =>
+                  handleFilterChange(e.target.value || undefined)
+                }
                 className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm"
               >
                 {actionTypes.map((type) => (
                   <option key={type.label} value={type.value ?? ""}>
                     {type.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label
-                htmlFor="limit-filter"
-                className="text-sm text-muted-foreground mb-1 block"
-              >
-                Show
-              </label>
-              <select
-                id="limit-filter"
-                value={limit}
-                onChange={(e) => setLimit(Number(e.target.value))}
-                className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm"
-              >
-                {limitOptions.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt} entries
                   </option>
                 ))}
               </select>
@@ -244,7 +259,10 @@ export function AdminAuditLogsPage() {
                 id="date-from"
                 type="date"
                 value={dateFrom}
-                onChange={(e) => setDateFrom(e.target.value)}
+                onChange={(e) => {
+                  setDateFrom(e.target.value);
+                  setCurrentPage(1);
+                }}
                 className="h-9 w-[150px]"
               />
             </div>
@@ -260,7 +278,10 @@ export function AdminAuditLogsPage() {
                 id="date-to"
                 type="date"
                 value={dateTo}
-                onChange={(e) => setDateTo(e.target.value)}
+                onChange={(e) => {
+                  setDateTo(e.target.value);
+                  setCurrentPage(1);
+                }}
                 className="h-9 w-[150px]"
               />
             </div>
@@ -272,6 +293,7 @@ export function AdminAuditLogsPage() {
                   onClick={() => {
                     setDateFrom("");
                     setDateTo("");
+                    setCurrentPage(1);
                   }}
                 >
                   Clear Dates
@@ -372,6 +394,33 @@ export function AdminAuditLogsPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Pagination */}
+      {!isLoading && totalPages > 1 && (
+        <div className="flex justify-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+          >
+            <ChevronLeft className="h-4 w-4 mr-1" />
+            Previous
+          </Button>
+          <div className="flex items-center px-4 text-sm text-muted-foreground">
+            Page {currentPage} of {totalPages}
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+          >
+            Next
+            <ChevronRight className="h-4 w-4 ml-1" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

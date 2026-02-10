@@ -2,6 +2,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertCircle,
   CheckCircle,
+  ChevronLeft,
+  ChevronRight,
   Eye,
   FileText,
   Loader2,
@@ -40,18 +42,33 @@ export function OfficerDocumentsPage() {
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(
     null,
   );
   const [verifyModalOpen, setVerifyModalOpen] = useState(false);
   const [reuploadModalOpen, setReuploadModalOpen] = useState(false);
 
+  // Handler for search changes - resets page
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    setCurrentPage(1);
+  };
+
+  // Handler for filter changes - resets page
+  const handleFilterChange = (value: string) => {
+    setStatusFilter(value);
+    setCurrentPage(1);
+  };
+
   // Fetch documents
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["officer-documents", searchQuery],
+    queryKey: ["officer-documents", searchQuery, currentPage],
     queryFn: () =>
       getDocuments({
         search: searchQuery || undefined,
+        page: currentPage,
+        page_size: 20,
       }),
   });
 
@@ -99,6 +116,7 @@ export function OfficerDocumentsPage() {
   });
 
   const documents = data?.data?.documents ?? [];
+  const totalPages = data?.data?.total_pages ?? 1;
 
   // Backend handles search, frontend filters by status
   const filteredDocuments = documents.filter((doc) => {
@@ -212,7 +230,7 @@ export function OfficerDocumentsPage() {
         <div>
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+            onChange={(e) => handleFilterChange(e.target.value)}
             className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm"
           >
             <option value="all">All Documents</option>
@@ -226,7 +244,7 @@ export function OfficerDocumentsPage() {
           <Input
             placeholder="Search by filename, type, or customer..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className="pl-9"
           />
         </div>
@@ -358,6 +376,33 @@ export function OfficerDocumentsPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Pagination */}
+      {!isLoading && totalPages > 1 && (
+        <div className="flex justify-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+          >
+            <ChevronLeft className="h-4 w-4 mr-1" />
+            Previous
+          </Button>
+          <div className="flex items-center px-4 text-sm text-muted-foreground">
+            Page {currentPage} of {totalPages}
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+          >
+            Next
+            <ChevronRight className="h-4 w-4 ml-1" />
+          </Button>
+        </div>
+      )}
 
       {/* Modals */}
       {selectedDocument && (

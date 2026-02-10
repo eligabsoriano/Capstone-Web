@@ -47,9 +47,11 @@ export const adminQueryKeys = {
     [...adminQueryKeys.admins(), "detail", id] as const,
   auditLogs: (filters?: {
     action?: string;
-    limit?: number;
+    page?: number;
+    page_size?: number;
     date_from?: string;
     date_to?: string;
+    search?: string;
   }) => [...adminQueryKeys.all, "audit-logs", filters] as const,
   workload: () => [...adminQueryKeys.all, "workload"] as const,
 };
@@ -148,9 +150,11 @@ export function useDeactivateOfficer() {
 
 export function useAuditLogs(filters?: {
   action?: string;
-  limit?: number;
+  page?: number;
+  page_size?: number;
   date_from?: string;
   date_to?: string;
+  search?: string;
 }) {
   return useQuery({
     queryKey: adminQueryKeys.auditLogs(filters),

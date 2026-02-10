@@ -326,6 +326,9 @@ export interface AuditLog {
 export interface AuditLogsResponse {
   logs: AuditLog[];
   total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
 }
 
 // ============================================================================

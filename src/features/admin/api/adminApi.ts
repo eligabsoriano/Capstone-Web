@@ -127,12 +127,13 @@ export async function deactivateOfficer(
 // ============================================================================
 
 /**
- * Get audit logs
+ * Get audit logs with pagination
  * GET /api/analytics/audit-logs/
  */
 export async function getAuditLogs(params?: {
   action?: string;
-  limit?: number;
+  page?: number;
+  page_size?: number;
   date_from?: string;
   date_to?: string;
   search?: string;

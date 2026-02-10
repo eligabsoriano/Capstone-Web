@@ -55,13 +55,23 @@ export interface DocumentType {
 // ============================================================================
 
 /**
- * Get list of documents (optionally filtered by customer)
+ * Get list of documents (optionally filtered by customer) with pagination
  */
 export async function getDocuments(params?: {
   customer_id?: string;
   type?: string;
   search?: string;
-}): Promise<ApiResponse<{ documents: Document[]; total: number }>> {
+  page?: number;
+  page_size?: number;
+}): Promise<
+  ApiResponse<{
+    documents: Document[];
+    total: number;
+    page: number;
+    page_size: number;
+    total_pages: number;
+  }>
+> {
   const response = await apiClient.get("/api/documents/", {
     params,
   });
