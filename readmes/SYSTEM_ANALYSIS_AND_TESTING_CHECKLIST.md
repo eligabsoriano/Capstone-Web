@@ -327,41 +327,41 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| AUTH-001 | Admin Login - Valid | 1. Navigate to `/login` <br> 2. Select "Admin" role <br> 3. Enter valid credentials <br> 4. Click Login | Redirects to `/admin` dashboard | ☐ |
-| AUTH-002 | Admin Login - Invalid Password | 1. Navigate to `/login` <br> 2. Enter valid email, wrong password <br> 3. Click Login | Shows "Invalid credentials" error | ☐ |
-| AUTH-003 | Admin Login - Nonexistent Email | 1. Navigate to `/login` <br> 2. Enter non-registered email <br> 3. Click Login | Shows "Invalid credentials" error | ☐ |
-| AUTH-004 | Admin Login - Empty Fields | 1. Navigate to `/login` <br> 2. Click Login without entering data | Shows validation errors for required fields | ☐ |
-| AUTH-005 | Officer Login - Valid | 1. Navigate to `/login` <br> 2. Select "Loan Officer" role <br> 3. Enter valid credentials | Redirects to `/officer` dashboard | ☐ |
-| AUTH-006 | Officer Login - Deactivated Account | 1. Login with deactivated officer account | Shows "Account deactivated" error | ☐ |
-| AUTH-007 | Admin Logout | 1. Login as Admin <br> 2. Click profile dropdown <br> 3. Click Logout | Redirects to `/login`, clears session | ☐ |
-| AUTH-008 | Officer Logout | 1. Login as Officer <br> 2. Click profile dropdown <br> 3. Click Logout | Redirects to `/login`, clears session | ☐ |
-| AUTH-009 | Token Refresh | 1. Login <br> 2. Wait for access token to near expiry <br> 3. Make API request | Token auto-refreshes, request succeeds | ☐ |
-| AUTH-010 | Session Expiry | 1. Login <br> 2. Wait for refresh token to expire <br> 3. Make API request | Redirects to login page | ☐ |
+| AUTH-001 | Admin Login - Valid | 1. Navigate to `/login` <br> 2. Select "Admin" role <br> 3. Enter valid credentials <br> 4. Click Login | Redirects to `/admin` dashboard | ✔️ |
+| AUTH-002 | Admin Login - Invalid Password | 1. Navigate to `/login` <br> 2. Enter valid email, wrong password <br> 3. Click Login | Shows "Invalid credentials" error | ✔️ | 
+| AUTH-003 | Admin Login - Nonexistent Email | 1. Navigate to `/login` <br> 2. Enter non-registered email <br> 3. Click Login | Shows "Invalid credentials" error | ✔️ | 
+| AUTH-004 | Admin Login - Empty Fields | 1. Navigate to `/login` <br> 2. Click Login without entering data | Shows validation errors for required fields | ✔️ |
+| AUTH-005 | Officer Login - Valid | 1. Navigate to `/login` <br> 2. Select "Loan Officer" role <br> 3. Enter valid credentials | Redirects to `/officer` dashboard | ✔️ |
+| AUTH-006 | Officer Login - Deactivated Account | 1. Login with deactivated officer account | Shows "Account deactivated" error | ✔️ |
+| AUTH-007 | Admin Logout | 1. Login as Admin <br> 2. Click profile dropdown <br> 3. Click Logout | Redirects to `/login`, clears session | ✔️ |
+| AUTH-008 | Officer Logout | 1. Login as Officer <br> 2. Click profile dropdown <br> 3. Click Logout | Redirects to `/login`, clears session | ✔️ |
+| AUTH-009 | Token Refresh | 1. Login <br> 2. Wait for access token to near expiry <br> 3. Make API request | Token auto-refreshes, request succeeds | ✔️ |
+| AUTH-010 | Session Expiry | 1. Login <br> 2. Wait for refresh token to expire <br> 3. Make API request | Redirects to login page | ✔️ |
 
 #### 1.2 Two-Factor Authentication (2FA)
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| 2FA-001 | Enable 2FA | 1. Go to Settings <br> 2. Click "Enable 2FA" <br> 3. Scan QR code with authenticator app | QR code displayed, setup instructions shown | ☐ |
+| 2FA-001 | Enable 2FA | 1. Go to Settings <br> 2. Click "Enable 2FA" <br> 3. Scan QR code with authenticator app | QR code displayed, setup instructions shown | ✔️ |
 | 2FA-002 | Verify 2FA Setup | 1. Enable 2FA <br> 2. Enter 6-digit code from app <br> 3. Submit | 2FA enabled, backup codes displayed | ☐ |
-| 2FA-003 | 2FA Setup - Wrong Code | 1. Enable 2FA <br> 2. Enter wrong 6-digit code | Shows "Invalid code" error | ☐ |
-| 2FA-004 | Login with 2FA | 1. Login with email/password (2FA enabled) <br> 2. Enter 2FA code | Successfully logged in | ☐ |
-| 2FA-005 | Login with 2FA - Wrong Code | 1. Login with email/password <br> 2. Enter wrong 2FA code | Shows "Invalid code" error | ☐ |
-| 2FA-006 | Login with Backup Code | 1. Login with email/password <br> 2. Click "Use backup code" <br> 3. Enter backup code | Successfully logged in, backup code consumed | ☐ |
-| 2FA-007 | Disable 2FA | 1. Go to Settings <br> 2. Click "Disable 2FA" <br> 3. Confirm action | 2FA disabled, login no longer requires code | ☐ |
-| 2FA-008 | Regenerate Backup Codes | 1. Go to Settings <br> 2. Click "Generate new backup codes" | Old codes invalidated, new codes shown | ☐ |
+| 2FA-003 | 2FA Setup - Wrong Code | 1. Enable 2FA <br> 2. Enter wrong 6-digit code | Shows "Invalid code" error | ✔️ |
+| 2FA-004 | Login with 2FA | 1. Login with email/password (2FA enabled) <br> 2. Enter 2FA code | Successfully logged in | ⁉️ |
+| 2FA-005 | Login with 2FA - Wrong Code | 1. Login with email/password <br> 2. Enter wrong 2FA code | Shows "Invalid code" error | ⁉️ |
+| 2FA-006 | Login with Backup Code | 1. Login with email/password <br> 2. Click "Use backup code" <br> 3. Enter backup code | Successfully logged in, backup code consumed | ⁉️ |
+| 2FA-007 | Disable 2FA | 1. Go to Settings <br> 2. Click "Disable 2FA" <br> 3. Confirm action | 2FA disabled, login no longer requires code | ⁉️ |
+| 2FA-008 | Regenerate Backup Codes | 1. Go to Settings <br> 2. Click "Generate new backup codes" | Old codes invalidated, new codes shown | ⁉️ |
 
 #### 1.3 Password Management
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| PWD-001 | Change Password - Valid | 1. Go to Settings <br> 2. Enter current password <br> 3. Enter new password (meets requirements) <br> 4. Confirm new password | Password changed, success message | ☐ |
-| PWD-002 | Change Password - Wrong Current | 1. Go to Settings <br> 2. Enter wrong current password <br> 3. Enter new password | Shows "Current password incorrect" error | ☐ |
-| PWD-003 | Change Password - Mismatch | 1. Go to Settings <br> 2. Enter different values for new and confirm | Shows "Passwords don't match" error | ☐ |
-| PWD-004 | Change Password - Weak Password | 1. Go to Settings <br> 2. Enter password without special char | Shows password requirement errors | ☐ |
-| PWD-005 | Request Password Reset | 1. Go to Login page <br> 2. Click "Forgot Password" <br> 3. Enter registered email | Shows "Reset link sent" message | ☐ |
-| PWD-006 | Reset Password - Valid Link | 1. Click reset link from email <br> 2. Enter new password <br> 3. Confirm | Password reset, redirects to login | ☐ |
-| PWD-007 | Reset Password - Expired Link | 1. Click expired reset link | Shows "Link expired" error | ☐ |
+| PWD-001 | Change Password - Valid | 1. Go to Settings <br> 2. Enter current password <br> 3. Enter new password (meets requirements) <br> 4. Confirm new password | Password changed, success message | ✔️ |
+| PWD-002 | Change Password - Wrong Current | 1. Go to Settings <br> 2. Enter wrong current password <br> 3. Enter new password | Shows "Current password incorrect" error | ✔️ |
+| PWD-003 | Change Password - Mismatch | 1. Go to Settings <br> 2. Enter different values for new and confirm | Shows "Passwords don't match" error | ✔️ |
+| PWD-004 | Change Password - Weak Password | 1. Go to Settings <br> 2. Enter password without special char | Shows password requirement errors "An error occurred. Please try again." | ✔️ |
+| PWD-005 | Request Password Reset | 1. Go to Login page <br> 2. Click "Forgot Password" <br> 3. Enter registered email | Shows "Reset link sent" message | ❌ |
+| PWD-006 | Reset Password - Valid Link | 1. Click reset link from email <br> 2. Enter new password <br> 3. Confirm | Password reset, redirects to login | ❌ |
+| PWD-007 | Reset Password - Expired Link | 1. Click expired reset link | Shows "Link expired" error | ❌ |
 
 ---
 
@@ -371,80 +371,80 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| DASH-001 | Dashboard Stats Load | 1. Login as Admin <br> 2. View dashboard | Stats cards display user counts, loan stats | ☐ |
-| DASH-002 | Charts Render | 1. Login as Admin <br> 2. View dashboard charts | StatusBarChart and ProductsPieChart render correctly | ☐ |
-| DASH-003 | Recent Activity | 1. Login as Admin <br> 2. View recent activity section | Shows recent system activities | ☐ |
-| DASH-004 | Stats Accuracy | 1. Compare dashboard stats with actual database counts | Numbers match database records | ☐ |
+| DASH-001 | Dashboard Stats Load | 1. Login as Admin <br> 2. View dashboard | Stats cards display user counts, loan stats | ✔️ |
+| DASH-002 | Charts Render | 1. Login as Admin <br> 2. View dashboard charts | StatusBarChart and ProductsPieChart render correctly | ✔️ |
+| DASH-003 | Recent Activity | 1. Login as Admin <br> 2. View recent activity section | Shows recent system activities | ✔️ |
+| DASH-004 | Stats Accuracy | 1. Compare dashboard stats with actual database counts | Numbers match database records | ✔️ |
 
 #### 2.2 Officer Dashboard
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| DASH-005 | Officer Stats Load | 1. Login as Officer <br> 2. View dashboard | Shows assigned applications, pending reviews | ☐ |
-| DASH-006 | Today's Tasks | 1. Login as Officer <br> 2. View tasks section | Shows tasks due today | ☐ |
+| DASH-005 | Officer Stats Load | 1. Login as Officer <br> 2. View dashboard | Shows assigned applications, pending reviews | ✔️ |
+| DASH-006 | Today's Tasks | 1. Login as Officer <br> 2. View tasks section | Shows tasks due today | ✔️ |
 
 #### 2.3 Navigation & UI
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| NAV-001 | Sidebar Navigation | 1. Click each sidebar link | Navigates to correct page, active state shown | ☐ |
-| NAV-002 | Sidebar Collapse | 1. Click collapse button | Sidebar minimizes to icons only | ☐ |
-| NAV-003 | Sidebar Expand | 1. Collapse sidebar <br> 2. Click expand button | Sidebar expands to full width | ☐ |
-| NAV-004 | Breadcrumbs | 1. Navigate to nested page | Breadcrumbs show correct hierarchy | ☐ |
-| NAV-005 | Dark Mode Toggle | 1. Click theme toggle button | Theme switches, preference persisted | ☐ |
-| NAV-006 | Light Mode Toggle | 1. In dark mode, click theme toggle | Switches to light mode | ☐ |
-| NAV-007 | Profile Dropdown | 1. Click profile avatar | Shows dropdown with profile, settings, logout | ☐ |
-| NAV-008 | Mobile Responsive | 1. Resize to mobile width | Sidebar becomes hamburger menu | ☐ |
-| NAV-009 | Mobile Menu | 1. On mobile, click hamburger <br> 2. Click menu item | Menu opens, navigation works | ☐ |
+| NAV-001 | Sidebar Navigation | 1. Click each sidebar link | Navigates to correct page, active state shown | ✔️ |
+| NAV-002 | Sidebar Collapse | 1. Click collapse button | Sidebar minimizes to icons only | ✔️ |
+| NAV-003 | Sidebar Expand | 1. Collapse sidebar <br> 2. Click expand button | Sidebar expands to full width | ✔️ |
+| NAV-004 | Breadcrumbs | 1. Navigate to nested page | Breadcrumbs show correct hierarchy | ✔️ |
+| NAV-005 | Dark Mode Toggle | 1. Click theme toggle button | Theme switches, preference persisted | ✔️ |
+| NAV-006 | Light Mode Toggle | 1. In dark mode, click theme toggle | Switches to light mode | ✔️ |
+| NAV-007 | Profile Dropdown | 1. Click profile avatar | Shows dropdown with profile, settings, logout | ✔️ |
+| NAV-008 | Mobile Responsive | 1. Resize to mobile width | Sidebar becomes hamburger menu | ✔️ |
+| NAV-009 | Mobile Menu | 1. On mobile, click hamburger <br> 2. Click menu item | Menu opens, navigation works | ✔️ |
 
 ---
 
-### Module 3: User Management
+### Module 3: User Managementl
 
 #### 3.1 Loan Officer Management
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| USER-001 | List Officers | 1. Login as Admin <br> 2. Navigate to Loan Officers | Table displays officers with pagination | ☐ |
-| USER-002 | Search Officers - Name | 1. Type officer name in search box | Table filters to matching officers | ☐ |
-| USER-003 | Search Officers - Email | 1. Type officer email in search box | Table filters to matching officers | ☐ |
-| USER-004 | Search Officers - No Results | 1. Search for non-existent name | Shows "No officers found" message | ☐ |
-| USER-005 | Filter - All | 1. Select "All" from filter dropdown | Shows both active and inactive officers | ☐ |
-| USER-006 | Filter - Active | 1. Select "Active" from filter dropdown | Shows only active officers | ☐ |
-| USER-007 | Filter - Inactive | 1. Select "Inactive" from filter dropdown | Shows only inactive officers | ☐ |
-| USER-008 | Sort by Name (Asc) | 1. Click "Name" column header | Officers sorted A-Z by name | ☐ |
-| USER-009 | Sort by Name (Desc) | 1. Click "Name" column header twice | Officers sorted Z-A by name | ☐ |
-| USER-010 | Sort by Date | 1. Click "Date Created" column header | Officers sorted by creation date | ☐ |
-| USER-011 | Pagination - Next | 1. Click "Next" button | Shows next page of officers | ☐ |
-| USER-012 | Pagination - Previous | 1. Go to page 2 <br> 2. Click "Previous" | Shows previous page | ☐ |
-| USER-013 | Pagination - Direct | 1. Click page number button | Jumps to selected page | ☐ |
-| USER-014 | Create Officer - Valid | 1. Click "Add Officer" <br> 2. Fill all fields correctly <br> 3. Submit | Officer created, appears in list | ☐ |
-| USER-015 | Create Officer - Duplicate Email | 1. Click "Add Officer" <br> 2. Enter existing email | Shows "Email already exists" error | ☐ |
-| USER-016 | Create Officer - Invalid Email | 1. Click "Add Officer" <br> 2. Enter invalid email format | Shows email validation error | ☐ |
-| USER-017 | Create Officer - Missing Required | 1. Click "Add Officer" <br> 2. Leave required fields empty <br> 3. Submit | Shows validation errors for each field | ☐ |
-| USER-018 | Edit Officer | 1. Click edit icon on officer row <br> 2. Modify fields <br> 3. Save | Changes saved, reflected in list | ☐ |
-| USER-019 | Deactivate Officer | 1. Click deactivate button on active officer <br> 2. Confirm | Officer status changes to inactive | ☐ |
-| USER-020 | Activate Officer | 1. Click activate button on inactive officer | Officer status changes to active | ☐ |
+| USER-001 | List Officers | 1. Login as Admin <br> 2. Navigate to Loan Officers | Table displays officers with pagination | ✔️ |
+| USER-002 | Search Officers - Name | 1. Type officer name in search box | Table filters to matching officers | ✔️ |
+| USER-003 | Search Officers - Email | 1. Type officer email in search box | Table filters to matching officers | ✔️ |
+| USER-004 | Search Officers - No Results | 1. Search for non-existent name | Shows "No officers found" message | ✔️ |
+| USER-005 | Filter - All | 1. Select "All" from filter dropdown | Shows both active and inactive officers | ✔️ |
+| USER-006 | Filter - Active | 1. Select "Active" from filter dropdown | Shows only active officers | ✔️ |
+| USER-007 | Filter - Inactive | 1. Select "Inactive" from filter dropdown | Shows only inactive officers | ✔️ |
+| USER-008 | Sort by Name (Asc) | 1. Click "Name" column header | Officers sorted A-Z by name | ❌ |
+| USER-009 | Sort by Name (Desc) | 1. Click "Name" column header twice | Officers sorted Z-A by name | ❌ |
+| USER-010 | Sort by Date | 1. Click "Date Created" column header | Officers sorted by creation date | ❌ |
+| USER-011 | Pagination - Next | 1. Click "Next" button | Shows next page of officers | ❌ |
+| USER-012 | Pagination - Previous | 1. Go to page 2 <br> 2. Click "Previous" | Shows previous page | ❌ |
+| USER-013 | Pagination - Direct | 1. Click page number button | Jumps to selected page | ❌ |
+| USER-014 | Create Officer - Valid | 1. Click "Add Officer" <br> 2. Fill all fields correctly <br> 3. Submit | Officer created, appears in list | ✔️ |
+| USER-015 | Create Officer - Duplicate Email | 1. Click "Add Officer" <br> 2. Enter existing email | Shows "Email already exists" error | ✔️ |
+| USER-016 | Create Officer - Invalid Email | 1. Click "Add Officer" <br> 2. Enter invalid email format | Shows email validation error | ✔️ |
+| USER-017 | Create Officer - Missing Required | 1. Click "Add Officer" <br> 2. Leave required fields empty <br> 3. Submit | Shows validation errors for each field | ✔️ |
+| USER-018 | Edit Officer | 1. Click edit icon on officer row <br> 2. Modify fields <br> 3. Save | Changes saved, reflected in list | ✔️ |
+| USER-019 | Deactivate Officer | 1. Click deactivate button on active officer <br> 2. Confirm | Officer status changes to inactive | ✔️ |
+| USER-020 | Activate Officer | 1. Click activate button on inactive officer | Officer status changes to active | ❌ |
 
 #### 3.2 Admin Management (Super Admin Only)
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| USER-021 | Admins Link Visible (Super Admin) | 1. Login as Super Admin <br> 2. Check sidebar | "Admins" link visible in sidebar | ☐ |
-| USER-022 | Admins Link Hidden (Regular Admin) | 1. Login as Regular Admin <br> 2. Check sidebar | "Admins" link NOT visible | ☐ |
-| USER-023 | List Admins | 1. Login as Super Admin <br> 2. Navigate to Admins | Table displays admins with pagination | ☐ |
-| USER-024 | Create Admin - Valid | 1. Click "Add Admin" <br> 2. Fill all fields <br> 3. Set role (Admin/Super Admin) <br> 4. Submit | Admin created | ☐ |
-| USER-025 | Edit Admin | 1. Click edit on admin row <br> 2. Modify fields <br> 3. Save | Changes saved | ☐ |
-| USER-026 | Deactivate Admin | 1. Deactivate another admin | Admin deactivated | ☐ |
-| USER-027 | Cannot Deactivate Self | 1. Try to deactivate own account | Shows error or button disabled | ☐ |
+| USER-021 | Admins Link Visible (Super Admin) | 1. Login as Super Admin <br> 2. Check sidebar | "Admins" link visible in sidebar | ✔️ |
+| USER-022 | Admins Link Hidden (Regular Admin) | 1. Login as Regular Admin <br> 2. Check sidebar | "Admins" link NOT visible | ✔️ |
+| USER-023 | List Admins | 1. Login as Super Admin <br> 2. Navigate to Admins | Table displays admins with pagination | ❌ |
+| USER-024 | Create Admin - Valid | 1. Click "Add Admin" <br> 2. Fill all fields <br> 3. Set role (Admin/Super Admin) <br> 4. Submit | Admin created | ✔️ |
+| USER-025 | Edit Admin | 1. Click edit on admin row <br> 2. Modify fields <br> 3. Save | Changes saved | ✔️ |
+| USER-026 | Deactivate Admin | 1. Deactivate another admin | Admin deactivated | ✔️ |
+| USER-027 | Cannot Deactivate Self | 1. Try to deactivate own account | Shows error or button disabled | ✔️ |
 
 #### 3.3 Officer Workload
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| USER-028 | View Workload | 1. Navigate to Officer Workload | Shows officers with assigned application counts | ☐ |
-| USER-029 | Assign Application | 1. Select unassigned application <br> 2. Choose officer <br> 3. Assign | Application assigned, officer count increases | ☐ |
-| USER-030 | Reassign Application | 1. Select assigned application <br> 2. Choose different officer <br> 3. Reassign | Application moved to new officer | ☐ |
+| USER-028 | View Workload | 1. Navigate to Officer Workload | Shows officers with assigned application counts | ❌ |
+| USER-029 | Assign Application | 1. Select unassigned application <br> 2. Choose officer <br> 3. Assign | Application assigned, officer count increases | ❌ |
+| USER-030 | Reassign Application | 1. Select assigned application <br> 2. Choose different officer <br> 3. Reassign | Application moved to new officer | ❌ |
 
 ---
 
@@ -452,14 +452,14 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| PROD-001 | List Products | 1. Navigate to Loan Products | Table shows all products | ☐ |
-| PROD-002 | Create Product - Valid | 1. Click "Add Product" <br> 2. Fill name, interest rate, terms <br> 3. Save | Product created, appears in list | ☐ |
-| PROD-003 | Create Product - Duplicate Name | 1. Create product with existing name | Shows "Name already exists" error | ☐ |
-| PROD-004 | Create Product - Invalid Rate | 1. Enter negative interest rate | Shows validation error | ☐ |
-| PROD-005 | Edit Product | 1. Click edit on product row <br> 2. Modify fields <br> 3. Save | Changes saved | ☐ |
-| PROD-006 | Deactivate Product | 1. Click deactivate on active product | Product marked inactive | ☐ |
-| PROD-007 | Activate Product | 1. Click activate on inactive product | Product marked active | ☐ |
-| PROD-008 | Product in Use | 1. Try to delete product with active loans | Shows error or prevents deletion | ☐ |
+| PROD-001 | List Products | 1. Navigate to Loan Products | Table shows all products | ✔️ |
+| PROD-002 | Create Product - Valid | 1. Click "Add Product" <br> 2. Fill name, interest rate, terms <br> 3. Save | Product created, appears in list | ✔️ |
+| PROD-003 | Create Product - Duplicate Name | 1. Create product with existing name | Shows "Name already exists" error | ❌ |
+| PROD-004 | Create Product - Invalid Rate | 1. Enter negative interest rate | Shows validation error | ❌ |
+| PROD-005 | Edit Product | 1. Click edit on product row <br> 2. Modify fields <br> 3. Save | Changes saved | ✔️ |
+| PROD-006 | Deactivate Product | 1. Click deactivate on active product | Product marked inactive | ✔️ |
+| PROD-007 | Activate Product | 1. Click activate on inactive product | Product marked active | ✔️ |
+| PROD-008 | Product in Use | 1. Try to delete product with active loans | Shows error or prevents deletion | ✔️ |
 
 ---
 
@@ -469,10 +469,10 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| APP-001 | List All Applications | 1. Login as Admin <br> 2. Navigate to Applications | Shows all applications with pagination | ☐ |
-| APP-002 | Filter by Status | 1. Select status filter (Pending/Approved/Rejected) | Table filters accordingly | ☐ |
-| APP-003 | View Application Details | 1. Click on application row | Shows full application details | ☐ |
-| APP-004 | Assign to Officer | 1. Select unassigned application <br> 2. Click "Assign" <br> 3. Select officer | Application assigned to officer | ☐ |
+| APP-001 | List All Applications | 1. Login as Admin <br> 2. Navigate to Applications | Shows all applications with pagination | ✅ |
+| APP-002 | Filter by Status | 1. Select status filter (Pending/Approved/Rejected) | Table filters accordingly | ✅ |
+| APP-003 | View Application Details | 1. Click on application row | Shows full application details | ✅ |
+| APP-004 | Assign to Officer | 1. Select unassigned application <br> 2. Click "Assign" <br> 3. Select officer | Application assigned to officer | ❌ |
 
 #### 5.2 Officer Application Review
 
