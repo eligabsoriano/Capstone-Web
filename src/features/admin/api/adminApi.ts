@@ -135,6 +135,7 @@ export async function getAuditLogs(params?: {
   limit?: number;
   date_from?: string;
   date_to?: string;
+  search?: string;
 }): Promise<ApiResponse<AuditLogsResponse>> {
   // Filter out undefined values to ensure clean query params
   const cleanParams = params
@@ -158,12 +159,12 @@ export async function getAuditLogs(params?: {
  * Get officer workload stats
  * GET /api/loans/admin/officers/workload/
  */
-export async function getOfficerWorkload(): Promise<
-  ApiResponse<{ officers: OfficerWorkload[]; total: number }>
-> {
+export async function getOfficerWorkload(params?: {
+  search?: string;
+}): Promise<ApiResponse<{ officers: OfficerWorkload[]; total: number }>> {
   const response = await apiClient.get<
     ApiResponse<{ officers: OfficerWorkload[]; total: number }>
-  >("/api/loans/admin/officers/workload/");
+  >("/api/loans/admin/officers/workload/", { params });
   return response.data;
 }
 
@@ -196,6 +197,7 @@ export async function assignApplication(
  */
 export async function getProducts(params?: {
   active?: boolean;
+  search?: string;
 }): Promise<ApiResponse<{ products: LoanProduct[]; total: number }>> {
   const response = await apiClient.get<
     ApiResponse<{ products: LoanProduct[]; total: number }>

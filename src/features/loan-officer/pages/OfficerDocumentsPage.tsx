@@ -48,8 +48,11 @@ export function OfficerDocumentsPage() {
 
   // Fetch documents
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["officer-documents"],
-    queryFn: () => getDocuments(),
+    queryKey: ["officer-documents", searchQuery],
+    queryFn: () =>
+      getDocuments({
+        search: searchQuery || undefined,
+      }),
   });
 
   // Verify mutation
@@ -97,20 +100,9 @@ export function OfficerDocumentsPage() {
 
   const documents = data?.data?.documents ?? [];
 
-  // Filter documents
+  // Backend handles search, frontend filters by status
   const filteredDocuments = documents.filter((doc) => {
-    // Status filter
     if (statusFilter !== "all" && doc.status !== statusFilter) return false;
-
-    // Search filter
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      return (
-        doc.filename.toLowerCase().includes(query) ||
-        doc.document_type.toLowerCase().includes(query) ||
-        doc.customer_id.toLowerCase().includes(query)
-      );
-    }
     return true;
   });
 

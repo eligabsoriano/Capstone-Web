@@ -57,11 +57,13 @@ export interface DocumentType {
 /**
  * Get list of documents (optionally filtered by customer)
  */
-export async function getDocuments(
-  customerId?: string,
-): Promise<ApiResponse<{ documents: Document[]; total: number }>> {
+export async function getDocuments(params?: {
+  customer_id?: string;
+  type?: string;
+  search?: string;
+}): Promise<ApiResponse<{ documents: Document[]; total: number }>> {
   const response = await apiClient.get("/api/documents/", {
-    params: customerId ? { customer_id: customerId } : {},
+    params,
   });
   return response.data;
 }

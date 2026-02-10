@@ -405,7 +405,7 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| USER-001 | List Officers | 1. Login as Admin <br> 2. Navigate to Loan Officers | Table displays officers with pagination | ✔️ |
+| USER-001 | List Officers | 1. Login as Admin <br> 2. Navigate to Loan Officers | Table displays officers with pagination | |
 | USER-002 | Search Officers - Name | 1. Type officer name in search box | Table filters to matching officers | ✔️ |
 | USER-003 | Search Officers - Email | 1. Type officer email in search box | Table filters to matching officers | ✔️ |
 | USER-004 | Search Officers - No Results | 1. Search for non-existent name | Shows "No officers found" message | ✔️ |
