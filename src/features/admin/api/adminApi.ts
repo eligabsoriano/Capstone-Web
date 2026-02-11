@@ -19,6 +19,9 @@ import type {
   OfficerSearchParams,
   OfficersListResponse,
   OfficerWorkload,
+  PendingApplication,
+  ReassignApplicationRequest,
+  ReassignApplicationResponse,
   UpdateAdminRequest,
   UpdateOfficerRequest,
   UpdatePermissionsRequest,
@@ -157,15 +160,42 @@ export async function getAuditLogs(params?: {
 // ============================================================================
 
 /**
- * Get officer workload stats
+ * Get officer workload stats with pagination
  * GET /api/loans/admin/officers/workload/
  */
 export async function getOfficerWorkload(params?: {
   search?: string;
-}): Promise<ApiResponse<{ officers: OfficerWorkload[]; total: number }>> {
+  page?: number;
+  page_size?: number;
+}): Promise<
+  ApiResponse<{
+    officers: OfficerWorkload[];
+    total: number;
+    page: number;
+    page_size: number;
+    total_pages: number;
+    pending_applications?: PendingApplication[];
+    pending_count?: number;
+  }>
+> {
+  // Filter out undefined values
+  const cleanParams = params
+    ? Object.fromEntries(
+        Object.entries(params).filter(([_, value]) => value !== undefined),
+      )
+    : {};
+
   const response = await apiClient.get<
-    ApiResponse<{ officers: OfficerWorkload[]; total: number }>
-  >("/api/loans/admin/officers/workload/", { params });
+    ApiResponse<{
+      officers: OfficerWorkload[];
+      total: number;
+      page: number;
+      page_size: number;
+      total_pages: number;
+      pending_applications?: PendingApplication[];
+      pending_count?: number;
+    }>
+  >("/api/loans/admin/officers/workload/", { params: cleanParams });
   return response.data;
 }
 
@@ -185,6 +215,20 @@ export async function assignApplication(
     `/api/loans/admin/applications/${applicationId}/assign/`,
     data,
   );
+  return response.data;
+}
+
+/**
+ * Reassign application to a different officer
+ * POST /api/loans/admin/applications/:id/reassign/
+ */
+export async function reassignApplication(
+  applicationId: string,
+  data: ReassignApplicationRequest,
+): Promise<ApiResponse<ReassignApplicationResponse>> {
+  const response = await apiClient.post<
+    ApiResponse<ReassignApplicationResponse>
+  >(`/api/loans/admin/applications/${applicationId}/reassign/`, data);
   return response.data;
 }
 

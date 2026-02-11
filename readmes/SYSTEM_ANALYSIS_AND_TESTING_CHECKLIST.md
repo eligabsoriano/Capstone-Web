@@ -442,9 +442,9 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| USER-028 | View Workload | 1. Navigate to Officer Workload | Shows officers with assigned application counts | ❌ |
-| USER-029 | Assign Application | 1. Select unassigned application <br> 2. Choose officer <br> 3. Assign | Application assigned, officer count increases | ❌ |
-| USER-030 | Reassign Application | 1. Select assigned application <br> 2. Choose different officer <br> 3. Reassign | Application moved to new officer | ❌ |
+| USER-028 | View Workload | 1. Navigate to Officer Workload | Shows officers with assigned application counts | ✅ |
+| USER-029 | Assign Application | 1. Select unassigned application <br> 2. Choose officer <br> 3. Assign | Application assigned, officer count increases | ✅ |
+| USER-030 | Reassign Application | 1. Select assigned application <br> 2. Choose different officer <br> 3. Reassign | Application moved to new officer | ✅ |
 
 ---
 

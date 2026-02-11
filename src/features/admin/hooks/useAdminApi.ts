@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type {
   AdminSearchParams,
-  AssignApplicationRequest,
   CreateAdminRequest,
   CreateOfficerRequest,
   OfficerSearchParams,
@@ -10,7 +9,6 @@ import type {
   UpdatePermissionsRequest,
 } from "@/types/api";
 import {
-  assignApplication,
   createAdmin,
   createOfficer,
   deactivateAdmin,
@@ -21,7 +19,6 @@ import {
   getAuditLogs,
   getOfficerDetail,
   getOfficersList,
-  getOfficerWorkload,
   updateAdmin,
   updateAdminPermissions,
   updateOfficer,
@@ -164,46 +161,6 @@ export function useAuditLogs(filters?: {
         throw new Error(response.message || "Failed to fetch audit logs");
       }
       return response.data!;
-    },
-  });
-}
-
-// ============================================================================
-// WORKLOAD HOOK
-// ============================================================================
-
-export function useOfficerWorkload() {
-  return useQuery({
-    queryKey: adminQueryKeys.workload(),
-    queryFn: async () => {
-      const response = await getOfficerWorkload();
-      if (response.status === "error") {
-        throw new Error(response.message || "Failed to fetch workload");
-      }
-      return response.data!;
-    },
-  });
-}
-
-// ============================================================================
-// APPLICATION ASSIGNMENT HOOK
-// ============================================================================
-
-export function useAssignApplication() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({
-      applicationId,
-      data,
-    }: {
-      applicationId: string;
-      data: AssignApplicationRequest;
-    }) => assignApplication(applicationId, data),
-    onSuccess: () => {
-      // Invalidate relevant queries
-      queryClient.invalidateQueries({ queryKey: adminQueryKeys.workload() });
-      queryClient.invalidateQueries({ queryKey: adminQueryKeys.auditLogs() });
     },
   });
 }

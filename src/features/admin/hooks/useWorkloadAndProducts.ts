@@ -1,7 +1,14 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import type {
   AssignApplicationRequest,
   CreateProductRequest,
+  OfficerWorkloadParams,
+  ReassignApplicationRequest,
   UpdateProductRequest,
 } from "@/types/api";
 import {
@@ -10,6 +17,7 @@ import {
   deleteProduct,
   getOfficerWorkload,
   getProducts,
+  reassignApplication,
   updateProduct,
 } from "../api/adminApi";
 
@@ -17,13 +25,14 @@ import {
 // OFFICER WORKLOAD HOOKS
 // ============================================================================
 
-export function useOfficerWorkload() {
+export function useOfficerWorkload(params?: OfficerWorkloadParams) {
   return useQuery({
-    queryKey: ["admin", "workload"],
+    queryKey: ["admin", "workload", params],
     queryFn: async () => {
-      const response = await getOfficerWorkload();
+      const response = await getOfficerWorkload(params);
       return response.data;
     },
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -41,6 +50,26 @@ export function useAssignApplication() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "workload"] });
       queryClient.invalidateQueries({ queryKey: ["applications"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "audit-logs"] });
+    },
+  });
+}
+
+export function useReassignApplication() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      applicationId,
+      data,
+    }: {
+      applicationId: string;
+      data: ReassignApplicationRequest;
+    }) => reassignApplication(applicationId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "workload"] });
+      queryClient.invalidateQueries({ queryKey: ["applications"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "audit-logs"] });
     },
   });
 }
