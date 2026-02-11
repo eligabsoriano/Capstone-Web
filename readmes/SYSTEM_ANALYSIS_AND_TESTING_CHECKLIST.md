@@ -442,8 +442,8 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| USER-028 | View Workload | 1. Navigate to Officer Workload | Shows officers with assigned application counts | ❌ |
-| USER-029 | Assign Application | 1. Select unassigned application <br> 2. Choose officer <br> 3. Assign | Application assigned, officer count increases | ❌ |
+| USER-028 | View Workload | 1. Navigate to Officer Workload | Shows officers with assigned application counts | ✅ |
+| USER-029 | Assign Application | 1. Select unassigned application <br> 2. Choose officer <br> 3. Assign | Application assigned, officer count increases | ✅ |
 | USER-030 | Reassign Application | 1. Select assigned application <br> 2. Choose different officer <br> 3. Reassign | Application moved to new officer | ❌ |
 
 ---
@@ -499,14 +499,14 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status | Notes |
 |---------|-----------|-------|-----------------|--------|-------|
-| DOC-001 | List Documents | 1. Navigate to Documents page | Shows all documents with status badges | ❌ | Backend `/api/documents/` endpoint error: "Failed to load documents" |
-| DOC-002 | Filter by Type | 1. Select document type filter | Shows only selected type | ⚠️ | Blocked: API endpoint not working |
-| DOC-003 | Filter by Status | 1. Select status filter (Pending/Verified/Rejected) | Shows matching documents | ⚠️ | Blocked: No documents to filter |
-| DOC-004 | View Document | 1. Click on document row | Opens document preview | ⚠️ | Blocked: API endpoint not working |
-| DOC-005 | Verify Document | 1. Open pending document <br> 2. Review content <br> 3. Click "Verify" | Document status changes to Verified | ⚠️ | Blocked: No test data available |
-| DOC-006 | Reject Document | 1. Open pending document <br> 2. Click "Reject" <br> 3. Enter reason | Document status changes to Rejected, customer notified | ⚠️ | Blocked: No test data available |
-| DOC-007 | Request Re-upload | 1. Open document <br> 2. Click "Request Re-upload" <br> 3. Specify issue | Request sent to customer | ⚠️ | Blocked: No test data available |
-| DOC-008 | Document Status Badge | 1. View documents list | Status badges show correct colors (Pending=Yellow, Verified=Green, Rejected=Red) | ⚠️ | Blocked: API error prevents data load |
+| DOC-001 | List Documents | 1. Navigate to Documents page | Shows all documents with status badges | ✅ |
+| DOC-002 | Filter by Type | 1. Select document type filter | Shows only selected type | ✅ | 
+| DOC-003 | Filter by Status | 1. Select status filter (Pending/Verified/Rejected) | Shows matching documents | ✅ |
+| DOC-004 | View Document | 1. Click on document row | Opens document preview | ⚠️ |
+| DOC-005 | Verify Document | 1. Open pending document <br> 2. Review content <br> 3. Click "Verify" | Document status changes to Verified | ✅ |
+| DOC-006 | Reject Document | 1. Open pending document <br> 2. Click "Reject" <br> 3. Enter reason | Document status changes to Rejected, customer notified | ✅ | 
+| DOC-007 | Request Re-upload | 1. Open document <br> 2. Click "Request Re-upload" <br> 3. Specify issue | Request sent to customer | ⚠️ | 
+| DOC-008 | Document Status Badge | 1. View documents list | Status badges show correct colors (Pending=Yellow, Verified=Green, Rejected=Red) | ⚠️ | 
 
 ---
 
@@ -590,10 +590,10 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| PROF-001 | View Own Profile | 1. Click profile in header | Shows user profile page | ☐ |
-| PROF-002 | Update Profile | 1. Edit profile fields <br> 2. Save | Changes saved successfully | ☐ |
-| PROF-003 | View Customer Profile | 1. Open customer's loan application <br> 2. Click customer name | Shows customer profile details | ☐ |
-| PROF-004 | Business Profile | 1. View customer with business loan | Shows business details | ☐ |
+| PROF-001 | View Own Profile | 1. Click profile in header | Shows user profile page | ✔ |
+| PROF-002 | Update Profile | 1. Edit profile fields <br> 2. Save | Changes saved successfully | ✔ |
+| PROF-003 | View Customer Profile | 1. Open customer's loan application <br> 2. Click customer name | Shows customer profile details | ✔ |
+| PROF-004 | Business Profile | 1. View customer with business loan | Shows business details | ✔ |
 
 ---
 
@@ -601,12 +601,12 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| NOTIF-001 | Notification Bell | 1. View header | Shows notification bell with count badge | ☐ |
-| NOTIF-002 | View Notifications | 1. Click notification bell | Shows notification dropdown/list | ☐ |
-| NOTIF-003 | Mark as Read | 1. Click on notification | Notification marked as read, badge decreases | ☐ |
-| NOTIF-004 | Mark All Read | 1. Click "Mark all as read" | All notifications marked as read | ☐ |
-| NOTIF-005 | Real-time Update | 1. Have another user trigger notification <br> 2. Observe | New notification appears without refresh | ☐ |
-| NOTIF-006 | Notification Link | 1. Click notification with action | Navigates to relevant page | ☐ |
+| NOTIF-001 | Notification Bell | 1. View header | Shows notification bell with count badge | ⁉️ |
+| NOTIF-002 | View Notifications | 1. Click notification bell | Shows notification dropdown/list | ⁉️ |
+| NOTIF-003 | Mark as Read | 1. Click on notification | Notification marked as read, badge decreases | ⁉️ |
+| NOTIF-004 | Mark All Read | 1. Click "Mark all as read" | All notifications marked as read | ⁉️ |
+| NOTIF-005 | Real-time Update | 1. Have another user trigger notification <br> 2. Observe | New notification appears without refresh | ⁉️ |
+| NOTIF-006 | Notification Link | 1. Click notification with action | Navigates to relevant page | ⁉️ |
 
 ---
 
