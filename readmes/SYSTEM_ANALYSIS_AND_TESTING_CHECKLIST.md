@@ -452,14 +452,14 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| PROD-001 | List Products | 1. Navigate to Loan Products | Table shows all products | ✔️ |
-| PROD-002 | Create Product - Valid | 1. Click "Add Product" <br> 2. Fill name, interest rate, terms <br> 3. Save | Product created, appears in list | ✔️ |
-| PROD-003 | Create Product - Duplicate Name | 1. Create product with existing name | Shows "Name already exists" error | ❌ |
-| PROD-004 | Create Product - Invalid Rate | 1. Enter negative interest rate | Shows validation error | ❌ |
-| PROD-005 | Edit Product | 1. Click edit on product row <br> 2. Modify fields <br> 3. Save | Changes saved | ✔️ |
-| PROD-006 | Deactivate Product | 1. Click deactivate on active product | Product marked inactive | ✔️ |
-| PROD-007 | Activate Product | 1. Click activate on inactive product | Product marked active | ✔️ |
-| PROD-008 | Product in Use | 1. Try to delete product with active loans | Shows error or prevents deletion | ✔️ |
+| PROD-001 | List Products | 1. Navigate to Loan Products | Table shows all products | ✅ |
+| PROD-002 | Create Product - Valid | 1. Click "Add Product" <br> 2. Fill name, interest rate, terms <br> 3. Save | Product created, appears in list | ✅ |
+| PROD-003 | Create Product - Duplicate Name | 1. Create product with existing name | Shows "Name already exists" error | ✅ |
+| PROD-004 | Create Product - Invalid Rate | 1. Enter negative interest rate | Shows validation error | ✅ |
+| PROD-005 | Edit Product | 1. Click edit on product row <br> 2. Modify fields <br> 3. Save | Changes saved | ✅ |
+| PROD-006 | Deactivate Product | 1. Click deactivate on active product | Product marked inactive | ✅ |
+| PROD-007 | Activate Product | 1. Click activate on inactive product | Product marked active | ✅ |
+| PROD-008 | Product in Use | 1. Try to delete product with active loans | Shows error or prevents deletion | ✅ |
 
 ---
 
