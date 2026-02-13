@@ -1,0 +1,154 @@
+﻿UPANG-FA.pdf 
+
+MSME PATHWAYS: SMART LOAN SUPPORT
+FOR THE INFORMAL SECTOR
+
+
+
+
+
+
+A Capstone Project Presented to the Faculty of the
+College of Information Technology Education
+PHINMA - University of Pangasinan
+
+
+
+
+In Partial Fulfillment 
+of the Requirements for the Degree
+BACHELOR OF SCIENCE IN INFORMATION TECHNOLOGY
+
+
+
+
+by
+JUSTIN MC NEAL GONZALES CARONONGAN
+ELI GABRIEL TAMONDONG SORIANO
+JOHN LLOYD PIMENTEL 
+FENIEL BARTE
+JOSHUA CO
+
+
+March 2026
+Chapter 2
+METHODOLOGY
+This chapter discusses the methodology employed in the development of the proposed system, MSME Pathways: Smart Loan Support for the Informal Sector. It presents the development methodology, system architecture overview, tools and technologies used, population and locale of the study, data gathering techniques, sources of data, treatment of data, and ethical considerations.
+
+
+Development Methodology
+This section discusses the development methodology used in the study, including the selected software development model and the phases involved in system development, along with their corresponding deliverables.
+Software Development Model. The study will employ the Agile Software Development Model using the Scrum approach. Scrum is applied to support incremental delivery through short development cycles, enabling the research team to prioritize features, validate requirements, and continuously improve system components based on stakeholder feedback. This model is suitable for MSME Pathways because the proposed system includes complex and interdependent features such as AI-enabled guidance and profiling, as well as blockchain-based transaction integrity mechanisms, which require iterative refinement and staged integration.
+The Scrum approach is appropriate for the scope of the project because it encourages frequent feedback and progressive enhancement of the system’s functionality and usability. In the context of informal-sector microentrepreneurs, user needs and constraints (e.g., limited time, varying digital literacy, and practical concerns during lending interactions) are best addressed through repeated validation of interface design, content clarity, and guidance accuracy. Scrum also supports risk reduction by enabling early testing of high-impact modules such as the AI chatbot and profiling logic, and by allowing blockchain components to be integrated and verified gradually to ensure system stability and reliability.
+
+
+ Figure 1 presents the software development model adopted in the study, illustrating the flow of activities involved in system development.
+Figure 1 
+Phases of Scrum 
+Image goes here. All images will be applied with thin, gray border[a]
+Planning. This phase focuses on identifying system requirements, defining project objectives, and preparing the overall plan for system development. Key activities include requirements elicitation, initial backlog preparation, and scoping of AI and blockchain components based on feasibility and project constraints. The deliverables include the Project Proposal, Requirements Specification, and initial Development Plan. 
+Design. This phase involves translating requirements into an organized system structure and user interface concept. The activities include drafting user flows for microentrepreneurs and loan officers, defining data structures for profiling and loan readiness assessment, and outlining the high-level architecture to support secure data handling and blockchain logging. The deliverables include Wireframes, Architecture Diagrams, and design documentation for the mobile application and web dashboard.
+Development. This phase covers the implementation of prioritized features based on sprint objectives. Development activities include building the mobile application interfaces, implementing backend services and APIs, developing AI-enabled modules for chatbot guidance and profiling support, and integrating blockchain smart contracts for transaction integrity. The deliverables include Source Code, configured APIs, AI model artifacts (as applicable), and smart contract implementations.
+Testing. This phase ensures that the developed features meet functional and usability requirements. It includes unit checking of modules, verification of API responses, validation of data handling, and usability evaluation involving representative users. The deliverables include Test Cases, Bug/Issue Logs, and User Acceptance Testing (UAT) Forms used to document feedback and confirm readiness for prototype use.
+Deployment. This phase focuses on preparing the system for controlled release and demonstration. Activities include environment configuration, deployment of the backend services and database connectivity, and ensuring that the mobile and web interfaces function correctly within the intended setting. The deliverables include a deployed Prototype Build, basic User Guide/Manual, and deployment documentation supporting demonstration and evaluation activities.
+
+
+System Architecture Overview
+The proposed system follows a three-tier architecture consisting of the presentation layer, application layer, and data layer. This architecture supports organized separation of concerns, allowing user interaction components, processing logic, and data services to function cohesively while maintaining scalability and maintainability for the prototype implementation.
+        Presentation Layer. The presentation layer consists of the mobile application developed using Flutter and a web dashboard intended for loan officers and authorized personnel. The mobile application serves as the primary interface for informal-sector microentrepreneurs, enabling access to loan guidance, basic profiling inputs, and loan readiness interactions. The web dashboard supports monitoring and review tasks that require administrative visibility, such as viewing submitted profiles and summarizing user interactions for evaluation purposes.
+        Application Layer. The application layer is implemented using Python Django, which manages the core system logic and processing. This layer handles authentication and access controls, validates and processes user inputs, delivers AI-supported guidance and profiling responses, and coordinates blockchain interactions. It serves as the central integration point where AI modules (chatbot and profiling) and blockchain services (smart contract logging for transaction integrity) are orchestrated through standardized endpoints and controlled processing rules.
+        Data Layer. The data layer consists of MongoDB Atlas for centralized storage of system records and the Ethereum network for blockchain-based smart contract execution. MongoDB Atlas stores user profiles, interaction records, and structured system data that require flexible schema support for informal-sector user information. The Ethereum network stores smart contract outputs that serve as immutable references for transaction integrity, ensuring that critical logs (e.g., transaction hashes and verification markers) remain tamper-resistant and auditable. Sensitive personal data are retained off-chain, while the blockchain is used for integrity-preserving references appropriate for a secure prototype design.
+Figure 2
+Three Tier Architecture
+Image goes here. All images will be applied with thin, gray border[b]
+Tools and Technologies Used
+The development of the proposed system will utilize the following tools and technologies:
+Programming Languages. Python will be used to implement backend processing, API logic, data validation, and server-side integration for AI and blockchain services through the Django framework. Dart will be used to develop the Flutter-based mobile application, enabling a consistent interface for Android and iOS deployment while supporting usability requirements for informal-sector users. Solidity will be used to develop Ethereum smart contracts that record integrity-related transaction references and support tamper-resistant logging for selected system events.
+Frameworks or Libraries. Django will serve as the primary backend framework to develop RESTful services, manage user authentication and authorization, and enforce essential validation rules required for reliable data handling. Flutter will serve as the cross-platform mobile interface, which supports accessible and user-centered navigation for microentrepreneurs who may have varying levels of digital literacy. Scikit-learn/TensorFlow will serve for AI-based profiling and decision-support features, enabling the analysis of user-provided indicators and interaction patterns that contribute to loan readiness guidance. Finally, Web3.py is integrated to enable secure interaction between the Django backend and the Ethereum network, specifically by supporting smart contract calls and the retrieval of blockchain transaction references.
+Database. MongoDB Atlas will be used as a cloud-based NoSQL database to store user profiles, application records, and interaction data. Its flexible data structure supports the variability of informal-sector information while enabling secure cloud-hosted access for the prototype environment.
+Tools. For the development workflow, the primary integrated development environment is Visual Studio Code (VS Code), which is used for writing, debugging, and managing the codebase across the mobile, backend, AI, and smart contract components. Git/GitHub is essential for version control, collaborative development, and maintaining the traceability of revisions across iterative Scrum sprints. Finally, Insomnia is utilized for API testing and verification of backend endpoints, which supports the early detection of integration issues between the mobile application, web dashboard, and backend services.[c]
+
+
+Population and Locale of Study
+The population of the study consists of informal-sector microentrepreneurs in Dagupan City, particularly sari-sari store owners and market vendors, who serve as the primary intended users and evaluators of the proposed mobile application. These respondents are selected because they directly represent the target beneficiaries of the system’s loan guidance and profiling support, and their inputs are essential in assessing usability, clarity of guidance, and relevance of system features within real-world informal business contexts.
+In addition, selected loan officers or lending personnel serve as supporting respondents, particularly for evaluating the usefulness of dashboard-based monitoring features and the practicality of profiling outputs for ethical pre-screening support. This additional group contributes professional insights into how the system’s outputs may align with preliminary lending workflows without performing actual loan approval or disbursement within the prototype scope.
+The locale of the study is PHINMA–University of Pangasinan and selected barangays in Dagupan City. System development, configuration, and controlled testing activities are conducted within the academic environment of PHINMA–University of Pangasinan, while needs assessment and usability-related feedback are gathered from selected barangays where informal-sector microentrepreneurs conduct regular business activities.[d]
+
+
+Data Gathering Techniques
+Data gathering techniques play a crucial role in the study as they provide the necessary information needed for system development and evaluation. The selected techniques are intended to capture both user requirements and usability feedback to ensure that the proposed solution aligns with the practical needs of informal-sector microentrepreneurs and the functional expectations of loan officers.
+
+
+Interviews. Interviews are conducted with informal-sector microentrepreneurs to obtain direct insights into their borrowing habits, loan-related concerns, and common challenges experienced during loan inquiries and informal lending practices. This technique supports the identification of pain points that the system must address, such as confusion on loan terms, fear of rejection, lack of documentation, and limited awareness of safer lending options.
+
+
+Survey Questionnaires. Survey questionnaires are administered using Google Forms to collect structured feedback from respondents regarding the usability, clarity, and perceived usefulness of the mobile application. The questionnaire focuses on user experience indicators such as ease of navigation, understandability of financial guidance content, and overall satisfaction with the proposed features.
+
+
+Observation. Observation is conducted to understand the current manual lending-related practices and informal borrowing processes within the target community. Through observation, the researchers document typical workflows, information exchange patterns, and constraints that influence how microentrepreneurs seek financial support, which helps ensure that the system design remains realistic and context-appropriate.[e]
+
+
+
+
+Sources of Data
+Data is a critical component of the study because the accuracy of system design decisions and evaluation outcomes depends on the quality and relevance of collected information. To ensure that the proposed system is grounded in actual user needs and lending-related realities, data are obtained from both primary and secondary sources. 
+
+
+Primary Sources. The primary sources of data include informal-sector microentrepreneurs and loan officers. Microentrepreneurs provide requirement-based inputs and usability feedback related to loan guidance, profiling questions, and user interface accessibility. Loan officers provide insights regarding the usefulness and interpretability of profiling outputs and monitoring features within a pre-screening support context.
+
+
+Secondary Sources. Secondary data are obtained from existing studies and references related to microfinance, digital financial inclusion, and alternative data-based profiling. This includes relevant Bangko Sentral ng Pilipinas (BSP) reports and materials that describe financial inclusion conditions, as well as sample loan application forms and lending-related documents used as references for identifying common borrower data requirements and typical evaluation criteria.
+
+
+And so on… The table formatting should follow the
+design given below.
+The table shows the total number of respondents of
+this study.
+
+
+Table 1
+Respondents of the Study
+
+
+Position No. of Respondents
+
+
+Alumni Officer-In-Charge 1
+College Deans 5[f]
+
+
+Treatment of Data
+The treatment of data describes how the information gathered in the study is handled after collection to ensure accuracy, consistency, and data security throughout the project. The procedures outlined in this section guide the collection, processing, analysis, and storage of data produced through system use and evaluation activities.
+
+
+Data Collection. Data are collected through structured inputs captured within the mobile application, including user registration details, business profile entries, and loan-related queries submitted during interaction with the system. Additional evaluation data are gathered through interview notes, survey questionnaire responses, and documented observations of existing lending-related practices.
+
+
+Data Processing. The collected data are cleaned and validated to ensure completeness and consistency prior to use in system processing and evaluation. Input validation and format checking are implemented using Django’s validation framework to reduce inconsistent entries and improve reliability of stored records. Inconsistent inputs, such as variations in date formats or incomplete field submissions, are normalized through defined validation rules and controlled input constraints to maintain standardized data representation.
+
+
+Data Analysis. Descriptive analysis is applied to summarize user feedback collected from survey questionnaires and usability-related responses. The results support refinement of interface design, content clarity, and feature prioritization. In addition, AI algorithms are applied to analyze user-provided indicators and interaction patterns for profiling support, producing guidance-oriented outputs intended to inform users about loan readiness and responsible borrowing considerations within the prototype scope.
+
+
+Data Storage and Backups. Collected data are stored in MongoDB Atlas using security controls appropriate for prototype implementation, including encryption in transit and at rest and role-based access restrictions to limit viewing and management of records to authorized users only. To prevent data loss while the application is in use, the database is configured under MongoDB Atlas’ high-availability setup (replication with automatic failover), ensuring continuity of stored records even if a node becomes unavailable. In addition, automated scheduled backups (snapshots) are enabled to provide restorable copies of the database in cases of accidental deletion, corruption, or operational failure, with backup access restricted to designated administrator accounts and recovery procedures validated through controlled restoration checks. For transaction integrity and auditability, immutable references such as hashes and transaction identifiers are recorded through Ethereum smart contracts, allowing critical verification logs to remain tamper-resistant even when database restoration is performed.[g]
+
+
+Ethical Considerations
+        Ethical considerations guide the development and implementation of the proposed system to ensure responsible use of technology, protection of user data, and inclusivity for informal-sector users. The study emphasizes secure handling of information, fair system behavior, and transparent communication of system purpose and limitations, particularly because the proposed application involves user profiling and guidance that may influence financial decision-making.
+
+
+        Security and Privacy of Data. The study implements security measures to protect sensitive information collected from microentrepreneurs and loan officers. These measures include encryption of stored records, hashing of passwords, and strict access control protocols that limit data visibility based on user roles. Data captured through interviews and surveys are handled confidentially, and only aggregated or non-identifying summaries are used in reporting to prevent exposure of personal or business-sensitive details.
+
+
+Fair and Inclusive Design. The AI profiling component is designed to support inclusive and ethical guidance for unbanked and underserved users. Profiling outputs are treated as decision-support indicators rather than deterministic judgments, and the system is structured to avoid discriminatory assumptions that could disadvantage users with limited formal records. The study emphasizes the use of relevant and explainable indicators and supports iterative review of profiling logic to minimize bias risks and improve fairness for diverse informal-sector contexts.
+
+
+Transparency of Information. Transparency is maintained by informing users about the purpose, scope, and limitations of the system. Users are clearly informed that the “Smart Loan Support” features provide educational guidance and readiness support and do not serve as a guarantee of loan approval, bank endorsement, or actual loan disbursement. The system’s outputs are presented as recommendations intended to promote responsible borrowing decisions and clearer understanding of loan concepts, thereby managing expectations and supporting ethical use of technology in a lending-related context.
+          
+[a]image
+[b]image
+[c]baka may nakalimutan akong techstack here
+[d]hmm idk about this shit
+[e]hmmmm
+[f]di ko alam to
+[g]hohohooh
