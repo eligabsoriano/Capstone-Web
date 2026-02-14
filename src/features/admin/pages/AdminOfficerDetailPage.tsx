@@ -86,7 +86,7 @@ export function AdminOfficerDetailPage() {
     try {
       await deactivateMutation.mutateAsync(id);
       setShowDeactivateConfirm(false);
-      navigate("/admin/officers");
+      // Removed navigate - stay on the page to see the updated status
     } catch (err) {
       console.error("Failed to deactivate officer:", err);
     }

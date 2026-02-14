@@ -167,8 +167,28 @@ export function AdminOfficersPage() {
         });
         setFormErrors({});
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to create officer:", err);
+
+      // Extract error details from API response
+      // Axios wraps the response in error.response.data
+      const apiResponse = err?.response?.data;
+
+      if (apiResponse?.errors) {
+        // Backend returned field-specific errors (e.g., {email: "Email already exists"})
+        setFormErrors(apiResponse.errors);
+      } else if (apiResponse?.message) {
+        // Backend returned a general error message (e.g., "A loan officer with this email already exists")
+        setFormErrors({ general: apiResponse.message });
+      } else if (err?.message) {
+        // Network or other error
+        setFormErrors({ general: err.message });
+      } else {
+        // Fallback error
+        setFormErrors({
+          general: "Failed to create officer. Please try again.",
+        });
+      }
     }
   };
 
@@ -553,9 +573,9 @@ export function AdminOfficersPage() {
                 </Select>
               </div>
             </div>
-            {createOfficerMutation.error && (
+            {formErrors.general && (
               <p className="text-destructive text-sm mt-4">
-                Failed to create officer. Please try again.
+                {formErrors.general}
               </p>
             )}
             <div className="flex justify-end gap-2 mt-6">

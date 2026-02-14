@@ -360,9 +360,32 @@ export interface AssignApplicationResponse {
   status: string;
 }
 
+export interface ReassignApplicationRequest {
+  officer_id: string;
+}
+
+export interface ReassignApplicationResponse {
+  application_id: string;
+  assigned_officer: string;
+  officer_name: string;
+  status: string;
+}
+
 // ============================================================================
 // ADMIN - OFFICER WORKLOAD TYPES
 // ============================================================================
+
+export interface OfficerWorkloadParams {
+  search?: string;
+  page?: number;
+  page_size?: number;
+  pending_search?: string;
+  pending_page?: number;
+  pending_page_size?: number;
+  assigned_search?: string;
+  assigned_page?: number;
+  assigned_page_size?: number;
+}
 
 export interface OfficerWorkload {
   id: string;
@@ -373,6 +396,24 @@ export interface OfficerWorkload {
   employee_id?: string;
   pending_count?: number;
   active?: boolean;
+}
+
+export interface OfficerWorkloadResponse {
+  officers: OfficerWorkload[];
+  total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+  pending_applications: PendingApplication[];
+  pending_count: number;
+  pending_page?: number;
+  pending_page_size?: number;
+  pending_total_pages?: number;
+  assigned_applications?: PendingApplication[];
+  assigned_count?: number;
+  assigned_page?: number;
+  assigned_page_size?: number;
+  assigned_total_pages?: number;
 }
 
 /**

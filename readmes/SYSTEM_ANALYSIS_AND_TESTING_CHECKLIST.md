@@ -444,7 +444,7 @@
 |---------|-----------|-------|-----------------|--------|
 | USER-028 | View Workload | 1. Navigate to Officer Workload | Shows officers with assigned application counts | ✅ |
 | USER-029 | Assign Application | 1. Select unassigned application <br> 2. Choose officer <br> 3. Assign | Application assigned, officer count increases | ✅ |
-| USER-030 | Reassign Application | 1. Select assigned application <br> 2. Choose different officer <br> 3. Reassign | Application moved to new officer | ❌ |
+| USER-030 | Reassign Application | 1. Select assigned application <br> 2. Choose different officer <br> 3. Reassign | Application moved to new officer | ✅ |
 
 ---
 
@@ -452,14 +452,14 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| PROD-001 | List Products | 1. Navigate to Loan Products | Table shows all products | ✔️ |
-| PROD-002 | Create Product - Valid | 1. Click "Add Product" <br> 2. Fill name, interest rate, terms <br> 3. Save | Product created, appears in list | ✔️ |
-| PROD-003 | Create Product - Duplicate Name | 1. Create product with existing name | Shows "Name already exists" error | ❌ |
-| PROD-004 | Create Product - Invalid Rate | 1. Enter negative interest rate | Shows validation error | ❌ |
-| PROD-005 | Edit Product | 1. Click edit on product row <br> 2. Modify fields <br> 3. Save | Changes saved | ✔️ |
-| PROD-006 | Deactivate Product | 1. Click deactivate on active product | Product marked inactive | ✔️ |
-| PROD-007 | Activate Product | 1. Click activate on inactive product | Product marked active | ✔️ |
-| PROD-008 | Product in Use | 1. Try to delete product with active loans | Shows error or prevents deletion | ✔️ |
+| PROD-001 | List Products | 1. Navigate to Loan Products | Table shows all products | ✅ |
+| PROD-002 | Create Product - Valid | 1. Click "Add Product" <br> 2. Fill name, interest rate, terms <br> 3. Save | Product created, appears in list | ✅ |
+| PROD-003 | Create Product - Duplicate Name | 1. Create product with existing name | Shows "Name already exists" error | ✅ |
+| PROD-004 | Create Product - Invalid Rate | 1. Enter negative interest rate | Shows validation error | ✅ |
+| PROD-005 | Edit Product | 1. Click edit on product row <br> 2. Modify fields <br> 3. Save | Changes saved | ✅ |
+| PROD-006 | Deactivate Product | 1. Click deactivate on active product | Product marked inactive | ✅ |
+| PROD-007 | Activate Product | 1. Click activate on inactive product | Product marked active | ✅ |
+| PROD-008 | Product in Use | 1. Try to delete product with active loans | Shows error or prevents deletion | ✅ |
 
 ---
 
@@ -616,37 +616,37 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| EDGE-001 | Offline Mode | 1. Disconnect network <br> 2. Try to use app | Shows appropriate offline message | ☐ |
-| EDGE-002 | Slow Connection | 1. Throttle network <br> 2. Load data-heavy page | Shows loading indicators, eventually loads | ☐ |
-| EDGE-003 | Request Timeout | 1. Simulate server timeout | Shows timeout error message | ☐ |
-| EDGE-004 | Reconnection | 1. Go offline <br> 2. Come back online | App recovers and syncs | ☐ |
+| EDGE-001 | Offline Mode | 1. Disconnect network <br> 2. Try to use app | Shows appropriate offline message | ⁉️ |
+| EDGE-002 | Slow Connection | 1. Throttle network <br> 2. Load data-heavy page | Shows loading indicators, eventually loads | ⁉️ |
+| EDGE-003 | Request Timeout | 1. Simulate server timeout | Shows timeout error message | ⁉️ |
+| EDGE-004 | Reconnection | 1. Go offline <br> 2. Come back online | App recovers and syncs | ⁉️ |
 
 ### Authorization & Security
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| EDGE-005 | Access Admin as Officer | 1. Login as Officer <br> 2. Manually navigate to `/admin/` | Redirected or shows 403 | ☐ |
-| EDGE-006 | Access Officer as Admin | 1. Login as Admin <br> 2. Navigate to `/officer/` | Appropriate handling (redirect or allow) | ☐ |
-| EDGE-007 | Expired Token API Call | 1. Manually expire token <br> 2. Make API call | Redirects to login or refreshes token | ☐ |
-| EDGE-008 | Tampered Token | 1. Modify JWT in storage <br> 2. Make API call | Shows authentication error | ☐ |
+| EDGE-005 | Access Admin as Officer | 1. Login as Officer <br> 2. Manually navigate to `/admin/` | Redirected or shows 403 | ✔ |
+| EDGE-006 | Access Officer as Admin | 1. Login as Admin <br> 2. Navigate to `/officer/` | Appropriate handling (redirect or allow) | ✔ |
+| EDGE-007 | Expired Token API Call | 1. Manually expire token <br> 2. Make API call | Redirects to login or refreshes token | ✔ |
+| EDGE-008 | Tampered Token | 1. Modify JWT in storage <br> 2. Make API call | Shows authentication error | ✔ |
 
 ### Data Validation
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| EDGE-009 | XSS Prevention | 1. Enter `<script>alert('xss')</script>` in input <br> 2. Submit | Input sanitized, no script execution | ☐ |
-| EDGE-010 | SQL/NoSQL Injection | 1. Enter malicious query in search | Query sanitized, no injection | ☐ |
-| EDGE-011 | Large File Upload | 1. Try to upload file exceeding limit | Shows file size error | ☐ |
-| EDGE-012 | Invalid File Type | 1. Try to upload unsupported file type | Shows file type error | ☐ |
-| EDGE-013 | Special Characters in Name | 1. Enter name with special chars | Handles appropriately (saves or validation error) | ☐ |
-| EDGE-014 | Empty Form Submission | 1. Submit form without required fields | Shows all validation errors | ☐ |
-| EDGE-015 | Very Long Input | 1. Enter extremely long text in fields | Truncates or shows max length error | ☐ |
+| EDGE-009 | XSS Prevention | 1. Enter `<script>alert('xss')</script>` in input <br> 2. Submit | Input sanitized, no script execution | ⚠️  |
+| EDGE-010 | SQL/NoSQL Injection | 1. Enter malicious query in search | Query sanitized, no injection | ✔ |
+| EDGE-011 | Large File Upload | 1. Try to upload file exceeding limit | Shows file size error | ⚠️ |
+| EDGE-012 | Invalid File Type | 1. Try to upload unsupported file type | Shows file type error | ⚠️ |
+| EDGE-013 | Special Characters in Name | 1. Enter name with special chars | Handles appropriately (saves or validation error) | ❌ |
+| EDGE-014 | Empty Form Submission | 1. Submit form without required fields | Shows all validation errors | ✔ |
+| EDGE-015 | Very Long Input | 1. Enter extremely long text in fields | Truncates or shows max length error | ❌ |
 
 ### Concurrent Operations
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| EDGE-016 | Simultaneous Edits | 1. User A opens edit form <br> 2. User B saves same record <br> 3. User A tries to save | Shows conflict or last-write-wins | ☐ |
+| EDGE-016 | Simultaneous Edits | 1. User A opens edit form <br> 2. User B saves same record <br> 3. User A tries to save | Shows conflict or last-write-wins | ❌ |
 | EDGE-017 | Double Submit | 1. Click submit button rapidly twice | Only one submission processed | ☐ |
 | EDGE-018 | Stale Data | 1. View list <br> 2. Another user adds record <br> 3. Refresh | New record appears | ☐ |
 
