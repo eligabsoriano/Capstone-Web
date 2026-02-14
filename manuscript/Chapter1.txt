@@ -1,0 +1,109 @@
+﻿UPANG-FA.pdf 
+
+MSME PATHWAYS: SMART LOAN SUPPORT
+FOR THE INFORMAL SECTOR
+
+
+
+
+
+
+A Capstone Project Presented to the Faculty of the
+College of Information Technology Education
+PHINMA - University of Pangasinan
+
+
+
+
+In Partial Fulfillment 
+of the Requirements for the Degree
+BACHELOR OF SCIENCE IN INFORMATION TECHNOLOGY
+
+
+
+
+by
+JUSTIN MC NEAL GONZALES CARONONGAN
+ELI GABRIEL TAMONDONG SORIANO
+JOHN LLOYD PIMENTEL 
+FENIEL BARTE
+JOSHUA CO
+
+
+March 2026
+Chapter 1
+INTRODUCTION
+Background of the Study
+Micro, Small, and Medium Enterprises (MSMEs) are universally acknowledged as a fundamental pillar of economic growth, employment generation, and poverty reduction in both developed and developing economies. On a global scale, MSMEs represent approximately 90% of all businesses and contribute to more than half of total employment worldwide (World Bank, 2023). Their role extends beyond economic contribution; MSMEs foster innovation, stimulate local markets, and serve as critical entry points for entrepreneurship, particularly among low- and middle-income populations. Despite their importance, MSMEs—especially those operating within the informal sector—continue to face systemic barriers that hinder their growth and sustainability, with limited access to formal financial services being among the most pressing challenges.
+Access to finance is widely recognized as a key enabler of enterprise development. Formal credit allows MSMEs to invest in inventory, adopt new technologies, expand operations, and manage cash flow volatility. However, many microentrepreneurs remain excluded from traditional banking systems due to rigid lending requirements such as collateral, formal income documentation, and established credit histories. Informal-sector operators, who often rely on daily cash transactions and lack standardized financial records, are disproportionately affected by these constraints. As a result, they are frequently compelled to seek financing from informal lenders who impose excessive interest rates, short repayment periods, and exploitative terms, thereby increasing financial vulnerability and limiting long-term business growth.
+In the Philippine context, the importance of MSMEs mirrors global trends but is even more pronounced. Data from the Department of Trade and Industry (DTI) indicates that MSMEs account for 99.5% of all registered enterprises in the country and provide employment to approximately 63% of the national workforce (DTI, 2023). These enterprises are concentrated primarily in the microenterprise category, which includes small-scale vendors, sari-sari store owners, transport operators, and home-based entrepreneurs. While these businesses play a vital role in sustaining household incomes and local economies, many remain informal in nature and operate outside regulatory and financial frameworks.
+The issue of financial exclusion remains a significant national concern. According to the Bangko Sentral ng Pilipinas (BSP) Financial Inclusion Survey (2022), nearly 29% of Filipino adults do not possess formal financial accounts, and an even larger percentage lack access to formal credit facilities. Informal-sector workers are among the most affected due to factors such as insufficient financial literacy, a lack of trust in financial institutions, the perceived complexity of banking processes, and a fear of loan rejection. These challenges are further compounded by limited awareness of available financial products and inadequate support mechanisms to prepare borrowers for responsible loan participation.
+At the regional and local levels, the informal economy is particularly prevalent in densely populated urban centers and commercial districts where microentrepreneurs engage in daily retail, food vending, and service provision. While these activities generate consistent cash flow, they are rarely documented, making it difficult for financial institutions to assess creditworthiness using conventional evaluation methods. Additionally, existing microfinance outreach programs often rely on labor-intensive, manual screening processes that increase operational costs and limit scalability. As a result, many potentially creditworthy microentrepreneurs remain underserved or excluded from formal financial systems entirely.
+The rapid advancement and widespread adoption of mobile technology present a transformative opportunity to address these longstanding challenges. With near-universal smartphone ownership in the Philippines (Meltwater & We Are Social, 2025), mobile platforms have emerged as accessible and scalable tools for delivering financial services, education, and support to previously marginalized populations. Mobile-first solutions reduce geographic barriers, lower operational costs, and enable continuous user engagement. However, many existing digital financial applications are not tailored to the realities of informal-sector users, as they often assume stable income records, prior financial knowledge, and consistent internet connectivity.
+Empirical literature highlights the effectiveness of technology‑enabled interventions in promoting financial inclusion, and research indicates that digital financial literacy and digital financial tools are key components of improving financial knowledge and behaviors in the digital environment (Koskelainen, Kalmi, Scornavacca, & Vartiainen, 2023). Furthermore, the expansion of digital financial services and FinTech innovations has enabled the use of alternative data sources—including mobile phone usage patterns, digital transaction histories, and online behavioral indicators—to assess creditworthiness among populations excluded from traditional credit bureaus. Recent evidence demonstrates that these technology-driven approaches can significantly improve financial inclusion by providing more accessible and inclusive credit assessment mechanisms for underserved microenterprises and informal-sector operators (World Bank, 2022). Additionally, blockchain technology has emerged as a promising tool for enhancing transparency, security, and trust in financial transactions. Its decentralized and immutable architecture provides a reliable mechanism for recording and verifying financial activities, with applications in financial services that improve efficiency, reduce fraud, and enhance transparency (Wang, Xie, & Zhang, 2021).
+These findings emphasize the potential of intelligent, data-driven, and blockchain-integrated systems to bridge the gap between informal microentrepreneurs and formal financial institutions.
+Given these conditions, there is a clear and urgent need for an integrated, user-centered solution that combines financial education, ethical loan pre-screening, alternative data profiling, and secure transaction recording in a manner that is accessible to informal-sector microentrepreneurs. Addressing financial inclusion requires not only access to credit but also the development of financial capability, preparedness, and trust among borrowers through transparent and verifiable systems.
+In response to this need, the project titled MSME Pathways: Smart Loan Support for the Informal Sector proposes the development of an AI-enabled, blockchain-integrated, mobile-first platform designed to empower underserved microentrepreneurs. The system aims to enhance financial literacy, support responsible loan readiness, ensure transaction integrity through blockchain technology, and provide ethical, data-informed insights that can facilitate engagement with formal lending institutions. By leveraging mobile technology, intelligent analytics, and distributed ledger technology, the project seeks to contribute to inclusive economic growth and support the long-term sustainability of informal-sector MSMEs in the Philippines.
+Statement of the Problem
+Informal-sector microentrepreneurs in the Philippines face significant barriers to accessing formal financial services, resulting in persistent financial exclusion and a reliance on informal lending sources with unfavorable terms. These challenges arise from limited financial literacy, the absence of a formal credit history, distrust of financial institutions, and the perceived complexity of loan application processes.
+This study seeks to address the following research questions:
+1. What are the financial behaviors, challenges, and user requirements of informal-sector microentrepreneurs in accessing formal financial services?
+2. What system features and functionalities are required to provide accessible financial education and ethical loan pre-screening for users with limited financial literacy?
+3. What is the effectiveness of the developed system in improving financial understanding, loan readiness, and user confidence in engaging with formal lending processes?
+Objectives of the Study
+The objective of this study is to design, develop, and implement an AI-enabled Smart Loan Support System that provides accessible financial guidance, ethical loan pre-screening, and alternative data-driven profiling to support financial inclusion and improve access to formal lending opportunities for microentrepreneurs in the informal sector. Specifically, this study aims:
+1. To identify the financial behaviors, challenges, and user requirements of informal-sector MSMEs through interviews, surveys, and needs assessment activities;
+2. To determine the required system features and functionalities that provide accessible financial education and ethical loan pre-screening for users with limited financial literacy, and
+3. To evaluate the effectiveness of the system in improving financial understanding, loan readiness, and user confidence through usability testing, functionality testing, and user feedback analysis.
+
+
+
+
+Scope and Delimitation
+This study focuses on the design, development, and evaluation of MSME Pathways: Smart Loan Support for the Informal Sector, an AI-enabled system intended to promote financial inclusion among informal-sector microentrepreneurs. The system provides AI-driven financial guidance through a conversational chatbot that explains loan concepts using simple and culturally relevant language, along with simplified loan education modules covering interest rates, repayment terms, and borrowing risks. It incorporates alternative data profiling mechanisms based on user-provided business activity indicators and self-reported income patterns to support smart loan pre-qualification and loan readiness assessment using predefined ethical lending criteria. The system also delivers feedback and recommendations based on profiling results. MSME Pathways is designed for use by informal-sector microentrepreneurs such as sari-sari store owners, market vendors, and home-based sellers, as well as loan officers and system administrators who access a web-based administrative interface for monitoring, profiling review, and basic reporting. The system is implemented through a mobile application developed using Flutter for Android and iOS platforms, a web-based interface accessible through standard browsers, backend services built with Python and the Django framework, a cloud-hosted MongoDB Atlas database, and cloud infrastructure platforms for deployment. AI and machine learning libraries are utilized for intelligent guidance and profiling features, while blockchain technology using Solidity smart contracts on Ethereum-compatible networks is employed to ensure secure and transparent transaction recording.
+The study is delimited to a prototype-level system and does not include actual loan disbursement, fund transfer functionalities, or integration with live banking systems, financial institution APIs, or regulatory approval processes. Formal credit scoring mechanisms and real-time credit bureau integration are also excluded. The accuracy of the AI components is limited by the quality and size of the available training and test data, and the system operates within predefined performance boundaries without guarantees of large-scale, real-time scalability. Development constraints related to time, budget, and access to advanced infrastructure limit extensive feature optimization and enterprise-level deployment. System testing and evaluation are conducted within a controlled academic environment over a limited timeframe and participant group. The mobile application is designed to support Android 9.0 or later and iOS 13 or later, while the web interface is optimized for modern web browsers such as Chrome, Firefox, Safari, and Edge.
+Significance of the Study
+The significance of this study lies in its direct contribution to addressing financial exclusion among informal-sector microentrepreneurs. The developed system is expected to benefit the following stakeholders:
+To the Informal-Sector Microentrepreneurs. The primary beneficiaries of this study are sari-sari store owners, market vendors, home-based sellers, and other micro-entrepreneurs operating in the informal economy. The system provides clear and simplified explanations of loan concepts, reducing confusion and misinformation that commonly lead to poor borrowing decisions. Through the AI-driven guidance and loan readiness assessment features, users can develop improved financial understanding and increased confidence in engaging with formal lending processes. This may reduce their reliance on informal and high-interest lenders.
+To the Microfinance Institutions and Loan Officers. Financial institutions and lending professionals benefit from the structured, data-driven insights generated by the system's alternative data profiling and pre-qualification features. These tools support more informed and ethical lending decisions while reducing the time and effort required for preliminary borrower assessment. The system enhances transparency and provides a standardized mechanism for evaluating borrowers who lack formal credit histories.
+To the Policymakers and Development Organizations. Government agencies, non-governmental organizations, and development institutions focused on financial inclusion can utilize the system as a scalable model for outreach and education programs. The project demonstrates how technology can be aligned with economic development goals, particularly in serving resource-constrained and underserved communities.
+To the Researchers and Project Developers. The proponents of this study benefit from the practical application of concepts related to platform technologies, system architecture, cloud integration, blockchain development, and ethical use of intelligent systems. The project serves as a meaningful demonstration of technical competencies and problem-solving skills relevant to real-world challenges.
+To the Academic Community and Future Researchers. This study contributes to the body of knowledge on the application of artificial intelligence, blockchain technology, mobile technology, and alternative data in promoting financial inclusion. The documented system design, implementation process, and evaluation results serve as reference material for future research and development in inclusive financial technology solutions.
+Definition of Terms
+The following terms are defined operationally and conceptually to enhance understanding and precision within the context of this study:
+Alternative Data. Non-traditional information used to assess an individual's financial behavior and creditworthiness, such as business activity indicators, utility payment patterns, and self-reported income, rather than formal credit bureau records.
+Artificial Intelligence (AI). A branch of computer science focused on creating systems capable of performing tasks that typically require human intelligence, including learning, reasoning, and natural language understanding. In this study, AI powers the financial guidance chatbot and profiling mechanisms.
+Blockchain. A decentralized, distributed digital ledger technology that records transactions across multiple computers in a manner that ensures the records cannot be altered retroactively. In this study, blockchain is used to securely record and verify transaction references and user verification events.
+Chatbot. A software application that simulates human conversation through text-based or voice-based interactions. In this study, the chatbot provides financial guidance and answers user queries about loan concepts.
+Financial Inclusion. The availability and accessibility of useful and affordable financial products and services to individuals and businesses, particularly those traditionally excluded from formal financial systems.
+Financial Literacy. The ability to understand and effectively use various financial skills, including personal financial management, budgeting, and understanding loan terms and conditions.
+Informal Sector. The segment of the economy comprising activities and income sources that are not regulated, taxed, or monitored by the government. Workers in this sector typically lack formal employment contracts and social protection.
+Loan Pre-qualification. A preliminary assessment process that evaluates an individual's basic eligibility for a loan based on self-reported information, without a formal credit check or commitment from a lender.
+Microentrepreneur. An individual who operates a very small-scale business, typically with minimal capital and few or no employees. Examples include sari-sari store owners, market vendors, and home-based sellers.
+MSME (Micro, Small, and Medium Enterprise). A classification of business entities based on asset size and number of employees. In the Philippines, micro enterprises have assets of up to PHP 3 million, small enterprises have assets between PHP 3 million and PHP 15 million, and medium enterprises have assets between PHP 15 million and PHP 100 million.
+Profiling. The process of collecting and analyzing user data to create a profile that represents an individual's characteristics, behaviors, and potential creditworthiness.
+Sari-sari Store. A small neighborhood convenience store commonly found in the Philippines that sells a variety of household items in small daily quantities.
+Smart Contract. A self-executing program stored on a blockchain that automatically enforces the terms of an agreement when predetermined conditions are met. In this study, smart contracts developed using Solidity are used to record critical transaction references and verification events.
+Solidity. A high-level, object-oriented programming language used to write smart contracts on Ethereum-compatible blockchain platforms. In this study, Solidity is used to develop blockchain components for secure transaction logic.
+User Experience (UX). The overall experience of a person using a product or system, focusing on ease of use, accessibility, and satisfaction during interaction.
+
+
+
+
+
+
+
+
+
+
+
+
+REFERENCES
+World Bank. (2025). Small and medium enterprises (SMEs) finance. World Bank. https://www.worldbank.org/en/topic/smefinance
+Institute for Small-Scale Industries. (2024, September 26). Empowering Philippine MSMEs through digital transformation. https://beta.entrepreneurship.org.ph/2024/09/26/empowering-philippine-msmes-through-digital-transformation/
+Bangko Sentral ng Pilipinas. (2022). Financial inclusion dashboard – 4Q 2022 [Financial Inclusion Survey data]. Bangko Sentral ng Pilipinas. https://www.bsp.gov.ph/Media_and_Research/Financial%20Inclusion%20Dashboard/2022/FIDashboard_4Q2022.pdf
+Meltwater, & We Are Social. (2025). Digital 2026: Philippines report. DataReportal. https://datareportal.com/reports/digital-2026-philippines
+Koskelainen, T., Kalmi, P., Scornavacca, E., & Vartiainen, T. (2023). Financial literacy in the digital age—A research agenda. Journal of Consumer Affairs, 57(1), 507–528.
+https://doi.org/10.1111/joca.12510
+World Bank. (2022). The Global Findex Database 2021. Financial inclusion, digital payments, and resilience in the age of COVID-19. World Bank. https://www.worldbank.org/en/publication/globalfindex
+Wang, S., Xie, J., & Zhang, X. (2021). Blockchain technology for financial services: Applications, challenges, and future directions. Journal of Banking & Finance, 129, 106154. https://doi.org/10.1016/j.jbankfin.2021.106154
