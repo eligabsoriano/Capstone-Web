@@ -29,7 +29,7 @@ export interface Document {
   file_url: string;
   mime_type: string;
   file_size: number;
-  status: "pending" | "approved" | "rejected";
+  status: "pending" | "needs_review" | "approved" | "rejected" | "expired";
   verification_status: "unverified" | "verified" | "rejected";
   verified_by: string | null;
   verified_at: string | null;
@@ -60,7 +60,7 @@ export interface DocumentType {
 export async function getDocuments(params?: {
   customer_id?: string;
   type?: string;
-  status?: "pending" | "approved" | "rejected";
+  status?: "pending" | "needs_review" | "approved" | "rejected" | "expired";
   search?: string;
   page?: number;
   page_size?: number;

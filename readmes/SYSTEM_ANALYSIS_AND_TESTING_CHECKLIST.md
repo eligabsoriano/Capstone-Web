@@ -505,8 +505,8 @@
 | DOC-004 | View Document | 1. Click on document row | Opens document preview | ✅ |
 | DOC-005 | Verify Document | 1. Open pending document <br> 2. Review content <br> 3. Click "Verify" | Document status changes to Verified | ✅ |
 | DOC-006 | Reject Document | 1. Open pending document <br> 2. Click "Reject" <br> 3. Enter reason | Document status changes to Rejected, customer notified | ✅ | 
-| DOC-007 | Request Re-upload | 1. Open document <br> 2. Click "Request Re-upload" <br> 3. Specify issue | Request sent to customer | ⚠️ | 
-| DOC-008 | Document Status Badge | 1. View documents list | Status badges show correct colors (Pending=Yellow, Verified=Green, Rejected=Red) | ⚠️ | 
+| DOC-007 | Request Re-upload | 1. Open document <br> 2. Click "Request Re-upload" <br> 3. Specify issue | Request sent to customer | ✅ | 
+| DOC-008 | Document Status Badge | 1. View documents list | Status badges show correct colors (Pending=Yellow, Verified=Green, Rejected=Red) | ✅ | 
 
 ---
 

@@ -44,7 +44,7 @@ export function OfficerDocumentsPage() {
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<
-    "all" | "pending" | "approved" | "rejected"
+    "all" | "pending" | "needs_review" | "approved" | "rejected"
   >("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(
@@ -61,7 +61,7 @@ export function OfficerDocumentsPage() {
 
   // Handler for filter changes - resets page
   const handleFilterChange = (
-    value: "all" | "pending" | "approved" | "rejected",
+    value: "all" | "pending" | "needs_review" | "approved" | "rejected",
   ) => {
     setStatusFilter(value);
     setCurrentPage(1);
@@ -126,16 +126,28 @@ export function OfficerDocumentsPage() {
   const totalDocuments = data?.data?.total ?? 0;
   const totalPages = data?.data?.total_pages ?? 1;
 
-  const getStatusBadgeVariant = (status: string) => {
+  const getStatusBadgeClassName = (status: string) => {
     switch (status) {
       case "approved":
-        return "default";
+        return "border-emerald-200 bg-emerald-100 text-emerald-900";
       case "rejected":
-        return "destructive";
+        return "border-red-200 bg-red-100 text-red-900";
       case "pending":
-        return "secondary";
+      case "needs_review":
+        return "border-yellow-200 bg-yellow-100 text-yellow-900";
       default:
-        return "outline";
+        return "border-slate-200 bg-slate-100 text-slate-900";
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "approved":
+        return "VERIFIED";
+      case "needs_review":
+        return "NEEDS REVIEW";
+      default:
+        return status.replace(/_/g, " ").toUpperCase();
     }
   };
 
@@ -234,13 +246,19 @@ export function OfficerDocumentsPage() {
             value={statusFilter}
             onChange={(e) =>
               handleFilterChange(
-                e.target.value as "all" | "pending" | "approved" | "rejected",
+                e.target.value as
+                  | "all"
+                  | "pending"
+                  | "needs_review"
+                  | "approved"
+                  | "rejected",
               )
             }
             className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm"
           >
             <option value="all">All Documents</option>
             <option value="pending">Pending Review</option>
+            <option value="needs_review">Needs Review</option>
             <option value="approved">Approved</option>
             <option value="rejected">Rejected</option>
           </select>
@@ -327,12 +345,18 @@ export function OfficerDocumentsPage() {
                       )}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={getStatusBadgeVariant(doc.status)}>
-                        {doc.status.toUpperCase()}
+                      <Badge
+                        variant="outline"
+                        className={getStatusBadgeClassName(doc.status)}
+                      >
+                        {getStatusLabel(doc.status)}
                       </Badge>
                       {doc.reupload_requested && (
-                        <Badge variant="destructive" className="ml-1">
-                          Reupload
+                        <Badge
+                          variant="outline"
+                          className="ml-1 border-orange-200 bg-orange-100 text-orange-900"
+                        >
+                          REUPLOAD REQUESTED
                         </Badge>
                       )}
                     </TableCell>
@@ -356,7 +380,8 @@ export function OfficerDocumentsPage() {
                             <Eye className="h-4 w-4" />
                           </Button>
                         )}
-                        {doc.status === "pending" && (
+                        {(doc.status === "pending" ||
+                          doc.status === "needs_review") && (
                           <>
                             <Button
                               variant="ghost"
