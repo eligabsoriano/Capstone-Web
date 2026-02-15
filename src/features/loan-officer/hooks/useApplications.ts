@@ -8,6 +8,7 @@ import {
   disburseApplication,
   getOfficerApplicationDetail,
   getOfficerApplications,
+  requestMissingDocuments,
   reviewApplication,
 } from "../api/applicationsApi";
 
@@ -83,6 +84,28 @@ export function useDisburseApplication() {
       applicationId: string;
       data: DisburseApplicationRequest;
     }) => disburseApplication(applicationId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["officer-applications"] });
+      queryClient.invalidateQueries({ queryKey: ["officer-application"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "audit-logs"] });
+    },
+  });
+}
+
+/**
+ * Hook for requesting missing documents that were never uploaded
+ */
+export function useRequestMissingDocuments() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      applicationId,
+      data,
+    }: {
+      applicationId: string;
+      data: { missing_documents: string[]; reason?: string };
+    }) => requestMissingDocuments(applicationId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["officer-applications"] });
       queryClient.invalidateQueries({ queryKey: ["officer-application"] });

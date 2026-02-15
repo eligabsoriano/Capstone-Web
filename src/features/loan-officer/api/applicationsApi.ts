@@ -5,6 +5,8 @@ import type {
   DisburseApplicationResponse,
   OfficerApplicationDetail,
   OfficerApplicationListItem,
+  RequestMissingDocumentsRequest,
+  RequestMissingDocumentsResponse,
   ReviewApplicationRequest,
   ReviewApplicationResponse,
 } from "@/types/api";
@@ -83,6 +85,20 @@ export async function reviewApplication(
 ): Promise<ApiResponse<ReviewApplicationResponse>> {
   const response = await apiClient.put(
     `/api/loans/officer/applications/${applicationId}/review/`,
+    data,
+  );
+  return response.data;
+}
+
+/**
+ * Request missing documents that were never uploaded
+ */
+export async function requestMissingDocuments(
+  applicationId: string,
+  data: RequestMissingDocumentsRequest,
+): Promise<ApiResponse<RequestMissingDocumentsResponse>> {
+  const response = await apiClient.post(
+    `/api/loans/officer/applications/${applicationId}/request-missing-documents/`,
     data,
   );
   return response.data;

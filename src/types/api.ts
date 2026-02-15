@@ -545,6 +545,7 @@ export interface OfficerApplicationDetail {
     id: string | null;
     name: string;
     code: string | null;
+    required_documents?: string[];
   };
   requested_amount: number;
   recommended_amount: number;
@@ -560,6 +561,9 @@ export interface OfficerApplicationDetail {
   rejection_reason: string | null;
   submitted_at: string | null;
   decision_date: string | null;
+  missing_documents_requested?: string[];
+  missing_documents_reason?: string | null;
+  missing_documents_requested_at?: string | null;
   // Complete customer data
   customer?: {
     customer_id: string;
@@ -654,6 +658,19 @@ export interface DisburseApplicationResponse {
     total_amount: number;
     term_months: number;
   };
+}
+
+export interface RequestMissingDocumentsRequest {
+  missing_documents: string[];
+  reason?: string;
+}
+
+export interface RequestMissingDocumentsResponse {
+  id: string;
+  status: string;
+  missing_documents_requested: string[];
+  missing_documents_reason: string;
+  missing_documents_requested_at: string | null;
 }
 
 // ============================================================================

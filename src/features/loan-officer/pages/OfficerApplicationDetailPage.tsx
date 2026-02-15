@@ -30,6 +30,7 @@ import { RequestDocumentsModal } from "../components/RequestDocumentsModal";
 import {
   useDisburseApplication,
   useOfficerApplicationDetail,
+  useRequestMissingDocuments,
   useReviewApplication,
 } from "../hooks";
 
@@ -45,6 +46,7 @@ export function OfficerApplicationDetailPage() {
   } = useOfficerApplicationDetail(id || "");
   const reviewMutation = useReviewApplication();
   const disburseMutation = useDisburseApplication();
+  const requestMissingDocumentsMutation = useRequestMissingDocuments();
 
   const [approvalModalOpen, setApprovalModalOpen] = useState(false);
   const [rejectionModalOpen, setRejectionModalOpen] = useState(false);
@@ -169,6 +171,26 @@ export function OfficerApplicationDetailPage() {
     }
   };
 
+  const handleRequestMissingDocuments = async (
+    missingDocumentTypes: string[],
+    reason: string,
+  ) => {
+    if (!id) return;
+    try {
+      await requestMissingDocumentsMutation.mutateAsync({
+        applicationId: id,
+        data: {
+          missing_documents: missingDocumentTypes,
+          reason,
+        },
+      });
+      toast.success("Missing documents request sent to customer");
+      setRequestDocumentsModalOpen(false);
+    } catch (err) {
+      toast.error(parseError(err));
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-24">
@@ -204,6 +226,12 @@ export function OfficerApplicationDetailPage() {
   const requestableDocuments = (application.documents || []).filter(
     (doc) => doc.status !== "approved",
   );
+  const uploadedDocumentTypes = new Set(
+    (application.documents || []).map((doc) => doc.document_type),
+  );
+  const missingRequiredDocuments = (
+    application.product.required_documents || []
+  ).filter((docType) => !uploadedDocumentTypes.has(docType));
 
   return (
     <div className="space-y-6">
@@ -806,17 +834,20 @@ export function OfficerApplicationDetailPage() {
                     onClick={() => setRequestDocumentsModalOpen(true)}
                     disabled={
                       requestDocumentsMutation.isPending ||
-                      requestableDocuments.length === 0
+                      requestMissingDocumentsMutation.isPending ||
+                      (requestableDocuments.length === 0 &&
+                        missingRequiredDocuments.length === 0)
                     }
                   >
                     <FileText className="h-4 w-4 mr-2" />
                     Request Documents
                   </Button>
-                  {requestableDocuments.length === 0 && (
-                    <p className="text-xs text-muted-foreground text-center">
-                      No documents available for re-upload request.
-                    </p>
-                  )}
+                  {requestableDocuments.length === 0 &&
+                    missingRequiredDocuments.length === 0 && (
+                      <p className="text-xs text-muted-foreground text-center">
+                        No missing or re-upload request options available.
+                      </p>
+                    )}
                 </>
               )}
               {canDisburse && (
@@ -901,8 +932,11 @@ export function OfficerApplicationDetailPage() {
           filename: doc.filename,
           status: doc.status,
         }))}
-        isPending={requestDocumentsMutation.isPending}
-        onConfirm={handleRequestDocuments}
+        missingDocumentTypes={missingRequiredDocuments}
+        isSubmittingMissing={requestMissingDocumentsMutation.isPending}
+        isSubmittingReupload={requestDocumentsMutation.isPending}
+        onConfirmMissing={handleRequestMissingDocuments}
+        onConfirmReupload={handleRequestDocuments}
       />
     </div>
   );
