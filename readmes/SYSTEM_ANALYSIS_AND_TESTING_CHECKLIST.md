@@ -502,7 +502,7 @@
 | DOC-001 | List Documents | 1. Navigate to Documents page | Shows all documents with status badges | ✅ |
 | DOC-002 | Filter by Type | 1. Select document type filter | Shows only selected type | ✅ | 
 | DOC-003 | Filter by Status | 1. Select status filter (Pending/Verified/Rejected) | Shows matching documents | ✅ |
-| DOC-004 | View Document | 1. Click on document row | Opens document preview | ⚠️ |
+| DOC-004 | View Document | 1. Click on document row | Opens document preview | ✅ |
 | DOC-005 | Verify Document | 1. Open pending document <br> 2. Review content <br> 3. Click "Verify" | Document status changes to Verified | ✅ |
 | DOC-006 | Reject Document | 1. Open pending document <br> 2. Click "Reject" <br> 3. Enter reason | Document status changes to Rejected, customer notified | ✅ | 
 | DOC-007 | Request Re-upload | 1. Open document <br> 2. Click "Request Re-upload" <br> 3. Specify issue | Request sent to customer | ⚠️ | 

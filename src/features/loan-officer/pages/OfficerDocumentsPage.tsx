@@ -29,6 +29,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { resolveMediaUrl } from "@/shared/utils/media";
 import {
   type Document,
   getDocuments,
@@ -39,9 +40,12 @@ import { DocumentVerifyModal } from "../components/DocumentVerifyModal";
 import { RequestReuploadModal } from "../components/RequestReuploadModal";
 
 export function OfficerDocumentsPage() {
+  const PAGE_SIZE = 20;
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<
+    "all" | "pending" | "approved" | "rejected"
+  >("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(
     null,
@@ -56,19 +60,22 @@ export function OfficerDocumentsPage() {
   };
 
   // Handler for filter changes - resets page
-  const handleFilterChange = (value: string) => {
+  const handleFilterChange = (
+    value: "all" | "pending" | "approved" | "rejected",
+  ) => {
     setStatusFilter(value);
     setCurrentPage(1);
   };
 
   // Fetch documents
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["officer-documents", searchQuery, currentPage],
+    queryKey: ["officer-documents", searchQuery, statusFilter, currentPage],
     queryFn: () =>
       getDocuments({
+        status: statusFilter === "all" ? undefined : statusFilter,
         search: searchQuery || undefined,
         page: currentPage,
-        page_size: 20,
+        page_size: PAGE_SIZE,
       }),
   });
 
@@ -116,13 +123,8 @@ export function OfficerDocumentsPage() {
   });
 
   const documents = data?.data?.documents ?? [];
+  const totalDocuments = data?.data?.total ?? 0;
   const totalPages = data?.data?.total_pages ?? 1;
-
-  // Backend handles search, frontend filters by status
-  const filteredDocuments = documents.filter((doc) => {
-    if (statusFilter !== "all" && doc.status !== statusFilter) return false;
-    return true;
-  });
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
@@ -230,7 +232,11 @@ export function OfficerDocumentsPage() {
         <div>
           <select
             value={statusFilter}
-            onChange={(e) => handleFilterChange(e.target.value)}
+            onChange={(e) =>
+              handleFilterChange(
+                e.target.value as "all" | "pending" | "approved" | "rejected",
+              )
+            }
             className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm"
           >
             <option value="all">All Documents</option>
@@ -255,7 +261,7 @@ export function OfficerDocumentsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5 text-primary" />
-            Documents ({filteredDocuments.length})
+            Documents ({totalDocuments})
           </CardTitle>
           <CardDescription>
             Click on a document to review and verify
@@ -266,7 +272,7 @@ export function OfficerDocumentsPage() {
             <div className="flex items-center justify-center py-12">
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
-          ) : filteredDocuments.length === 0 ? (
+          ) : documents.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>No documents found</p>
@@ -285,7 +291,7 @@ export function OfficerDocumentsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredDocuments.map((doc) => (
+                {documents.map((doc) => (
                   <TableRow key={doc.id}>
                     <TableCell>
                       <div className="flex items-center gap-2">
@@ -339,7 +345,12 @@ export function OfficerDocumentsPage() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => window.open(doc.file_url, "_blank")}
+                            onClick={() =>
+                              window.open(
+                                resolveMediaUrl(doc.file_url),
+                                "_blank",
+                              )
+                            }
                             title="View Document"
                           >
                             <Eye className="h-4 w-4" />

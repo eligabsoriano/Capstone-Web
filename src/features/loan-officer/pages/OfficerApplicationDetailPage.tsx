@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { parseError } from "@/lib/errors";
+import { resolveMediaUrl } from "@/shared/utils/media";
 import type { DisburseApplicationResponse } from "@/types/api";
 import { requestReupload } from "../api/documentsApi";
 import { ApprovalModal } from "../components/ApprovalModal";
@@ -700,7 +701,10 @@ export function OfficerApplicationDetailPage() {
                             className="h-7 w-7"
                             onClick={() =>
                               doc.file_url &&
-                              window.open(doc.file_url, "_blank")
+                              window.open(
+                                resolveMediaUrl(doc.file_url),
+                                "_blank",
+                              )
                             }
                           >
                             <Eye className="h-4 w-4" />

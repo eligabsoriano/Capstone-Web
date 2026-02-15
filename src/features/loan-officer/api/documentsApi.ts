@@ -60,6 +60,7 @@ export interface DocumentType {
 export async function getDocuments(params?: {
   customer_id?: string;
   type?: string;
+  status?: "pending" | "approved" | "rejected";
   search?: string;
   page?: number;
   page_size?: number;
