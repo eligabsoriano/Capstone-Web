@@ -489,9 +489,9 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| APP-011 | View Approved for Disbursement | 1. Navigate to Disbursement page | Shows approved applications pending disbursement | ✅ |
-| APP-012 | Process Disbursement | 1. Select approved application <br> 2. Enter disbursement details <br> 3. Confirm | Disbursement recorded, repayment schedule generated | ✅  |
-| APP-013 | Disbursement Receipt | 1. After disbursement <br> 2. View/print receipt | Receipt shows all disbursement details | ❌ |
+| APP-011 | View Approved for Disbursement | 1. Navigate to Applications page <br> 2. Filter status to Approved | Shows approved applications pending disbursement | ✅ |
+| APP-012 | Process Disbursement | 1. Open approved application detail <br> 2. Click "Disburse Loan" <br> 3. Enter disbursement details <br> 4. Confirm | Disbursement recorded, repayment schedule generated | ✅  |
+| APP-013 | Disbursement Receipt | 1. After disbursement, receipt modal opens <br> 2. Click "Print Receipt" or close and click "View Receipt" from actions | Receipt shows disbursement details and can be printed | ✅ |
 
 ---
 

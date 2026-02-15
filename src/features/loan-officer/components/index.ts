@@ -1,6 +1,7 @@
 export { ApprovalModal } from "./ApprovalModal";
 export { ChangePasswordSettings } from "./ChangePasswordSettings";
 export { DisbursementModal } from "./DisbursementModal";
+export { DisbursementReceiptModal } from "./DisbursementReceiptModal";
 export { DocumentVerifyModal } from "./DocumentVerifyModal";
 export { OfficerHeader } from "./OfficerHeader";
 export { OfficerLayout } from "./OfficerLayout";

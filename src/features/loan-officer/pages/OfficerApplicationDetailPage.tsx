@@ -24,9 +24,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { parseError } from "@/lib/errors";
+import type { DisburseApplicationResponse } from "@/types/api";
 import { requestReupload } from "../api/documentsApi";
 import { ApprovalModal } from "../components/ApprovalModal";
 import { DisbursementModal } from "../components/DisbursementModal";
+import { DisbursementReceiptModal } from "../components/DisbursementReceiptModal";
 import { RejectionModal } from "../components/RejectionModal";
 import { RequestDocumentsModal } from "../components/RequestDocumentsModal";
 import {
@@ -55,6 +57,9 @@ export function OfficerApplicationDetailPage() {
   const [approvalModalOpen, setApprovalModalOpen] = useState(false);
   const [rejectionModalOpen, setRejectionModalOpen] = useState(false);
   const [disbursementModalOpen, setDisbursementModalOpen] = useState(false);
+  const [receiptModalOpen, setReceiptModalOpen] = useState(false);
+  const [latestDisbursement, setLatestDisbursement] =
+    useState<DisburseApplicationResponse | null>(null);
   const [requestDocumentsModalOpen, setRequestDocumentsModalOpen] =
     useState(false);
   const [internalNoteDraft, setInternalNoteDraft] = useState("");
@@ -160,11 +165,16 @@ export function OfficerApplicationDetailPage() {
     amount: number,
   ) => {
     if (!id) return;
-    await disburseMutation.mutateAsync({
+    const response = await disburseMutation.mutateAsync({
       applicationId: id,
       data: { method, reference, amount },
     });
     setDisbursementModalOpen(false);
+    if (response.status === "success" && response.data) {
+      setLatestDisbursement(response.data);
+      setReceiptModalOpen(true);
+      toast.success("Loan disbursed successfully");
+    }
   };
 
   const handleRequestDocuments = async (documentId: string, reason: string) => {
@@ -259,6 +269,23 @@ export function OfficerApplicationDetailPage() {
     application.product.required_documents || []
   ).filter((docType) => !uploadedDocumentTypes.has(docType));
   const internalNotes = application.internal_notes || [];
+  const scopedLatestDisbursement =
+    latestDisbursement?.id === application.id ? latestDisbursement : null;
+  const receiptData = scopedLatestDisbursement ?? {
+    id: application.id,
+    status: application.status,
+    disbursed_amount: application.disbursed_amount ?? 0,
+    disbursement_method: application.disbursement_method ?? "",
+    disbursement_reference: application.disbursement_reference ?? "",
+    disbursed_at: application.disbursed_at ?? null,
+  };
+  const canViewReceipt =
+    application.status === "disbursed" &&
+    Boolean(
+      receiptData.disbursement_reference ||
+        receiptData.disbursed_at ||
+        receiptData.disbursed_amount,
+    );
 
   return (
     <div className="space-y-6">
@@ -887,7 +914,17 @@ export function OfficerApplicationDetailPage() {
                   Disburse Loan
                 </Button>
               )}
-              {!canReview && !canDisburse && (
+              {canViewReceipt && (
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => setReceiptModalOpen(true)}
+                >
+                  <Eye className="h-4 w-4 mr-2" />
+                  View Receipt
+                </Button>
+              )}
+              {!canReview && !canDisburse && !canViewReceipt && (
                 <p className="text-sm text-muted-foreground text-center py-4">
                   No actions available for this application status.
                 </p>
@@ -934,7 +971,7 @@ export function OfficerApplicationDetailPage() {
                       key={`${note.created_at || "note"}-${index}`}
                       className="rounded-md border p-3"
                     >
-                      <p className="text-sm whitespace-pre-wrap">
+                      <p className="text-sm whitespace-pre-wrap break-all">
                         {note.content}
                       </p>
                       <p className="mt-1 text-xs text-muted-foreground">
@@ -1003,6 +1040,21 @@ export function OfficerApplicationDetailPage() {
         onConfirm={handleDisburse}
         approvedAmount={application.recommended_amount}
         isPending={disburseMutation.isPending}
+      />
+      <DisbursementReceiptModal
+        open={receiptModalOpen}
+        onClose={() => setReceiptModalOpen(false)}
+        receipt={{
+          applicationId: application.id,
+          customerName:
+            `${application.customer?.personal_profile?.first_name || ""} ${application.customer?.personal_profile?.last_name || ""}`.trim(),
+          productName: application.product.name,
+          amount: receiptData.disbursed_amount,
+          method: receiptData.disbursement_method,
+          reference: receiptData.disbursement_reference,
+          disbursedAt: receiptData.disbursed_at,
+          schedule: receiptData.schedule,
+        }}
       />
       <RequestDocumentsModal
         open={requestDocumentsModalOpen}

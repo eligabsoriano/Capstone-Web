@@ -572,6 +572,10 @@ export interface OfficerApplicationDetail {
   rejection_reason: string | null;
   submitted_at: string | null;
   decision_date: string | null;
+  disbursed_amount?: number | null;
+  disbursement_method?: string | null;
+  disbursement_reference?: string | null;
+  disbursed_at?: string | null;
   internal_notes?: ApplicationInternalNote[];
   internal_notes_count?: number;
   latest_internal_note?: ApplicationInternalNote | null;
