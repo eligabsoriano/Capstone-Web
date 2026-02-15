@@ -1,7 +1,7 @@
 import {
-  BarChart3,
   ChevronLeft,
   ChevronRight,
+  ClipboardList,
   FileText,
   LayoutDashboard,
   LogOut,
@@ -55,10 +55,9 @@ const navItems: NavItem[] = [
     superAdminOnly: true,
   },
   {
-    label: "Officer Workload",
-    icon: BarChart3,
-    href: "/admin/workload",
-    requiredPermission: "view_analytics",
+    label: "Applications",
+    icon: ClipboardList,
+    href: "/admin/applications",
   },
   {
     label: "Loan Products",

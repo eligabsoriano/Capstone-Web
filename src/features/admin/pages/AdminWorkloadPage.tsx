@@ -43,7 +43,15 @@ import {
 import type { PendingApplication } from "@/types/api";
 import { useAssignApplication, useOfficerWorkload } from "../hooks";
 
-export function AdminWorkloadPage() {
+interface AdminWorkloadPageProps {
+  title?: string;
+  description?: string;
+}
+
+export function AdminWorkloadPage({
+  title = "Officer Workload",
+  description = "Monitor officer capacity and assign applications",
+}: AdminWorkloadPageProps) {
   // Search states
   const [unassignedSearch, setUnassignedSearch] = useState("");
   const [assignedSearch, setAssignedSearch] = useState("");
@@ -291,10 +299,8 @@ export function AdminWorkloadPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Officer Workload</h1>
-          <p className="text-muted-foreground">
-            Monitor officer capacity and assign applications
-          </p>
+          <h1 className="text-2xl font-bold">{title}</h1>
+          <p className="text-muted-foreground">{description}</p>
         </div>
         <div className="flex gap-2">
           <Badge variant="secondary" className="text-sm">
