@@ -472,7 +472,7 @@
 | APP-001 | List All Applications | 1. Login as Admin <br> 2. Navigate to Applications | Shows all applications with pagination | ✅ |
 | APP-002 | Filter by Status | 1. Select status filter (Pending/Approved/Rejected) | Table filters accordingly | ✅ |
 | APP-003 | View Application Details | 1. Click on application row | Shows full application details | ✅ |
-| APP-004 | Assign to Officer | 1. Select unassigned application <br> 2. Click "Assign" <br> 3. Select officer | Application assigned to officer | ❌ |
+| APP-004 | Assign to Officer | 1. Select unassigned application <br> 2. Click "Assign" <br> 3. Select officer | Application assigned to officer | ✅ |
 
 #### 5.2 Officer Application Review
 

@@ -8,5 +8,6 @@ export { OfficerSidebar } from "./OfficerSidebar";
 export { PaymentHistoryCard } from "./PaymentHistoryCard";
 export { RejectionModal } from "./RejectionModal";
 export { RepaymentScheduleCard } from "./RepaymentScheduleCard";
+export { RequestDocumentsModal } from "./RequestDocumentsModal";
 export { RequestReuploadModal } from "./RequestReuploadModal";
 export { TwoFactorSettings } from "./TwoFactorSettings";

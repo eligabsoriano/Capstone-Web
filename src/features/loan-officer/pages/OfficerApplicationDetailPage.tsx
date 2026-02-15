@@ -1,3 +1,4 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   AlertCircle,
   ArrowLeft,
@@ -15,13 +16,17 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { parseError } from "@/lib/errors";
+import { requestReupload } from "../api/documentsApi";
 import { ApprovalModal } from "../components/ApprovalModal";
 import { DisbursementModal } from "../components/DisbursementModal";
 import { RejectionModal } from "../components/RejectionModal";
+import { RequestDocumentsModal } from "../components/RequestDocumentsModal";
 import {
   useDisburseApplication,
   useOfficerApplicationDetail,
@@ -31,6 +36,7 @@ import {
 export function OfficerApplicationDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const {
     data: application,
@@ -43,6 +49,34 @@ export function OfficerApplicationDetailPage() {
   const [approvalModalOpen, setApprovalModalOpen] = useState(false);
   const [rejectionModalOpen, setRejectionModalOpen] = useState(false);
   const [disbursementModalOpen, setDisbursementModalOpen] = useState(false);
+  const [requestDocumentsModalOpen, setRequestDocumentsModalOpen] =
+    useState(false);
+
+  const requestDocumentsMutation = useMutation({
+    mutationFn: ({
+      documentId,
+      reason,
+    }: {
+      documentId: string;
+      reason: string;
+    }) => requestReupload(documentId, { reason }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["officer-application", id],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ["officer-applications"],
+      });
+      await queryClient.invalidateQueries({ queryKey: ["officer-documents"] });
+      await queryClient.invalidateQueries({
+        queryKey: ["admin", "audit-logs"],
+      });
+      toast.success("Document request sent to customer");
+    },
+    onError: (err: unknown) => {
+      toast.error(parseError(err));
+    },
+  });
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-PH", {
@@ -126,6 +160,15 @@ export function OfficerApplicationDetailPage() {
     setDisbursementModalOpen(false);
   };
 
+  const handleRequestDocuments = async (documentId: string, reason: string) => {
+    try {
+      await requestDocumentsMutation.mutateAsync({ documentId, reason });
+      setRequestDocumentsModalOpen(false);
+    } catch {
+      // Error toast is handled in mutation onError.
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-24">
@@ -158,6 +201,9 @@ export function OfficerApplicationDetailPage() {
 
   const canReview = ["submitted", "under_review"].includes(application.status);
   const canDisburse = application.status === "approved";
+  const requestableDocuments = (application.documents || []).filter(
+    (doc) => doc.status !== "approved",
+  );
 
   return (
     <div className="space-y-6">
@@ -754,6 +800,23 @@ export function OfficerApplicationDetailPage() {
                     <XCircle className="h-4 w-4 mr-2" />
                     Reject Application
                   </Button>
+                  <Button
+                    variant="secondary"
+                    className="w-full"
+                    onClick={() => setRequestDocumentsModalOpen(true)}
+                    disabled={
+                      requestDocumentsMutation.isPending ||
+                      requestableDocuments.length === 0
+                    }
+                  >
+                    <FileText className="h-4 w-4 mr-2" />
+                    Request Documents
+                  </Button>
+                  {requestableDocuments.length === 0 && (
+                    <p className="text-xs text-muted-foreground text-center">
+                      No documents available for re-upload request.
+                    </p>
+                  )}
                 </>
               )}
               {canDisburse && (
@@ -828,6 +891,18 @@ export function OfficerApplicationDetailPage() {
         onConfirm={handleDisburse}
         approvedAmount={application.recommended_amount}
         isPending={disburseMutation.isPending}
+      />
+      <RequestDocumentsModal
+        open={requestDocumentsModalOpen}
+        onClose={() => setRequestDocumentsModalOpen(false)}
+        documents={requestableDocuments.map((doc) => ({
+          id: doc.id,
+          document_type: doc.document_type,
+          filename: doc.filename,
+          status: doc.status,
+        }))}
+        isPending={requestDocumentsMutation.isPending}
+        onConfirm={handleRequestDocuments}
       />
     </div>
   );
