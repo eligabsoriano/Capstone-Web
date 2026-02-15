@@ -11,6 +11,7 @@ import {
   GraduationCap,
   Home,
   Loader2,
+  MessageSquare,
   User,
   XCircle,
 } from "lucide-react";
@@ -21,6 +22,7 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 import { parseError } from "@/lib/errors";
 import { requestReupload } from "../api/documentsApi";
 import { ApprovalModal } from "../components/ApprovalModal";
@@ -28,6 +30,7 @@ import { DisbursementModal } from "../components/DisbursementModal";
 import { RejectionModal } from "../components/RejectionModal";
 import { RequestDocumentsModal } from "../components/RequestDocumentsModal";
 import {
+  useAddApplicationNote,
   useDisburseApplication,
   useOfficerApplicationDetail,
   useRequestMissingDocuments,
@@ -46,6 +49,7 @@ export function OfficerApplicationDetailPage() {
   } = useOfficerApplicationDetail(id || "");
   const reviewMutation = useReviewApplication();
   const disburseMutation = useDisburseApplication();
+  const addApplicationNoteMutation = useAddApplicationNote();
   const requestMissingDocumentsMutation = useRequestMissingDocuments();
 
   const [approvalModalOpen, setApprovalModalOpen] = useState(false);
@@ -53,6 +57,7 @@ export function OfficerApplicationDetailPage() {
   const [disbursementModalOpen, setDisbursementModalOpen] = useState(false);
   const [requestDocumentsModalOpen, setRequestDocumentsModalOpen] =
     useState(false);
+  const [internalNoteDraft, setInternalNoteDraft] = useState("");
 
   const requestDocumentsMutation = useMutation({
     mutationFn: ({
@@ -191,6 +196,27 @@ export function OfficerApplicationDetailPage() {
     }
   };
 
+  const handleAddInternalNote = async () => {
+    if (!id) return;
+
+    const note = internalNoteDraft.trim();
+    if (!note) {
+      toast.error("Please enter a note");
+      return;
+    }
+
+    try {
+      await addApplicationNoteMutation.mutateAsync({
+        applicationId: id,
+        data: { note },
+      });
+      toast.success("Internal note saved");
+      setInternalNoteDraft("");
+    } catch (err) {
+      toast.error(parseError(err));
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-24">
@@ -232,6 +258,7 @@ export function OfficerApplicationDetailPage() {
   const missingRequiredDocuments = (
     application.product.required_documents || []
   ).filter((docType) => !uploadedDocumentTypes.has(docType));
+  const internalNotes = application.internal_notes || [];
 
   return (
     <div className="space-y-6">
@@ -868,7 +895,61 @@ export function OfficerApplicationDetailPage() {
             </CardContent>
           </Card>
 
-          {/* Decision Info (if available) */}
+          {/* Internal Notes */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MessageSquare className="h-5 w-5 text-primary" />
+                Internal Notes
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Textarea
+                value={internalNoteDraft}
+                onChange={(e) => setInternalNoteDraft(e.target.value)}
+                placeholder="Add review note for officer/admin visibility"
+                rows={3}
+                disabled={addApplicationNoteMutation.isPending}
+              />
+              <Button
+                className="w-full"
+                onClick={handleAddInternalNote}
+                disabled={
+                  addApplicationNoteMutation.isPending ||
+                  !internalNoteDraft.trim()
+                }
+              >
+                {addApplicationNoteMutation.isPending
+                  ? "Saving Note..."
+                  : "Save Note"}
+              </Button>
+              {internalNotes.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  No internal notes yet.
+                </p>
+              ) : (
+                <div className="space-y-2">
+                  {[...internalNotes].reverse().map((note, index) => (
+                    <div
+                      key={`${note.created_at || "note"}-${index}`}
+                      className="rounded-md border p-3"
+                    >
+                      <p className="text-sm whitespace-pre-wrap">
+                        {note.content}
+                      </p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {(note.author_role || "user")
+                          .replace(/_/g, " ")
+                          .toUpperCase()}{" "}
+                        • {formatDate(note.created_at)}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
           {application.decision_date && (
             <Card>
               <CardHeader>

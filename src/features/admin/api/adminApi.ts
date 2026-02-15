@@ -18,8 +18,7 @@ import type {
   LoanProduct,
   OfficerSearchParams,
   OfficersListResponse,
-  OfficerWorkload,
-  PendingApplication,
+  OfficerWorkloadResponse,
   ReassignApplicationRequest,
   ReassignApplicationResponse,
   UpdateAdminRequest,
@@ -167,17 +166,7 @@ export async function getOfficerWorkload(params?: {
   search?: string;
   page?: number;
   page_size?: number;
-}): Promise<
-  ApiResponse<{
-    officers: OfficerWorkload[];
-    total: number;
-    page: number;
-    page_size: number;
-    total_pages: number;
-    pending_applications?: PendingApplication[];
-    pending_count?: number;
-  }>
-> {
+}): Promise<ApiResponse<OfficerWorkloadResponse>> {
   // Filter out undefined values
   const cleanParams = params
     ? Object.fromEntries(
@@ -185,17 +174,10 @@ export async function getOfficerWorkload(params?: {
       )
     : {};
 
-  const response = await apiClient.get<
-    ApiResponse<{
-      officers: OfficerWorkload[];
-      total: number;
-      page: number;
-      page_size: number;
-      total_pages: number;
-      pending_applications?: PendingApplication[];
-      pending_count?: number;
-    }>
-  >("/api/loans/admin/officers/workload/", { params: cleanParams });
+  const response = await apiClient.get<ApiResponse<OfficerWorkloadResponse>>(
+    "/api/loans/admin/officers/workload/",
+    { params: cleanParams },
+  );
   return response.data;
 }
 

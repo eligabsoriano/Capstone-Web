@@ -349,6 +349,13 @@ export interface ApplicationListItem {
   submitted_at: string;
 }
 
+export interface ApplicationInternalNote {
+  content: string;
+  author_id: string | null;
+  author_role: string | null;
+  created_at: string | null;
+}
+
 export interface AssignApplicationRequest {
   officer_id: string;
 }
@@ -429,6 +436,8 @@ export interface PendingApplication {
   risk_category: string | null;
   assigned_officer: string | null;
   submitted_at: string | null;
+  internal_notes_count?: number;
+  latest_internal_note?: ApplicationInternalNote | null;
 }
 
 // ============================================================================
@@ -536,6 +545,8 @@ export interface OfficerApplicationListItem {
   eligibility_score: number;
   risk_category: RiskCategory;
   submitted_at: string | null;
+  internal_notes_count?: number;
+  latest_internal_note?: ApplicationInternalNote | null;
 }
 
 export interface OfficerApplicationDetail {
@@ -561,6 +572,9 @@ export interface OfficerApplicationDetail {
   rejection_reason: string | null;
   submitted_at: string | null;
   decision_date: string | null;
+  internal_notes?: ApplicationInternalNote[];
+  internal_notes_count?: number;
+  latest_internal_note?: ApplicationInternalNote | null;
   missing_documents_requested?: string[];
   missing_documents_reason?: string | null;
   missing_documents_requested_at?: string | null;
@@ -671,6 +685,17 @@ export interface RequestMissingDocumentsResponse {
   missing_documents_requested: string[];
   missing_documents_reason: string;
   missing_documents_requested_at: string | null;
+}
+
+export interface AddApplicationInternalNoteRequest {
+  note: string;
+}
+
+export interface AddApplicationInternalNoteResponse {
+  id: string;
+  status: string;
+  internal_notes_count: number;
+  latest_internal_note: ApplicationInternalNote | null;
 }
 
 // ============================================================================

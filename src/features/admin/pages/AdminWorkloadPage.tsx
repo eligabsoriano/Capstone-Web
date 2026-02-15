@@ -421,6 +421,7 @@ export function AdminWorkloadPage({
                     <TableHead className="text-center">Score</TableHead>
                     <TableHead className="text-center">Risk</TableHead>
                     <TableHead>Submitted</TableHead>
+                    <TableHead>Notes</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -448,6 +449,17 @@ export function AdminWorkloadPage({
                       </TableCell>
                       <TableCell className="text-muted-foreground text-sm">
                         {formatDate(app.submitted_at)}
+                      </TableCell>
+                      <TableCell>
+                        <div className="max-w-[220px]">
+                          <p className="text-xs font-medium">
+                            {app.internal_notes_count ?? 0} note
+                            {(app.internal_notes_count ?? 0) === 1 ? "" : "s"}
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {app.latest_internal_note?.content || "—"}
+                          </p>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -516,6 +528,7 @@ export function AdminWorkloadPage({
                     <TableHead className="text-right">Amount</TableHead>
                     <TableHead className="text-center">Risk</TableHead>
                     <TableHead>Submitted</TableHead>
+                    <TableHead>Notes</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -547,6 +560,17 @@ export function AdminWorkloadPage({
                         </TableCell>
                         <TableCell className="text-muted-foreground text-sm">
                           {formatDate(app.submitted_at)}
+                        </TableCell>
+                        <TableCell>
+                          <div className="max-w-[220px]">
+                            <p className="text-xs font-medium">
+                              {app.internal_notes_count ?? 0} note
+                              {(app.internal_notes_count ?? 0) === 1 ? "" : "s"}
+                            </p>
+                            <p className="text-xs text-muted-foreground truncate">
+                              {app.latest_internal_note?.content || "—"}
+                            </p>
+                          </div>
                         </TableCell>
                         <TableCell className="text-right">
                           <Button

@@ -5,6 +5,7 @@ import type {
 } from "@/types/api";
 import {
   type ApplicationSearchParams,
+  addApplicationInternalNote,
   disburseApplication,
   getOfficerApplicationDetail,
   getOfficerApplications,
@@ -31,6 +32,29 @@ export function useOfficerApplications(
             page_size: 20,
             total_pages: 0,
           },
+  });
+}
+
+/**
+ * Hook for adding standalone internal notes on an application
+ */
+export function useAddApplicationNote() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      applicationId,
+      data,
+    }: {
+      applicationId: string;
+      data: { note: string };
+    }) => addApplicationInternalNote(applicationId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["officer-applications"] });
+      queryClient.invalidateQueries({ queryKey: ["officer-application"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "workload"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "audit-logs"] });
+    },
   });
 }
 

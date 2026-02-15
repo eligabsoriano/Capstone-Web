@@ -1,5 +1,7 @@
 import { apiClient } from "@/shared/api/client";
 import type {
+  AddApplicationInternalNoteRequest,
+  AddApplicationInternalNoteResponse,
   ApiResponse,
   DisburseApplicationRequest,
   DisburseApplicationResponse,
@@ -99,6 +101,20 @@ export async function requestMissingDocuments(
 ): Promise<ApiResponse<RequestMissingDocumentsResponse>> {
   const response = await apiClient.post(
     `/api/loans/officer/applications/${applicationId}/request-missing-documents/`,
+    data,
+  );
+  return response.data;
+}
+
+/**
+ * Add standalone internal note to an application
+ */
+export async function addApplicationInternalNote(
+  applicationId: string,
+  data: AddApplicationInternalNoteRequest,
+): Promise<ApiResponse<AddApplicationInternalNoteResponse>> {
+  const response = await apiClient.post(
+    `/api/loans/officer/applications/${applicationId}/notes/`,
     data,
   );
   return response.data;

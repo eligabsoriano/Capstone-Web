@@ -483,7 +483,7 @@
 | APP-007 | Approve Application | 1. Review application <br> 2. Click "Approve" <br> 3. Add notes (optional) <br> 4. Confirm | Application status changes to Approved | ✅ |
 | APP-008 | Reject Application | 1. Review application <br> 2. Click "Reject" <br> 3. Add rejection reason (required) <br> 4. Confirm | Application status changes to Rejected, reason saved | ✅ |
 | APP-009 | Request More Documents | 1. Review application <br> 2. Click "Request Documents" <br> 3. Choose request type: Missing Document or Re-upload <br> 4. Select document(s) and specify what's needed (optional for Missing Document) <br> 5. Send request | Request saved, customer notified by email, application remains in active review flow | ✅ |
-| APP-010 | Add Review Notes | 1. Open application <br> 2. Add internal notes <br> 3. Save | Notes saved, visible to other officers/admins | ⚠️ |
+| APP-010 | Add Review Notes | 1. Open application detail <br> 2. Add note in "Internal Notes" section <br> 3. Click "Save Note" <br> 4. Verify notes summary appears in officer/admin application tables | Notes save without approve/reject, are visible in detail history and summarized in officer/admin application list views | ✅ |
 
 #### 5.3 Disbursement
 
