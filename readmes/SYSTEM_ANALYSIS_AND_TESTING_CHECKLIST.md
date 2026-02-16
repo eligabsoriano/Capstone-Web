@@ -523,7 +523,7 @@
 | PAY-005 | Payment Methods | 1. Open payment form <br> 2. Check available methods | Shows Cash, Bank Transfer, Mobile Money, etc. | ✅ |
 | PAY-006 | Reference Number | 1. Select bank transfer <br> 2. Enter reference number | Reference number saved with payment | ✅ |
 | PAY-007 | Payment Confirmation | 1. Submit payment | Shows confirmation with details | ✅  |
-| PAY-008 | Duplicate Payment Prevention | 1. Try to record same payment twice | Shows warning or prevents duplicate | ⚠️   |
+| PAY-008 | Duplicate Payment Prevention | 1. Try to record same payment twice | Shows warning or prevents duplicate | ✅ |
 
 #### 7.2 Repayment Schedule
 

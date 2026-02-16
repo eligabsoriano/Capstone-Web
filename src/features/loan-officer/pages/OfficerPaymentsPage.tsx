@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { parseError } from "@/lib/errors";
 import type { RecordPaymentRequest } from "@/types/api";
 import { type ActiveLoan, searchActiveLoans } from "../api/applicationsApi";
 import { PaymentHistoryCard, RepaymentScheduleCard } from "../components";
@@ -93,8 +94,8 @@ export function OfficerPaymentsPage() {
           toast.info("No active loans found for this search");
         }
       }
-    } catch {
-      toast.error("Failed to search loans");
+    } catch (err) {
+      toast.error(parseError(err));
     } finally {
       setIsSearching(false);
     }
@@ -147,8 +148,8 @@ export function OfficerPaymentsPage() {
           installment_number: formData.installment_number + 1,
         });
       },
-      onError: (err: Error) => {
-        toast.error(err.message || "Failed to record payment");
+      onError: (err: unknown) => {
+        toast.error(parseError(err));
       },
     });
   };
