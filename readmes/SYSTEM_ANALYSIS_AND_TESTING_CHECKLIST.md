@@ -516,7 +516,7 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| PAY-001 | Search Loans | 1. Navigate to Record Payment <br> 2. Search by customer name or loan ID | Shows matching active loans | ⚠️ |
+| PAY-001 | Search Loans | 1. Navigate to Record Payment <br> 2. Search by customer name or loan ID | Shows matching active loans | ✅ |
 | PAY-002 | Select Loan | 1. Search for loan <br> 2. Click on loan result | Shows loan details and payment form | ✅  |
 | PAY-003 | Record Full Payment | 1. Select loan <br> 2. Enter full installment amount <br> 3. Select payment method <br> 4. Submit | Payment recorded, schedule updated | ✅  |
 | PAY-004 | Record Partial Payment | 1. Select loan <br> 2. Enter partial amount <br> 3. Submit | Partial payment recorded, remaining balance shown | ✅  |

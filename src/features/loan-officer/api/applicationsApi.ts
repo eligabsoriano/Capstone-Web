@@ -160,7 +160,7 @@ export interface ActiveLoan {
 
 /**
  * Search active (disbursed) loans for payment recording
- * @param search - Customer name, phone, or ID
+ * @param search - Customer name, phone, customer ID, or loan/application ID
  */
 export async function searchActiveLoans(
   search: string,

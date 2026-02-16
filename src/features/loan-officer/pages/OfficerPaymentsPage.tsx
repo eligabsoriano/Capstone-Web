@@ -186,13 +186,13 @@ export function OfficerPaymentsPage() {
                 Find Loan
               </CardTitle>
               <CardDescription>
-                Search by customer name, phone, or ID
+                Search by customer name, phone, customer ID, or loan ID
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex gap-2">
                 <Input
-                  placeholder="Enter customer name or phone..."
+                  placeholder="Enter name, phone, customer ID, or loan ID..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
@@ -467,7 +467,10 @@ export function OfficerPaymentsPage() {
               <CardTitle>Quick Tips</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-sm text-muted-foreground">
-              <p>• Search by customer name or phone number</p>
+              <p>
+                • Search by name, phone, customer ID, or loan/application ID
+              </p>
+              <p>• Product ID is not supported in this search</p>
               <p>• System auto-fills next due installment</p>
               <p>• Reference # auto-generates if left empty</p>
               <p>• After recording, next installment auto-increments</p>
