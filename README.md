@@ -111,7 +111,7 @@ VITE_API_URL=http://localhost:8000
 ### 4. Start development server
 
 ```bash
-npm run dev
+npm run dev -- --host 0.0.0.0 --port 5173
 ```
 
 The app will be available at **http://localhost:5173**
