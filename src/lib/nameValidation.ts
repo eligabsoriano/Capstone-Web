@@ -7,6 +7,7 @@ export function normalizeName(value: string): string {
 export function getNameValidationError(
   value: string,
   fieldLabel: string,
+  maxLength = 50,
 ): string | null {
   const normalized = normalizeName(value);
 
@@ -16,6 +17,10 @@ export function getNameValidationError(
 
   if (!PERSON_NAME_REGEX.test(normalized)) {
     return `${fieldLabel} can only contain letters, spaces, apostrophes, hyphens, and periods`;
+  }
+
+  if (normalized.length > maxLength) {
+    return `${fieldLabel} must be at most ${maxLength} characters`;
   }
 
   return null;

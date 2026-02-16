@@ -638,9 +638,9 @@
 | EDGE-010 | SQL/NoSQL Injection | 1. Enter malicious query in search | Query sanitized, no injection | ✅ |
 | EDGE-011 | Large File Upload | 1. Try to upload file exceeding limit | Shows file size error | ✅ |
 | EDGE-012 | Invalid File Type | 1. Try to upload unsupported file type | Shows file type error | ✅ |
-| EDGE-013 | Special Characters in Name | 1. Enter name with special chars | Handles appropriately (saves or validation error) | ❌ |
-| EDGE-014 | Empty Form Submission | 1. Submit form without required fields | Shows all validation errors | ✔ |
-| EDGE-015 | Very Long Input | 1. Enter extremely long text in fields | Truncates or shows max length error | ❌ |
+| EDGE-013 | Special Characters in Name | 1. Enter name with special chars | Handles appropriately (saves or validation error) | ✅ |
+| EDGE-014 | Empty Form Submission | 1. Submit form without required fields | Shows all validation errors | ✅ |
+| EDGE-015 | Very Long Input | 1. Enter extremely long text in fields | Truncates or shows max length error | ✅ |
 
 ### Concurrent Operations
 

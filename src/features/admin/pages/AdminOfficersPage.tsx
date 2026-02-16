@@ -494,6 +494,7 @@ export function AdminOfficersPage() {
                   <Input
                     id="officer-first-name"
                     value={createForm.first_name}
+                    maxLength={50}
                     onChange={(e) =>
                       setCreateForm({
                         ...createForm,
@@ -521,6 +522,7 @@ export function AdminOfficersPage() {
                   <Input
                     id="officer-last-name"
                     value={createForm.last_name}
+                    maxLength={50}
                     onChange={(e) =>
                       setCreateForm({
                         ...createForm,
