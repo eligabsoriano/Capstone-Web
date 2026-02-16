@@ -802,3 +802,47 @@ export interface OfficerDashboardData {
     approval_rate: string;
   };
 }
+
+// ============================================================================
+// NOTIFICATIONS TYPES
+// ============================================================================
+
+export interface NotificationItem {
+  id: string;
+  notification_type: string;
+  subject: string;
+  message: string;
+  related_type: string | null;
+  related_id: string | null;
+  channel: string;
+  status: string;
+  is_read: boolean;
+  created_at: string | null;
+  sent_at: string | null;
+}
+
+export interface NotificationListResponse {
+  notifications: NotificationItem[];
+  unread_count: number;
+  pagination: {
+    page: number;
+    page_size: number;
+    total_items: number;
+    total_pages: number;
+    has_next: boolean;
+    has_previous: boolean;
+  };
+}
+
+export interface NotificationUnreadCountResponse {
+  unread_count: number;
+}
+
+export interface NotificationMarkReadResponse {
+  notification_id: string;
+  status: "read";
+}
+
+export interface NotificationMarkAllReadResponse {
+  marked_count: number;
+}

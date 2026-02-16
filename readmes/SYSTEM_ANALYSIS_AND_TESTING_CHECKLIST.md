@@ -590,10 +590,10 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| PROF-001 | View Own Profile | 1. Click profile in header | Shows user profile page | ✔ |
-| PROF-002 | Update Profile | 1. Edit profile fields <br> 2. Save | Changes saved successfully | ✔ |
-| PROF-003 | View Customer Profile | 1. Open customer's loan application <br> 2. Click customer name | Shows customer profile details | ✔ |
-| PROF-004 | Business Profile | 1. View customer with business loan | Shows business details | ✔ |
+| PROF-001 | View Own Profile | 1. Click profile in header | Shows user profile page | ✅ |
+| PROF-002 | Update Profile | 1. Edit profile fields <br> 2. Save | Changes saved successfully | ✅ |
+| PROF-003 | View Customer Profile | 1. Open customer's loan application <br> 2. Click customer name | Shows customer profile details | ✅ |
+| PROF-004 | Business Profile | 1. View customer with business loan | Shows business details | ✅ |
 
 ---
 
@@ -601,12 +601,12 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| NOTIF-001 | Notification Bell | 1. View header | Shows notification bell with count badge | ⁉️ |
-| NOTIF-002 | View Notifications | 1. Click notification bell | Shows notification dropdown/list | ⁉️ |
-| NOTIF-003 | Mark as Read | 1. Click on notification | Notification marked as read, badge decreases | ⁉️ |
-| NOTIF-004 | Mark All Read | 1. Click "Mark all as read" | All notifications marked as read | ⁉️ |
-| NOTIF-005 | Real-time Update | 1. Have another user trigger notification <br> 2. Observe | New notification appears without refresh | ⁉️ |
-| NOTIF-006 | Notification Link | 1. Click notification with action | Navigates to relevant page | ⁉️ |
+| NOTIF-001 | Notification Bell | 1. View header | Shows notification bell with count badge | ✅ |
+| NOTIF-002 | View Notifications | 1. Click notification bell | Shows notification dropdown/list | ✅ |
+| NOTIF-003 | Mark as Read | 1. Click on notification | Notification marked as read, badge decreases | ✅ |
+| NOTIF-004 | Mark All Read | 1. Click "Mark all as read" | All notifications marked as read | ✅ |
+| NOTIF-005 | Real-time Update | 1. Have another user trigger notification <br> 2. Observe | New notification appears without refresh | ✅ |
+| NOTIF-006 | Notification Link | 1. Click notification with action | Navigates to relevant page | ✅ |
 
 ---
 
