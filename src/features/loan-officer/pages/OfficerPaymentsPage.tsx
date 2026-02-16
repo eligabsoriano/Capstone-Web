@@ -78,6 +78,9 @@ export function OfficerPaymentsPage() {
     });
   };
 
+  const amountExceedsRemaining =
+    !!selectedLoan && formData.amount - selectedLoan.remaining_balance > 0.01;
+
   // Search for loans
   const handleSearch = async () => {
     if (!searchQuery.trim() || searchQuery.length < 2) {
@@ -124,6 +127,15 @@ export function OfficerPaymentsPage() {
       toast.error("Amount must be greater than 0");
       return;
     }
+    if (
+      selectedLoan &&
+      formData.amount - selectedLoan.remaining_balance > 0.01
+    ) {
+      toast.error(
+        `Amount exceeds remaining balance of ${formatCurrency(selectedLoan.remaining_balance)}`,
+      );
+      return;
+    }
     // Reference is optional now - backend will auto-generate if empty
 
     const submitData = {
@@ -135,12 +147,16 @@ export function OfficerPaymentsPage() {
     recordMutation.mutate(submitData, {
       onSuccess: (response) => {
         toast.success(response.message || "Payment recorded successfully");
+        const newRemaining = Math.max(response.data?.remaining_balance || 0, 0);
         setLastPayment({
           loan_id: response.data?.loan_id || formData.loan_id,
           amount: response.data?.amount || formData.amount,
-          remaining: response.data?.remaining_balance || 0,
+          remaining: newRemaining,
           reference: response.data?.reference || formData.reference,
         });
+        setSelectedLoan((prev) =>
+          prev ? { ...prev, remaining_balance: newRemaining } : prev,
+        );
         // Reset form but keep loan_id for multiple installments
         setFormData({
           ...initialFormData,
@@ -318,12 +334,19 @@ export function OfficerPaymentsPage() {
                       id="amount"
                       type="number"
                       min={0}
+                      max={selectedLoan?.remaining_balance}
                       step={0.01}
                       value={formData.amount || ""}
                       onChange={(e) =>
                         handleInputChange("amount", Number(e.target.value))
                       }
                     />
+                    {amountExceedsRemaining && selectedLoan && (
+                      <p className="text-xs text-destructive">
+                        Amount cannot exceed remaining balance of{" "}
+                        {formatCurrency(selectedLoan.remaining_balance)}.
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -393,7 +416,11 @@ export function OfficerPaymentsPage() {
                 <Button
                   type="submit"
                   className="w-full"
-                  disabled={recordMutation.isPending || !selectedLoan}
+                  disabled={
+                    recordMutation.isPending ||
+                    !selectedLoan ||
+                    amountExceedsRemaining
+                  }
                 >
                   {recordMutation.isPending ? (
                     <>
