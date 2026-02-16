@@ -2,6 +2,7 @@ import {
   AlertCircle,
   ChevronLeft,
   ChevronRight,
+  Download,
   Loader2,
   Receipt,
   RotateCcw,
@@ -9,6 +10,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,7 +23,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { parseError } from "@/lib/errors";
-import type { PaymentSearchParams } from "../api/paymentsApi";
+import {
+  type PaymentSearchItem,
+  type PaymentSearchParams,
+  searchPayments,
+} from "../api/paymentsApi";
 import { usePaymentSearch } from "../hooks";
 
 const DEFAULT_PAGE_SIZE = 20;
@@ -43,12 +49,21 @@ const paymentMethodLabels: Record<string, string> = {
   other: "Other",
 };
 
+const paymentStatusLabels = {
+  on_time: "On-time",
+  late: "Late",
+  unknown: "Unknown",
+} as const;
+
 export function OfficerPaymentHistoryPage() {
   const [filters, setFilters] = useState<PaymentSearchParams>(defaultFilters);
   const [searchInput, setSearchInput] = useState("");
   const [startDateInput, setStartDateInput] = useState("");
   const [endDateInput, setEndDateInput] = useState("");
   const [paymentMethodInput, setPaymentMethodInput] = useState("all");
+  const [paymentStatusInput, setPaymentStatusInput] = useState("all");
+  const [exportFormat, setExportFormat] = useState<"csv" | "json">("csv");
+  const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -86,6 +101,64 @@ export function OfficerPaymentHistoryPage() {
     });
   };
 
+  const formatStatusLabel = (status: PaymentSearchItem["payment_status"]) =>
+    paymentStatusLabels[status] || "Unknown";
+
+  const escapeCsvValue = (value: string) => {
+    if (/[",\n]/.test(value)) {
+      return `"${value.replace(/"/g, '""')}"`;
+    }
+    return value;
+  };
+
+  const downloadFile = (
+    content: string,
+    mimeType: string,
+    filename: string,
+  ): void => {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const fetchAllPaymentsForExport = async (): Promise<PaymentSearchItem[]> => {
+    const pageSize = 100;
+    const baseParams: PaymentSearchParams = {
+      ...filters,
+      page: 1,
+      page_size: pageSize,
+    };
+
+    const firstResponse = await searchPayments(baseParams);
+    if (firstResponse.status !== "success" || !firstResponse.data) {
+      throw new Error(
+        firstResponse.message || "Failed to export payment history",
+      );
+    }
+
+    const allPayments = [...firstResponse.data.payments];
+    const totalPagesForExport = firstResponse.data.total_pages || 1;
+
+    for (let exportPage = 2; exportPage <= totalPagesForExport; exportPage++) {
+      const response = await searchPayments({
+        ...baseParams,
+        page: exportPage,
+      });
+      if (response.status !== "success" || !response.data) {
+        throw new Error(response.message || "Failed to export payment history");
+      }
+      allPayments.push(...response.data.payments);
+    }
+
+    return allPayments;
+  };
+
   const handlePageChange = (page: number) => {
     setFilters((prev) => ({ ...prev, page }));
   };
@@ -98,6 +171,18 @@ export function OfficerPaymentHistoryPage() {
         value === "all"
           ? undefined
           : (value as PaymentSearchParams["payment_method"]),
+      page: 1,
+    }));
+  };
+
+  const handlePaymentStatusChange = (value: string) => {
+    setPaymentStatusInput(value);
+    setFilters((prev) => ({
+      ...prev,
+      payment_status:
+        value === "all"
+          ? undefined
+          : (value as PaymentSearchParams["payment_status"]),
       page: 1,
     }));
   };
@@ -136,11 +221,88 @@ export function OfficerPaymentHistoryPage() {
     }));
   };
 
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      const records = await fetchAllPaymentsForExport();
+      if (records.length === 0) {
+        toast.info("No records to export");
+        return;
+      }
+
+      const dateSuffix = new Date().toISOString().split("T")[0];
+
+      if (exportFormat === "json") {
+        const jsonContent = JSON.stringify(
+          {
+            generated_at: new Date().toISOString(),
+            filters,
+            total_records: records.length,
+            payments: records,
+          },
+          null,
+          2,
+        );
+        downloadFile(
+          jsonContent,
+          "application/json;charset=utf-8",
+          `payment-history-${dateSuffix}.json`,
+        );
+      } else {
+        const headers = [
+          "Date",
+          "Customer",
+          "Product",
+          "Loan ID",
+          "Installment #",
+          "Due Date",
+          "Status",
+          "Payment Method",
+          "Amount",
+          "Reference",
+        ];
+
+        const rows = records.map((payment) => [
+          formatDate(payment.recorded_at),
+          payment.customer_name,
+          payment.product_name,
+          payment.loan_id,
+          String(payment.installment_number),
+          formatDate(payment.due_date),
+          formatStatusLabel(payment.payment_status),
+          paymentMethodLabels[payment.payment_method] || payment.payment_method,
+          payment.amount.toFixed(2),
+          payment.reference || "",
+        ]);
+
+        const csvContent = [
+          headers.map(escapeCsvValue).join(","),
+          ...rows.map((row) =>
+            row.map((cell) => escapeCsvValue(cell)).join(","),
+          ),
+        ].join("\n");
+
+        downloadFile(
+          csvContent,
+          "text/csv;charset=utf-8",
+          `payment-history-${dateSuffix}.csv`,
+        );
+      }
+
+      toast.success("Payment history exported");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : parseError(err));
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   const resetFilters = () => {
     setSearchInput("");
     setStartDateInput("");
     setEndDateInput("");
     setPaymentMethodInput("all");
+    setPaymentStatusInput("all");
     setFilters(defaultFilters);
   };
 
@@ -217,6 +379,20 @@ export function OfficerPaymentHistoryPage() {
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="payment-history-status">Payment Status</Label>
+              <select
+                id="payment-history-status"
+                value={paymentStatusInput}
+                onChange={(e) => handlePaymentStatusChange(e.target.value)}
+                className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+              >
+                <option value="all">All Statuses</option>
+                <option value="on_time">On-time</option>
+                <option value="late">Late</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="payment-history-sort-by">Sort By</Label>
               <select
                 id="payment-history-sort-by"
@@ -266,7 +442,42 @@ export function OfficerPaymentHistoryPage() {
             </div>
           </div>
 
-          <div className="flex justify-end">
+          <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+              <div className="space-y-2">
+                <Label htmlFor="payment-history-export-format">
+                  Export Format
+                </Label>
+                <select
+                  id="payment-history-export-format"
+                  value={exportFormat}
+                  onChange={(e) =>
+                    setExportFormat(e.target.value as "csv" | "json")
+                  }
+                  className="h-10 min-w-32 rounded-md border border-input bg-background px-3 text-sm"
+                >
+                  <option value="csv">CSV</option>
+                  <option value="json">JSON</option>
+                </select>
+              </div>
+              <Button
+                onClick={handleExport}
+                disabled={isExporting || isLoading || isFetching}
+              >
+                {isExporting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Exporting...
+                  </>
+                ) : (
+                  <>
+                    <Download className="h-4 w-4 mr-2" />
+                    Export
+                  </>
+                )}
+              </Button>
+            </div>
+
             <Button variant="outline" onClick={resetFilters}>
               <RotateCcw className="h-4 w-4 mr-2" />
               Reset Filters
@@ -322,6 +533,9 @@ export function OfficerPaymentHistoryPage() {
                       <th className="px-4 py-3 text-left font-medium">
                         Method
                       </th>
+                      <th className="px-4 py-3 text-left font-medium">
+                        Status
+                      </th>
                       <th className="px-4 py-3 text-right font-medium">
                         Amount
                       </th>
@@ -355,6 +569,17 @@ export function OfficerPaymentHistoryPage() {
                           <Badge variant="outline">
                             {paymentMethodLabels[payment.payment_method] ||
                               payment.payment_method}
+                          </Badge>
+                        </td>
+                        <td className="px-4 py-3">
+                          <Badge
+                            variant={
+                              payment.payment_status === "late"
+                                ? "destructive"
+                                : "secondary"
+                            }
+                          >
+                            {formatStatusLabel(payment.payment_status)}
                           </Badge>
                         </td>
                         <td className="px-4 py-3 text-right font-medium text-green-600">

@@ -19,6 +19,7 @@ export interface PaymentSearchParams {
   loan_id?: string;
   customer_id?: string;
   disbursed_only?: boolean;
+  payment_status?: "on_time" | "late";
   payment_method?:
     | "cash"
     | "bank_transfer"
@@ -46,6 +47,8 @@ export interface PaymentSearchItem {
   customer_name: string;
   product_name: string;
   installment_number: number;
+  due_date: string | null;
+  payment_status: "on_time" | "late" | "unknown";
   amount: number;
   payment_method: string;
   reference: string;
