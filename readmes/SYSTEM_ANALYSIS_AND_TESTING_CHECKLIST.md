@@ -605,7 +605,7 @@
 | NOTIF-002 | View Notifications | 1. Click notification bell | Shows notification dropdown/list | ✅ |
 | NOTIF-003 | Mark as Read | 1. Click on notification | Notification marked as read, badge decreases | ✅ |
 | NOTIF-004 | Mark All Read | 1. Click "Mark all as read" | All notifications marked as read | ✅ |
-| NOTIF-005 | Real-time Update | 1. Have another user trigger notification <br> 2. Observe | New notification appears without refresh | ⏳ |
+| NOTIF-005 | Real-time Update | 1. Have another user trigger notification <br> 2. Observe | New notification appears without refresh | ✅ |
 | NOTIF-006 | Notification Link | 1. Click notification with action | Navigates to relevant page | ✅ |
 
 ---
@@ -628,13 +628,13 @@
 | EDGE-005 | Access Admin as Officer | 1. Login as Officer <br> 2. Manually navigate to `/admin/` | Redirected or shows 403 | ✅ |
 | EDGE-006 | Access Officer as Admin | 1. Login as Admin <br> 2. Navigate to `/officer/` | Appropriate handling (redirect or allow) | ✅ |
 | EDGE-007 | Expired Token API Call | 1. Manually expire token <br> 2. Make API call | Redirects to login or refreshes token | ✅ |
-| EDGE-008 | Tampered Token | 1. Modify JWT in storage <br> 2. Make API call | Shows authentication error | ✔ |
+| EDGE-008 | Tampered Token | 1. Modify JWT in storage <br> 2. Make API call | Shows authentication error | ✅ |
 
 ### Data Validation
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| EDGE-009 | XSS Prevention | 1. Enter `<script>alert('xss')</script>` in input <br> 2. Submit | Input sanitized, no script execution | ⚠️  |
+| EDGE-009 | XSS Prevention | 1. Enter `<script>alert('xss')</script>` in input <br> 2. Submit | Input sanitized, no script execution | ✅ |
 | EDGE-010 | SQL/NoSQL Injection | 1. Enter malicious query in search | Query sanitized, no injection | ✔ |
 | EDGE-011 | Large File Upload | 1. Try to upload file exceeding limit | Shows file size error | ⚠️ |
 | EDGE-012 | Invalid File Type | 1. Try to upload unsupported file type | Shows file type error | ⚠️ |
