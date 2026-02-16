@@ -138,6 +138,7 @@ export async function getAuditLogs(params?: {
   action?: string;
   action_group?: "login" | "create" | "update" | "delete";
   user_id?: string;
+  user_type?: "customer" | "loan_officer" | "admin";
   page?: number;
   page_size?: number;
   date_from?: string;

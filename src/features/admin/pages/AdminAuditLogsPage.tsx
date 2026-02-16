@@ -42,10 +42,11 @@ import {
 import { parseError } from "@/lib/errors";
 import type { AuditLog } from "@/types/api";
 import { getAuditLogs } from "../api";
-import { useAuditLogDetail, useAuditLogs, useAuditLogUsers } from "../hooks";
+import { useAuditLogDetail, useAuditLogs } from "../hooks";
 
 type ActionGroup = "login" | "create" | "update" | "delete";
 type ExportFormat = "csv" | "excel";
+type RoleFilter = "customer" | "loan_officer" | "admin";
 
 const ACTION_GROUP_OPTIONS: Array<{ value: ActionGroup; label: string }> = [
   { value: "login", label: "Login" },
@@ -177,7 +178,9 @@ export function AdminAuditLogsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
-  const [userFilter, setUserFilter] = useState<string | undefined>(undefined);
+  const [roleFilter, setRoleFilter] = useState<RoleFilter | undefined>(
+    undefined,
+  );
   const [exportFormat, setExportFormat] = useState<ExportFormat>("csv");
   const [isExporting, setIsExporting] = useState(false);
   const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
@@ -185,18 +188,17 @@ export function AdminAuditLogsPage() {
   const filters = useMemo(
     () => ({
       action_group: actionGroupFilter,
-      user_id: userFilter,
+      user_type: roleFilter,
       page: currentPage,
       page_size: 20,
       date_from: dateFrom || undefined,
       date_to: dateTo || undefined,
       search: searchQuery || undefined,
     }),
-    [actionGroupFilter, userFilter, currentPage, dateFrom, dateTo, searchQuery],
+    [actionGroupFilter, roleFilter, currentPage, dateFrom, dateTo, searchQuery],
   );
 
   const { data, isLoading, error, refetch } = useAuditLogs(filters);
-  const { data: usersData } = useAuditLogUsers("");
   const {
     data: selectedLogDetail,
     isLoading: isDetailLoading,
@@ -205,7 +207,6 @@ export function AdminAuditLogsPage() {
 
   const logs = data?.logs ?? [];
   const totalPages = data?.total_pages ?? 1;
-  const users = usersData?.users ?? [];
   const detail = selectedLogDetail || selectedLog;
 
   const formatTimestamp = (timestamp: string) => {
@@ -228,7 +229,7 @@ export function AdminAuditLogsPage() {
 
   const clearFilters = () => {
     setActionGroupFilter(undefined);
-    setUserFilter(undefined);
+    setRoleFilter(undefined);
     setDateFrom("");
     setDateTo("");
     setSearchQuery("");
@@ -432,29 +433,26 @@ export function AdminAuditLogsPage() {
 
             <div className="space-y-1">
               <label
-                htmlFor="audit-user-filter"
+                htmlFor="audit-role-filter"
                 className="text-sm text-muted-foreground block"
               >
-                User
+                Role
               </label>
               <select
-                id="audit-user-filter"
-                value={userFilter ?? ""}
+                id="audit-role-filter"
+                value={roleFilter ?? ""}
                 onChange={(e) => {
-                  setUserFilter(e.target.value || undefined);
+                  setRoleFilter(
+                    (e.target.value || undefined) as RoleFilter | undefined,
+                  );
                   setCurrentPage(1);
                 }}
                 className="h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm"
               >
-                <option value="">All Users</option>
-                {users.map((user) => (
-                  <option
-                    key={`${user.user_id}-${user.user_type}`}
-                    value={user.user_id}
-                  >
-                    {user.label}
-                  </option>
-                ))}
+                <option value="">All Roles</option>
+                <option value="customer">Customer</option>
+                <option value="loan_officer">Loan Officer</option>
+                <option value="admin">Admin</option>
               </select>
             </div>
 
