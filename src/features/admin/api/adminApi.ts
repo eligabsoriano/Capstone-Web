@@ -7,7 +7,9 @@ import type {
   ApiResponse,
   AssignApplicationRequest,
   AssignApplicationResponse,
+  AuditLog,
   AuditLogsResponse,
+  AuditLogUsersResponse,
   CreateAdminRequest,
   CreateAdminResponse,
   CreateOfficerRequest,
@@ -134,6 +136,8 @@ export async function deactivateOfficer(
  */
 export async function getAuditLogs(params?: {
   action?: string;
+  action_group?: "login" | "create" | "update" | "delete";
+  user_id?: string;
   page?: number;
   page_size?: number;
   date_from?: string;
@@ -150,6 +154,40 @@ export async function getAuditLogs(params?: {
   const response = await apiClient.get<ApiResponse<AuditLogsResponse>>(
     "/api/analytics/audit-logs/",
     { params: cleanParams },
+  );
+  return response.data;
+}
+
+/**
+ * Get distinct users found in audit logs for dropdown filtering
+ * GET /api/analytics/audit-logs/users/
+ */
+export async function getAuditLogUsers(params?: {
+  search?: string;
+  limit?: number;
+}): Promise<ApiResponse<AuditLogUsersResponse>> {
+  const cleanParams = params
+    ? Object.fromEntries(
+        Object.entries(params).filter(([_, value]) => value !== undefined),
+      )
+    : {};
+
+  const response = await apiClient.get<ApiResponse<AuditLogUsersResponse>>(
+    "/api/analytics/audit-logs/users/",
+    { params: cleanParams },
+  );
+  return response.data;
+}
+
+/**
+ * Get full details for one audit log entry
+ * GET /api/analytics/audit-logs/:logId/
+ */
+export async function getAuditLogDetail(
+  logId: string,
+): Promise<ApiResponse<AuditLog>> {
+  const response = await apiClient.get<ApiResponse<AuditLog>>(
+    `/api/analytics/audit-logs/${logId}/`,
   );
   return response.data;
 }

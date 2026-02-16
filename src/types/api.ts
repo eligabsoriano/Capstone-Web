@@ -315,12 +315,21 @@ export interface AuditLog {
   id: string;
   user_id: string;
   user_type: string;
+  user_email?: string;
   action: string;
   description: string;
   resource_type: string;
   resource_id: string | null;
+  details?: Record<string, unknown>;
   ip_address: string;
   timestamp: string;
+}
+
+export interface AuditLogUserOption {
+  user_id: string;
+  user_type: string;
+  user_email: string;
+  label: string;
 }
 
 export interface AuditLogsResponse {
@@ -329,6 +338,10 @@ export interface AuditLogsResponse {
   page: number;
   page_size: number;
   total_pages: number;
+}
+
+export interface AuditLogUsersResponse {
+  users: AuditLogUserOption[];
 }
 
 // ============================================================================

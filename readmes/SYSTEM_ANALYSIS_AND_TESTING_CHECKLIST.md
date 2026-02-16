@@ -562,12 +562,12 @@
 |---------|-----------|-------|-----------------|--------|
 | ANLY-005 | View Audit Logs | 1. Navigate to Audit Logs | Shows all system audit entries | ✅ |
 | ANLY-006 | Filter by Action | 1. Filter by action type (Login, Create, Update, Delete) | Shows matching logs | ✅  |
-| ANLY-007 | Filter by User | 1. Select specific user | Shows only that user's actions | ❌ |
-| ANLY-008 | Filter by Date Range | 1. Select date range | Shows logs within range | ☐ |
+| ANLY-007 | Filter by User | 1. Select specific user | Shows only that user's actions | ✅ |
+| ANLY-008 | Filter by Date Range | 1. Select date range | Shows logs within range | ✅ |
 | ANLY-009 | Search Logs | 1. Enter search term | Finds matching log entries | ✅ |
 | ANLY-010 | Export Logs CSV | 1. Click Export <br> 2. Select CSV | Downloads audit logs as CSV | ✅ |
-| ANLY-011 | Export Logs Excel | 1. Click Export <br> 2. Select Excel | Downloads audit logs as Excel | ❌ |
-| ANLY-012 | Log Details | 1. Click on log entry | Shows full details including IP, timestamp, changes | ❌ |
+| ANLY-011 | Export Logs Excel | 1. Click Export <br> 2. Select Excel | Downloads audit logs as Excel | ✅ |
+| ANLY-012 | Log Details | 1. Click on log entry | Shows full details including IP, timestamp, changes | ✅ |
 
 ---
 
