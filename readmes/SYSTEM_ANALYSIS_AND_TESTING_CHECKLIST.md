@@ -625,9 +625,9 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| EDGE-005 | Access Admin as Officer | 1. Login as Officer <br> 2. Manually navigate to `/admin/` | Redirected or shows 403 | ✔ |
-| EDGE-006 | Access Officer as Admin | 1. Login as Admin <br> 2. Navigate to `/officer/` | Appropriate handling (redirect or allow) | ✔ |
-| EDGE-007 | Expired Token API Call | 1. Manually expire token <br> 2. Make API call | Redirects to login or refreshes token | ✔ |
+| EDGE-005 | Access Admin as Officer | 1. Login as Officer <br> 2. Manually navigate to `/admin/` | Redirected or shows 403 | ✅ |
+| EDGE-006 | Access Officer as Admin | 1. Login as Admin <br> 2. Navigate to `/officer/` | Appropriate handling (redirect or allow) | ✅ |
+| EDGE-007 | Expired Token API Call | 1. Manually expire token <br> 2. Make API call | Redirects to login or refreshes token | ✅ |
 | EDGE-008 | Tampered Token | 1. Modify JWT in storage <br> 2. Make API call | Shows authentication error | ✔ |
 
 ### Data Validation
