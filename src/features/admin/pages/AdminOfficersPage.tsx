@@ -22,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { getNameValidationError, normalizeName } from "@/lib/nameValidation";
 import type { CreateOfficerRequest, OfficerSearchParams } from "@/types/api";
 import { useCreateOfficer, useOfficersList } from "../hooks";
 
@@ -128,10 +129,26 @@ export function AdminOfficersPage() {
 
     if (!createForm.first_name.trim()) {
       errors.first_name = "First name is required";
+    } else {
+      const nameError = getNameValidationError(
+        createForm.first_name,
+        "First name",
+      );
+      if (nameError) {
+        errors.first_name = nameError;
+      }
     }
 
     if (!createForm.last_name.trim()) {
       errors.last_name = "Last name is required";
+    } else {
+      const nameError = getNameValidationError(
+        createForm.last_name,
+        "Last name",
+      );
+      if (nameError) {
+        errors.last_name = nameError;
+      }
     }
 
     if (!createForm.email.trim()) {
@@ -150,7 +167,13 @@ export function AdminOfficersPage() {
     }
 
     try {
-      const response = await createOfficerMutation.mutateAsync(createForm);
+      const payload: CreateOfficerRequest = {
+        ...createForm,
+        first_name: normalizeName(createForm.first_name),
+        last_name: normalizeName(createForm.last_name),
+      };
+
+      const response = await createOfficerMutation.mutateAsync(payload);
       if (response.status === "success" && response.data) {
         setShowCreateModal(false);
         setShowPasswordModal({

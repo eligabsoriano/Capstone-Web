@@ -21,7 +21,7 @@ export default defineConfig({
       "Origin-Agent-Cluster": "?1",
       "Content-Security-Policy":
         "default-src 'self' http://localhost:* http://host.docker.internal:* ws://localhost:* ws://host.docker.internal:* data: blob:; " +
-        "script-src 'self' http://localhost:* http://host.docker.internal:*; " +
+        "script-src 'self' 'unsafe-inline' http://localhost:* http://host.docker.internal:*; " +
         "style-src 'self' 'unsafe-inline'; " +
         "img-src 'self' data: blob: http://localhost:* http://host.docker.internal:*; " +
         "font-src 'self' data:; " +
