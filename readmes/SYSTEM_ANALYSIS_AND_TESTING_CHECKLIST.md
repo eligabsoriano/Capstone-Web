@@ -605,7 +605,7 @@
 | NOTIF-002 | View Notifications | 1. Click notification bell | Shows notification dropdown/list | ✅ |
 | NOTIF-003 | Mark as Read | 1. Click on notification | Notification marked as read, badge decreases | ✅ |
 | NOTIF-004 | Mark All Read | 1. Click "Mark all as read" | All notifications marked as read | ✅ |
-| NOTIF-005 | Real-time Update | 1. Have another user trigger notification <br> 2. Observe | New notification appears without refresh | ✅ |
+| NOTIF-005 | Real-time Update | 1. Have another user trigger notification <br> 2. Observe | New notification appears without refresh | ⏳ |
 | NOTIF-006 | Notification Link | 1. Click notification with action | Navigates to relevant page | ✅ |
 
 ---
