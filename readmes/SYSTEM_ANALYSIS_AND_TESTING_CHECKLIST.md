@@ -616,10 +616,10 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| EDGE-001 | Offline Mode | 1. Disconnect network <br> 2. Try to use app | Shows appropriate offline message | ⁉️ |
-| EDGE-002 | Slow Connection | 1. Throttle network <br> 2. Load data-heavy page | Shows loading indicators, eventually loads | ⁉️ |
-| EDGE-003 | Request Timeout | 1. Simulate server timeout | Shows timeout error message | ⁉️ |
-| EDGE-004 | Reconnection | 1. Go offline <br> 2. Come back online | App recovers and syncs | ⁉️ |
+| EDGE-001 | Offline Mode | 1. Disconnect network <br> 2. Try to use app | Shows appropriate offline message | ✅ |
+| EDGE-002 | Slow Connection | 1. Throttle network <br> 2. Load data-heavy page | Shows loading indicators, eventually loads | ✅ |
+| EDGE-003 | Request Timeout | 1. Simulate server timeout | Shows timeout error message | ✅ |
+| EDGE-004 | Reconnection | 1. Go offline <br> 2. Come back online | App recovers and syncs | ✅ |
 
 ### Authorization & Security
 
