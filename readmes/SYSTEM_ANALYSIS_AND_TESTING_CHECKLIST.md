@@ -647,17 +647,17 @@
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
 | EDGE-016 | Simultaneous Edits | 1. User A opens edit form <br> 2. User B saves same record <br> 3. User A tries to save | Shows conflict or last-write-wins | ❌ |
-| EDGE-017 | Double Submit | 1. Click submit button rapidly twice | Only one submission processed | ☐ |
-| EDGE-018 | Stale Data | 1. View list <br> 2. Another user adds record <br> 3. Refresh | New record appears | ☐ |
+| EDGE-017 | Double Submit | 1. Click submit button rapidly twice | Only one submission processed | ✅ |
+| EDGE-018 | Stale Data | 1. View list <br> 2. Another user adds record <br> 3. Refresh | New record appears | ✅ |
 
 ### Browser & Device
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| EDGE-019 | Browser Back Button | 1. Navigate through pages <br> 2. Click back | Navigates correctly, state preserved | ☐ |
-| EDGE-020 | Page Refresh | 1. In middle of workflow <br> 2. Refresh page | State recovered or graceful reset | ☐ |
-| EDGE-021 | Multiple Tabs | 1. Open app in two tabs <br> 2. Logout in one | Both tabs reflect logout | ☐ |
-| EDGE-022 | Print Page | 1. Try to print report/list | Prints with proper formatting | ☐ |
+| EDGE-019 | Browser Back Button | 1. Navigate through pages <br> 2. Click back | Navigates correctly, state preserved | ✅ |
+| EDGE-020 | Page Refresh | 1. In middle of workflow <br> 2. Refresh page | State recovered or graceful reset | ✅ |
+| EDGE-021 | Multiple Tabs | 1. Open app in two tabs <br> 2. Logout in one | Both tabs reflect logout | ✅ |x   
+| EDGE-022 | Print Page | 1. Try to print report/list | Prints with proper formatting | ✅ |
 
 ---
 
