@@ -28,6 +28,7 @@ import {
   OfficerApplicationsPage,
   OfficerDashboardPage,
   OfficerDocumentsPage,
+  OfficerPaymentHistoryPage,
   OfficerPaymentsPage,
   OfficerSettingsPage,
 } from "@/features/loan-officer/pages";
@@ -124,6 +125,10 @@ export const router = createBrowserRouter([
               {
                 path: "payments",
                 element: <OfficerPaymentsPage />,
+              },
+              {
+                path: "payment-history",
+                element: <OfficerPaymentHistoryPage />,
               },
               {
                 path: "settings",

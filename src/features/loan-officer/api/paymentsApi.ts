@@ -18,6 +18,7 @@ export interface PaymentSearchParams {
   search?: string;
   loan_id?: string;
   customer_id?: string;
+  disbursed_only?: boolean;
   payment_method?:
     | "cash"
     | "bank_transfer"

@@ -532,16 +532,16 @@
 | PAY-009 | View Schedule | 1. Navigate to loan <br> 2. View repayment schedule | Shows all installments with dates and amounts | ✅ |
 | PAY-010 | Overdue Indicator | 1. View schedule with overdue payment | Overdue row highlighted in red | ✅  |
 | PAY-011 | Paid Indicator | 1. View schedule after payment | Paid rows marked with checkmark | ✅  |
-| PAY-012 | Remaining Balance | 1. View schedule | Shows correct remaining balance | ✅  |
+| PAY-012 | Remaining Balance | 1. View schedule | Shows correct remaining balance | ✅ |
 
 #### 7.3 Payment History
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
 | PAY-013 | View History | 1. Navigate to Payment History | Shows all payments with pagination | ✅ |
-| PAY-014 | Filter by Date | 1. Select date range | Shows payments in range | ⚠️  |
-| PAY-015 | Filter by Status | 1. Filter by On-time/Late payments | Shows matching payments | ⚠️  |
-| PAY-016 | Export History | 1. Click Export <br> 2. Select format | Downloads payment history file | ❌ |
+| PAY-014 | Filter by Date | 1. Select date range | Shows payments in range | ✅ |
+| PAY-015 | Filter by Status | 1. Filter by On-time/Late payments | Shows matching payments | ✅  |
+| PAY-016 | Export History | 1. Click Export <br> 2. Select format | Downloads payment history file | ✅ |
 
 ---
 

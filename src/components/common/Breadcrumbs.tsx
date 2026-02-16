@@ -20,7 +20,8 @@ const routeLabels: Record<string, string> = {
   settings: "Settings",
   // Loan Officer routes
   officer: "Dashboard",
-  payments: "Payments",
+  payments: "Record Payment",
+  "payment-history": "Payment History",
   documents: "Documents",
 };
 
