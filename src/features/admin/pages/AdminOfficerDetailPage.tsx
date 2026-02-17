@@ -60,6 +60,9 @@ export function AdminOfficerDetailPage() {
     department: "",
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [editBaseUpdatedAt, setEditBaseUpdatedAt] = useState<string | null>(
+    null,
+  );
 
   // Initialize edit form when officer data loads
   const startEditing = () => {
@@ -70,6 +73,7 @@ export function AdminOfficerDetailPage() {
         phone: officer.phone || "",
         department: officer.department || "",
       });
+      setEditBaseUpdatedAt(officer.updated_at ?? null);
       setFormErrors({});
       setIsEditing(true);
     }
@@ -108,8 +112,12 @@ export function AdminOfficerDetailPage() {
         ...editForm,
         first_name: normalizeName(editForm.first_name),
         last_name: normalizeName(editForm.last_name),
+        ...(editBaseUpdatedAt
+          ? { last_known_updated_at: editBaseUpdatedAt }
+          : {}),
       });
       setIsEditing(false);
+      setEditBaseUpdatedAt(null);
       setFormErrors({});
     } catch (err: any) {
       const apiErrors = err?.response?.data?.errors;

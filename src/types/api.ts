@@ -153,6 +153,7 @@ export interface LoanOfficerDetail extends LoanOfficerListItem {
   phone: string;
   verified: boolean;
   must_change_password: boolean;
+  updated_at?: string;
 }
 
 export interface CreateOfficerRequest {
@@ -176,6 +177,7 @@ export interface UpdateOfficerRequest {
   phone?: string;
   department?: string;
   active?: boolean;
+  last_known_updated_at?: string;
 }
 
 // Search params for officers list
@@ -217,6 +219,7 @@ export interface AdminListItem {
 export interface AdminDetail extends AdminListItem {
   first_name: string;
   last_name: string;
+  updated_at?: string;
 }
 
 export interface CreateAdminRequest {
@@ -238,6 +241,7 @@ export interface UpdateAdminRequest {
   first_name?: string;
   last_name?: string;
   active?: boolean;
+  last_known_updated_at?: string;
 }
 
 export interface UpdatePermissionsRequest {

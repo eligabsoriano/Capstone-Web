@@ -84,6 +84,9 @@ export function AdminAdminDetailPage() {
     last_name: "",
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [editBaseUpdatedAt, setEditBaseUpdatedAt] = useState<string | null>(
+    null,
+  );
 
   // Check if viewing own account
   const isOwnAccount =
@@ -96,6 +99,7 @@ export function AdminAdminDetailPage() {
         first_name: admin.first_name,
         last_name: admin.last_name,
       });
+      setEditBaseUpdatedAt(admin.updated_at ?? null);
       setFormErrors({});
       setIsEditing(true);
     }
@@ -134,8 +138,12 @@ export function AdminAdminDetailPage() {
         ...editForm,
         first_name: normalizeName(editForm.first_name),
         last_name: normalizeName(editForm.last_name),
+        ...(editBaseUpdatedAt
+          ? { last_known_updated_at: editBaseUpdatedAt }
+          : {}),
       });
       setIsEditing(false);
+      setEditBaseUpdatedAt(null);
       setFormErrors({});
     } catch (err: any) {
       const apiErrors = err?.response?.data?.errors;

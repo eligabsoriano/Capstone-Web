@@ -646,7 +646,7 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| EDGE-016 | Simultaneous Edits | 1. User A opens edit form <br> 2. User B saves same record <br> 3. User A tries to save | Shows conflict or last-write-wins | ❌ |
+| EDGE-016 | Simultaneous Edits | 1. User A opens edit form <br> 2. User B saves same record <br> 3. User A tries to save | Shows conflict or last-write-wins | ✅ |
 | EDGE-017 | Double Submit | 1. Click submit button rapidly twice | Only one submission processed | ✅ |
 | EDGE-018 | Stale Data | 1. View list <br> 2. Another user adds record <br> 3. Refresh | New record appears | ✅ |
 
