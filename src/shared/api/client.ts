@@ -2,16 +2,67 @@ import axios from "axios";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
+const CSRF_HEADER_NAME = "X-CSRFToken";
+const CSRF_COOKIE_NAME = "csrftoken";
+let csrfTokenCache: string | null = null;
+
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
+function getCookie(name: string): string | null {
+  if (typeof document === "undefined") {
+    return null;
+  }
+
+  const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const match = document.cookie.match(
+    new RegExp(`(?:^|; )${escapedName}=([^;]*)`),
+  );
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+function isUnsafeMethod(method?: string): boolean {
+  const normalized = (method || "GET").toUpperCase();
+  return !["GET", "HEAD", "OPTIONS", "TRACE"].includes(normalized);
+}
+
+async function ensureCsrfCookie(): Promise<void> {
+  const existing = getCookie(CSRF_COOKIE_NAME);
+  if (existing) {
+    csrfTokenCache = existing;
+    return;
+  }
+
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/auth/csrf-token/`, {
+      withCredentials: true,
+    });
+
+    const tokenFromBody = response?.data?.data?.csrf_token;
+    if (typeof tokenFromBody === "string" && tokenFromBody.length > 0) {
+      csrfTokenCache = tokenFromBody;
+    }
+  } catch {
+    // Best effort; request interceptor will proceed and backend will reject if required.
+  }
+}
+
 // Request interceptor - add auth token
 apiClient.interceptors.request.use(
-  (config) => {
+  async (config) => {
+    if (isUnsafeMethod(config.method)) {
+      await ensureCsrfCookie();
+      const csrfToken = getCookie(CSRF_COOKIE_NAME) || csrfTokenCache;
+      if (csrfToken) {
+        config.headers[CSRF_HEADER_NAME] = csrfToken;
+      }
+    }
+
     const token = localStorage.getItem("access_token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -93,6 +144,9 @@ apiClient.interceptors.response.use(
         `${API_BASE_URL}/api/auth/refresh-token/`,
         {
           refresh: refreshToken,
+        },
+        {
+          withCredentials: true,
         },
       );
 

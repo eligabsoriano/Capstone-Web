@@ -5,7 +5,7 @@
 | Criteria | Checkpoint Questions | Rating |
 |---|---|---|
 | Password Storage | Are passwords hashed securely? | ☐ Plaintext  ☐ MD5/SHA1  ☑ bcrypt/Argon2  ☐ bcrypt + salt/pepper |
-| Session Management | Do sessions expire and use secure flags? | ☐ None  ☐ No expiry  ☑ Expiry set  ☐ Expiry + secure flags |
+| Session Management | Do sessions expire and use secure flags? | ☐ None  ☐ No expiry  ☐ Expiry set  ☑ Expiry + secure flags |
 | Error Handling | Do login errors leak info? | ☐ Leaks  ☐ Inconsistent  ☑ Generic  ☐ Generic + logs |
 | Brute Force Protection | Are login attempts limited? | ☐ None  ☐ Counting  ☑ Rate limit  ☐ Rate + CAPTCHA |
 | MFA / 2FA | Is MFA enforced? | ☐ None  ☐ Planned  ☑ Optional  ☐ Mandatory (admin) |
@@ -20,6 +20,8 @@
 | Advanced Authentication | Advanced authentication used? | ☑ None  ☐ OAuth/SSO  ☐ Biometrics  ☐ Hardware/passkeys |
 
 ## How to Test Category 1
+
+Detailed session/cookie verification guide: [SESSION_EXPIRY_SECURE_FLAGS_TESTING_GUIDE.md](SESSION_EXPIRY_SECURE_FLAGS_TESTING_GUIDE.md)
 
 1. Password Storage: register a user password, then verify DB value is bcrypt hash (not plaintext).
 2. Session Management: login, decode JWT and verify `exp`; after expiry, call protected API and expect 401.
