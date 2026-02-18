@@ -67,10 +67,6 @@ export function useLogin(): UseLoginReturn {
         return;
       }
 
-      // Store tokens
-      localStorage.setItem("access_token", data.access_token);
-      localStorage.setItem("refresh_token", data.refresh_token);
-
       // Transform and store user data based on role
       if (role === "loan_officer") {
         const loanOfficerData = data as LoanOfficerLoginResponse;

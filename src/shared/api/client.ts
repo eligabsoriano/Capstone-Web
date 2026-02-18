@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosHeaders } from "axios";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
@@ -52,21 +52,19 @@ async function ensureCsrfCookie(): Promise<void> {
   }
 }
 
-// Request interceptor - add auth token
+// Request interceptor - attach CSRF token for unsafe requests.
 apiClient.interceptors.request.use(
   async (config) => {
     if (isUnsafeMethod(config.method)) {
       await ensureCsrfCookie();
       const csrfToken = getCookie(CSRF_COOKIE_NAME) || csrfTokenCache;
       if (csrfToken) {
-        config.headers[CSRF_HEADER_NAME] = csrfToken;
+        const headers = AxiosHeaders.from(config.headers);
+        headers.set(CSRF_HEADER_NAME, csrfToken);
+        config.headers = headers;
       }
     }
 
-    const token = localStorage.getItem("access_token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
     return config;
   },
   (error) => Promise.reject(error),
@@ -79,12 +77,12 @@ let failedQueue: Array<{
   reject: (reason?: unknown) => void;
 }> = [];
 
-const processQueue = (error: Error | null, token: string | null = null) => {
+const processQueue = (error: unknown) => {
   failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
     } else {
-      prom.resolve(token);
+      prom.resolve();
     }
   });
 
@@ -104,6 +102,7 @@ const AUTH_URLS = [
   "/api/auth/forgot-password/",
   "/api/auth/verify-reset-otp/",
   "/api/auth/reset-password/",
+  "/api/auth/csrf-token/",
 ];
 
 apiClient.interceptors.response.use(
@@ -123,10 +122,7 @@ apiClient.interceptors.response.use(
       return new Promise((resolve, reject) => {
         failedQueue.push({ resolve, reject });
       })
-        .then((token) => {
-          originalRequest.headers.Authorization = `Bearer ${token}`;
-          return apiClient(originalRequest);
-        })
+        .then(() => apiClient(originalRequest))
         .catch((err) => Promise.reject(err));
     }
 
@@ -134,34 +130,27 @@ apiClient.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      const refreshToken = localStorage.getItem("refresh_token");
+      await ensureCsrfCookie();
+      const csrfToken = getCookie(CSRF_COOKIE_NAME) || csrfTokenCache;
+      const headers = csrfToken ? { [CSRF_HEADER_NAME]: csrfToken } : undefined;
 
-      if (!refreshToken) {
-        throw new Error("No refresh token available");
-      }
-
-      const response = await axios.post(
+      await axios.post(
         `${API_BASE_URL}/api/auth/refresh-token/`,
-        {
-          refresh: refreshToken,
-        },
+        {},
         {
           withCredentials: true,
+          headers,
         },
       );
 
-      const { access_token } = response.data.data;
-      localStorage.setItem("access_token", access_token);
-
       // Process queued requests with new token
-      processQueue(null, access_token);
+      processQueue(null);
 
-      // Retry original request with new token
-      originalRequest.headers.Authorization = `Bearer ${access_token}`;
+      // Retry original request; cookies now contain the latest token pair.
       return apiClient(originalRequest);
     } catch (refreshError) {
       // Refresh failed - clear all auth data and redirect
-      processQueue(refreshError as Error, null);
+      processQueue(refreshError);
 
       localStorage.removeItem("access_token");
       localStorage.removeItem("refresh_token");

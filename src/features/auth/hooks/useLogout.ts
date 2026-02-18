@@ -22,12 +22,10 @@ export function useLogout(): UseLogoutReturn {
     setIsLoading(true);
     setError(null);
 
-    const refreshToken = localStorage.getItem("refresh_token");
-
     try {
-      // Call logout API if we have a refresh token and user role
-      if (refreshToken && user?.role) {
-        await logout(refreshToken, user.role);
+      // Call logout API if we have a user role.
+      if (user?.role) {
+        await logout(user.role);
       }
     } catch (err) {
       // Log error but don't prevent logout

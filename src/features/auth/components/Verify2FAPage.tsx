@@ -75,10 +75,6 @@ export function Verify2FAPage() {
       const result = response.data;
 
       if (result.status === "success" && result.data) {
-        // Store tokens - backend returns 'access' and 'refresh'
-        localStorage.setItem("access_token", result.data.access);
-        localStorage.setItem("refresh_token", result.data.refresh);
-
         // Determine user role and create user object
         const userData = result.data.user;
         let user: import("../store/authStore").User;
