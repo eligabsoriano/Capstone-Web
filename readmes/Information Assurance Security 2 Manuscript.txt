@@ -406,413 +406,88 @@ Trust Boundary 3: API and Database
 
 3. Asset Identification
 
+Critical Assets
+List and describe key assets such as:
+* User credentials
+* Personal or sensitive data
+* Authentication tokens
+* Application source code
 
-3.1 Critical Assets
+Asset 1: User Credentials
+* Description: Email/username, password hashes, MFA secrets, and reset credentials
+* Why critical: Compromise enables account takeover and unauthorized system access
 
+Asset 2: Personal or Sensitive Data
+* Description: PII, financial profile data, and uploaded identity/business documents
+* Why critical: Exposure can lead to privacy harm, fraud, and compliance violations
 
-ASSET 1: User Credentials
-* Description: Usernames, passwords, MFA tokens, session tokens
-* Location: MongoDB Atlas (hashed passwords), Redis (session tokens)
-* Sensitivity: Critical
-* Stride: S-01, S-02, E-02
-* OWASP: A07: Identification and Authentication Failures, A01: Broken Access Control
+Asset 3: Authentication Tokens
+* Description: Access tokens, refresh tokens, and temporary session tokens
+* Why critical: Theft or tampering can enable session hijacking and privilege abuse
 
+Asset 4: Application Source Code
+* Description: Frontend, backend API, and integration/business-logic source code
+* Why critical: Leakage or tampering can expose vulnerabilities or introduce malicious behavior
 
-ASSET 2: Personal Identifiable Information (PII)
-* Description: Names, addresses, phone numbers, email addresses, government IDs
-* Location: MongoDB Atlas with field-level encryption
-* Sensitivity: Critical
-* Stride: I-01, E-02, R-02
-* OWASP: A01: Broken Access Control, A02: Cryptographic Failures, A09: Security Logging and Monitoring Failures
+CIA Triad Mapping
+Map each asset to:
+* Confidentiality
+* Integrity
+* Availability
 
+| Asset | Confidentiality | Integrity | Availability |
+|---|---|---|---|
+| User Credentials | Critical - Exposure enables account takeover | Critical - Credential tampering enables unauthorized access | High - Login/auth must remain available |
+| Personal or Sensitive Data | Critical - PII/financial leakage impacts users and compliance | Critical - Data tampering causes wrong risk/loan decisions | High - Services depend on data availability |
+| Authentication Tokens | High - Token theft enables session hijacking | Critical - Token manipulation enables privilege abuse | High - Token service outage blocks access |
+| Application Source Code | High - Source exposure reveals attack paths | High - Code tampering may inject backdoors | Medium - Build/release disruption impacts operations |
 
-ASSET 3: Financial Data
-* Description: Income information, credit scores, loan history, and alternative data profiles
-* Location: MongoDB Atlas, Pre-Qualification Engine
-* Sensitivity: Critical
-* Stride: T-01, T-02, I-02
-* OWASP: A03: Injection, A02: Cryptographic Failures, A01: Broken Access Control
-
-
-ASSET 4: Identity Documents
-* Description: Uploaded government IDs, proof of income, and business permits
-* Location: Document Storage (AES-256 encrypted)
-* Sensitivity: High
-* Stride: S-03, T-02, I-01
-* OWASP: A07: Identification and Authentication Failures, A03: Injection, A02: Cryptographic Failures
-
-
-
-
-ASSET 5: Authentication Tokens (JWT)
-* Description: JSON Web Tokens for session management
-* Location: Redis Cache, transmitted via API
-* Sensitivity: High
-* Stride: S-02, E-02, I-01
-* OWASP: A07: Identification and Authentication Failures, A01: Broken Access Control, A02: Cryptographic Failures
-
-
-ASSET 6: Application Source Code
-* Description: Backend API, mobile app, web portal source code
-* Location: Version control repository
-* Sensitivity: High
-* Stride: T-04, E-01, R-03
-* OWASP: A08: Software and Data Integrity Failures, A06: Vulnerable and Outdated Components, A04: Insecure Design
-
-
-ASSET 7: ML Models
-* Description: Credit scoring models, document verification models, chatbot NLP models
-* Location: ML Model Repository
-* Sensitivity: High
-* Stride: T-03, D-03, I-02
-* OWASP: A08: Software and Data Integrity Failures, A04: Insecure Design, A05: Security Misconfiguration
-
-
-ASSET 8: Chatbot Conversation Logs
-* Description: User interactions with an AI chatbot
-* Location: Secure log storage
-* Owner: AI/ML Team
-* Sensitivity: Medium-High
-* Stride: I-03, R-01, D-03
-* OWASP: A02: Cryptographic Failures, A09: Security Logging and Monitoring Failures, A05: Security Misconfiguration
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-3.2 CIA Triad Mapping
-Asset
-	Confindentiality
-	Integrity
-	Availability
-	User Credentials
-	Critical: Exposure enables account takeover
-	Critical: Tampering allows unauthorized access
-	High: Users are locked out if unavailable
-	Personal Identifiable Information (PII)
-	Critical: Privacy breach, regulatory violations
-	High: Corrupted data leads to wrong decisions
-	Medium: Service degradation
-	Financial Data
-	Critical: Competitive advantage loss
-	Critical: Affects loan recommendations
-	High: Core service dependency
-	Identity Documents
-	Critical: Identity theft risks
-	High: Document forgery enables fraud
-	Medium: Delays in processing
-	Authentication Tokens (JWT)
-	High: Session hijacking
-	Critical: Token tampering privilege
-	High: Authentication failures
-	Application Source Code
-	High: Reveals vulnerabilities
-	High: Malicious code injection
-	Medium: Development disruption
-	ML Models
-	High: Model theft
-	Critical: Adversarial manipulation
-	High: Scoring service unavailable
-	Chatbot Conversation Logs
-	High: Sensitive conversations
-	Critical: Compliance evidence
-	High: Forensics and compliance
-	
-
-
-4. STRIDE Threat Model
-
+4. STRIDE Threat Model (30%)
 
 4.1 STRIDE Overview
-STRIDE is a threat modeling methodology developed by Microsoft that categorizes threats into six types:
-* Spoofing Identity: Pretending to be someone or something else
-* Example: Attacker using stolen credentials to impersonate a user
-* Tampering with Data: Unauthorized modification of data
-* Example: Altering credit scores in the database
-* Repudiation: Denying that an action took place
-* Example: User denying they submitted a loan application
-* Information Disclosure: Exposing information to unauthorized parties
-* Example: PII leaked through an API vulnerability
-* Denial of Service: Making the system unavailable
-* Example: DDoS attack overwhelming the API gateway
-* Elevation of Privilege: Gaining unauthorized access levels
-* Example: Regular user accessing admin functions
+STRIDE is a threat modeling framework with six categories:
+* Spoofing: Illegitimately assuming the identity of a valid user, role, or service to bypass authentication controls and gain trusted access.
+* Tampering: Altering data, requests, configurations, or executable code in transit or at rest, resulting in unauthorized or misleading system behavior.
+* Repudiation: Disputing performed actions because system logs, timestamps, or identity evidence are incomplete, weak, or not tamper-resistant.
+* Information Disclosure: Exposing confidential information to unauthorized entities through improper access control, insecure storage, or insecure transmission.
+* Denial of Service: Reducing or blocking service availability by exhausting compute, network, storage, or application resources needed by legitimate users.
+* Elevation of Privilege: Obtaining higher permissions than intended by abusing authorization flaws, role validation gaps, or trust assumptions.
 
+Scoring Model (Likelihood and Impact)
+* Likelihood score: 1 (Very Low) to 5 (Very High)
+* Impact score: 1 (Low) to 5 (Critical)
+* Risk Score = Likelihood x Impact
+* Risk Level:
+  - 1-5 = Low
+  - 6-10 = Medium
+  - 11-15 = High
+  - 16-25 = Critical
 
-ID
-	Component
-	Threat Category
-	Threat Description
-	Likelihood
-	Impact
-	Risk Score
-	Mitigation Strategy
-	S-01
-	Mobile App Login
-	Spoofing
-	An attacker impersonates a legitimate user using stolen credentials or session tokens
-	High
-	Critical
-	Critical
-	Implement MFA and session timeout (15 min)
-	S-02
-	API Gateway
-	Spoofing
-	Man-in-the-middle attack intercepts authentication tokens
-	Medium
-	Critical
-	High
-	JWT with short expiry
-	S-03
-	Document Upload
-	Spoofing
-	Fake or forged documents submitted for pre-qualification
-	High
-	High
-	High
-	ML-based document authenticity for verification of liveness detection
-	S-04
-	Chatbot Interface
-	Spoofing
-	Social engineering through impersonation in chat
-	Medium
-	Medium
-	Medium
-	User education, clear system identification, and input sanitization
-	T-01
-	Database
-	Tampering
-	Unauthorized modification of user credit profiles or loan recommendations
-	Low
-	Critical
-	High
-	Database encryption at rest, integrity checks, RBAC
-	T-02
-	API Requests
-	Tampering
-	Parameter manipulation to alter loan eligibility scores
-	High
-	Critical
-	Critical
-	Input validation, server-side calculations, request signing
-	T-03
-	ML Model
-	Tampering
-	Adversarial attacks to manipulate AI scoring decisions
-	Medium
-	Critical
-	High
-	Model input validation, anomaly detection, and model versioning
-	T-04
-	Mobile App
-	Tampering
-	Reverse engineering and code modification
-	Medium
-	High
-	High
-	Code obfuscation, integrity checks
-	R-01
-	Loan Recommendations
-	Repudiation
-	User denies receiving loan guidance or recommendations
-	Medium
-	High
-	High
-	Digital signatures, timestamped logs, and acknowledgement receipts
-	R-02
-	User Actions
-	Repudiation
-	User denies submitting documents or providing consent
-	Medium
-	High
-	High
-	Blockchain-backed logs, consent records
-	R-03
-	Admin Actions
-	Repudiation
-	Loan officer denies modifying user profiles
-	Low
-	High
-	Medium
-	Comprehensive audit logging,
-	I-01
-	User Data
-	Information Disclosure
-	PII exposure through API vulnerabilities
-	High
-	Critical
-	Critical
-	Parametrized queries, field-level encryption, and data masking
-	I-02
-	Financial Data
-	Information Disclosure
-	Credit scores or alternative data have been leaked to unauthorized parties
-	Medium
-	Critical
-	High
-	Encryption (AES-256), access controls, and data classification
-	I-03
-	Chatbot Logs
-	Information Disclosure
-	Sensitive conversation data exposed
-	Medium
-	High
-	High
-	Log sanitization, PII redaction, and secure log storage
-	I-04
-	Mobile Storage
-	Information Disclosure
-	Sensitive data extracted from device local storage
-	High
-	High
-	High
-	No sensitive data in local storage, encrypted SharedPrefs
-	D-01
-	API Gateway
-	Denial of Service
-	A DDoS attack makes the system unavailable to microentrepreneurs
-	High
-	High
-	High
-	CDN, rate limiting, and auto scaling
-	D-02
-	Database
-	Denial of Service
-	Resource exhaustion through malicious queries
-	Medium
-	Critical
-	High
-	Query timeouts, connection pooling, and read replicas
-	D-03
-	AI Service
-	Denial of Service
-	Overwhelming chatbot with complex queries
-	Medium
-	Medium
-	Medium
-	Request queuing, rate limits per user, and circuit breaker
-	E-01
-	Admin Portal
-	Elevation of Privilege
-	Regular user gains admin access to the loan officer dashboard
-	Low
-	Critical
-	High
-	RBAC, privilege separation, MFA for admin, least privilege
-	E-02
-	API endpoints
-	Elevation of Privilege
-	Horizontal privilege escalation to access other users’ data
-	Medium
-	Critical
-	Critical
-	Authorization checks at all layers, user context validation
-	E-03
-	Mobile App
-	Elevation of Privilege
-	Bypassing client-side restrictions to access premium features
-	Medium
-	Medium
-	Medium
-	Server-side enforcement, feature flags  verified server-side
-	
+4.2 STRIDE Threat Table
 
-4.3  Threat Prioritization
-Impact \ Likelihood
-	Low Likelihood
-	Medium Likelihood
-	High Likelihood
-	Critical Impact
-	D-02
-E-01
-	T-01
-T-03
-I-02
-	S-01
-T-02
-I-01
-E-02
-	High Impact
-	R-03
-	S-03
-R-01
-R-02
-T-04
-I-03
-E-03
-	D-01
-I-04
-	Medium Impact
-	—
-	S-04
-D-03
-	—
-	Low Impact
-	—
-	—
-	—
-	
+| System Component | STRIDE Category | Threat Description | Impact (1-5) | Likelihood (1-5) | Risk Level | Mitigation |
+|---|---|---|---|---|---|---|
+| Authentication Service | Spoofing | Attacker impersonates a valid user using stolen credentials/tokens | 5 | 3 | High (15) | MFA, strong password policy, short-lived tokens, lockout/rate limits |
+| Loan Application API | Tampering | Request parameter manipulation alters loan eligibility outcomes | 5 | 4 | Critical (20) | Server-side validation/calculation, signed critical actions, integrity checks |
+| Audit Logging Service | Repudiation | User/admin denies performing actions due to weak/non-verifiable logs | 4 | 3 | High (12) | Immutable timestamped logs, actor ID capture, tamper-evident retention |
+| Profile and Document APIs | Information Disclosure | Unauthorized access/IDOR exposes PII and sensitive documents | 5 | 4 | Critical (20) | Object-level authorization, RBAC enforcement, masking/minimization |
+| API Gateway | Denial of Service | Flooding or abusive traffic degrades system response and availability | 4 | 4 | Critical (16) | Rate limiting, WAF/CDN, autoscaling, circuit breaker controls |
+| Admin Access Control | Elevation of Privilege | Non-admin user gains officer/admin capabilities via broken authorization | 5 | 3 | High (15) | Least privilege RBAC, defense-in-depth authz checks, privilege separation |
 
+4.3 Threat Prioritization
 
+Threats were ranked using a likelihood-versus-impact matrix where Risk Score = Likelihood x Impact. Higher scores were prioritized first because they represent threats that are both more probable and more damaging to confidentiality, integrity, and availability.
 
+Highest-risk threats
+* Tampering in Loan Application API (Score 20, Critical)
+* Information Disclosure in Profile and Document APIs (Score 20, Critical)
+* Denial of Service in API Gateway (Score 16, Critical)
 
+Medium-risk threats
+* None identified in the current STRIDE scope using the defined scoring bands.
 
-Legend:
-🔴Critical Risk (Immediate Action Required)
-🟠High Risk (Priority Mitigation)
-🟡Medium Risk (Scheduled Mitigation)
-🟢Low Risk (Monitor)
-
-
-HIGHEST-RISK THREATS (Immediate Action Required - Sprint 1):
-* S-01: Credential theft on mobile app - CRITICAL
-* T-02: API parameter manipulation - CRITICAL
-* I-01: PII exposure through API vulnerabilities - CRITICAL
-* E-02: Horizontal privilege escalation - CRITICAL
-
-
-MEDIUM-RISK THREATS (Priority Mitigation - Sprint 1-2):
-* T-01
-* T-03
-* I-02
-* D-01
-* I-04
-* S-03
-* R-01
-* R-02
-* T-04
-* I-03
-* E-03
-* D-02
-* E-01
-
-
-LOW-RISK THREATS (Scheduled Mitigation - Sprint 3+):
-* S-04
-* D-03
-* R-03
-
-
-
-
-
-
-
-
-
-
-
-
-
+Low-risk threats
+* None identified in the current STRIDE scope using the defined scoring bands.
 
 5. Mapping to OWASP Top 10
 
