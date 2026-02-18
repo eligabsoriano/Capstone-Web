@@ -275,6 +275,76 @@ Component Interaction (Request-Response Flow)
 
 2.2 Architecture Diagram
 
+flowchart LR
+
+%% ===================== USERS (LEFT) =====================
+subgraph USERS["USERS"]
+direction TB
+U1["Finance Department<br/>• Upload invoices<br/>• Monitor transactions<br/>• Receive AI-generated alerts"]
+U2["Auditors<br/>• Review invoices<br/>• Access audit trails"]
+U3["Regulators<br/>• Access the blockchain ledger<br/>• Monitor compliance and regulatory requirements"]
+U4["Management<br/>• View insights and analytical reports<br/>• Miscellaneous work"]
+end
+
+%% ===================== SYSTEM (CENTER) =====================
+subgraph SYSTEM["SYSTEM"]
+direction TB
+S1["Frontend<br/>• Web Portal Interface (React.js)<br/>• User Dashboard<br/>• Upload &amp; Invoice Management<br/>• Visualization and Reports<br/>• Authentication and Authorization"]
+S2["Backend<br/>• API gateway (Node.js / Python)<br/>• Business logic (core processing)<br/>• Invoice processing workflows<br/>• Data validation and routing<br/>• Blockchain integration module<br/>• Notification service (alerts/messages)"]
+end
+
+%% ===================== DATABASE (TOP-CENTER) =====================
+subgraph DATABASE["DATABASE"]
+direction LR
+DB1["Invoice Database<br/>• Invoice Records<br/>• Metadata<br/>• Transaction History<br/>• Audit Logs"]
+DB2["Data Storage<br/>• User Credentials<br/>• Miscellaneous Data<br/>• (Anything blockchain-related)"]
+end
+
+%% ===================== API (RIGHT) =====================
+subgraph API["API"]
+direction TB
+A1["AI Processing<br/>• CNN-based fraud detection engine<br/>• NLP text pattern + NER<br/>• Visual authenticity checks<br/>• Anomaly detection mechanisms<br/>• Fraud pattern recognition"]
+A2["External Processes<br/>• Blockchain (smart contracts, hash generation, etc.)<br/>• Other related services not mentioned"]
+end
+
+%% ===================== FLOWS (MATCH SAMPLE) =====================
+U1 -- "Requests" --> SYSTEM
+U2 -- "Requests" --> SYSTEM
+U3 -- "Requests" --> SYSTEM
+U4 -- "Requests" --> SYSTEM
+
+SYSTEM -- "Response" --> U1
+SYSTEM -- "Response" --> U2
+SYSTEM -- "Response" --> U3
+SYSTEM -- "Response" --> U4
+
+SYSTEM -- "API Calls" --> API
+API -- "Results" --> SYSTEM
+
+SYSTEM -- "Query or Store" --> DATABASE
+DATABASE -- "Data Flow" --> SYSTEM
+
+
+%% ===================== COLORS (MATCH SAMPLE) =====================
+style USERS fill:#dbe8ff,stroke:#7aa2ff,stroke-width:2px
+style SYSTEM fill:#fff0a8,stroke:#f0c000,stroke-width:2px
+style DATABASE fill:#ffd6d6,stroke:#ff6b6b,stroke-width:2px
+style API fill:#f3d6ff,stroke:#c77dff,stroke-width:2px
+
+%% Inner boxes styling (optional, keeps them white like the sample)
+style U1 fill:#ffffff,stroke:#7aa2ff,stroke-width:1.5px
+style U2 fill:#ffffff,stroke:#7aa2ff,stroke-width:1.5px
+style U3 fill:#ffffff,stroke:#7aa2ff,stroke-width:1.5px
+style U4 fill:#ffffff,stroke:#7aa2ff,stroke-width:1.5px
+
+style S1 fill:#ffffff,stroke:#f0c000,stroke-width:1.5px
+style S2 fill:#ffffff,stroke:#f0c000,stroke-width:1.5px
+
+style DB1 fill:#ffffff,stroke:#ff6b6b,stroke-width:1.5px
+style DB2 fill:#ffffff,stroke:#ff6b6b,stroke-width:1.5px
+
+style A1 fill:#ffffff,stroke:#c77dff,stroke-width:1.5px
+style A2 fill:#ffffff,stroke:#c77dff,stroke-width:1.5px
 
   
 
@@ -282,30 +352,32 @@ Component Interaction (Request-Response Flow)
 
 2.3 Trust Boundaries
 
-
-Trust Boundary 1: Client ↔ Server Communication
-* All communication is encrypted 
-* All client input is considered untrusted
-* JWT tokens required for authenticated endpoints
-* Client-side validation supplemented by server-side enforcement
-* Certificate pinning on mobile to prevent MITM attacks
+Identify and explain trust boundaries between:
+* Users and clients
+* Clients and API
+* API and database
 
 
-Trust Boundary 2: Security Gateway ↔ Application Services
-* API Gateway validates all requests before forwarding
-* Rate limiting prevents abuse and DDoS
-* Internal service-to-service authentication
-* Request signing for sensitive operations
-* Network segmentation isolates critical components
+Trust Boundary 1: Users and Clients
+* This boundary separates human actors (Finance Department, Auditors, Regulators, Management) from the client interface (Frontend/Web Portal).
+* All user-provided data (uploads, form inputs, filters, and requests) is treated as untrusted until validated.
+* Authentication is required before access to role-specific client features.
+* Authorization rules in the client must not be trusted alone; all sensitive actions are re-validated server-side.
 
 
-Trust Boundary 3: Application Services ↔ Data Layer
-* Only Application Services can access databases directly
-* Database credentials are never exposed to clients
-* Parameterized queries prevent injection attacks
-* Field-level encryption for sensitive PII
-* Access controls enforced via Role-Based Access Control (RBAC)
-* Audit logging for all data access operations
+Trust Boundary 2: Clients and API
+* This boundary separates the Frontend client from Backend/API services.
+* All client-to-API communication must use HTTPS/TLS to protect credentials, tokens, and business data in transit.
+* API endpoints enforce JWT validation, role checks, rate limiting, and server-side input validation.
+* Only approved request formats and authenticated calls are processed; malformed or unauthorized requests are rejected.
+
+
+Trust Boundary 3: API and Database
+* This boundary separates API/Application services from Invoice Database and Data Storage components.
+* Direct database access from users/clients is prohibited; only backend services can read/write database records.
+* Database credentials are stored in server environment configuration and are never exposed to clients.
+* Data access is constrained by least privilege/RBAC policies, with logging/audit trails for sensitive operations.
+* Query and write operations are validated/sanitized before database execution to reduce injection and tampering risk.
 
 
 
