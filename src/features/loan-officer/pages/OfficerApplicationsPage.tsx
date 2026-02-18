@@ -25,7 +25,7 @@ import { Input } from "@/components/ui/input";
 import type { ApplicationSearchParams } from "../api/applicationsApi";
 import { useOfficerApplications } from "../hooks";
 
-type SortField = "customer_name" | "submitted_at" | "requested_amount";
+type SortField = "submitted_at" | "requested_amount";
 type SortOrder = "asc" | "desc";
 
 export function OfficerApplicationsPage() {
@@ -235,14 +235,7 @@ export function OfficerApplicationsPage() {
                         Application ID
                       </th>
                       <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden sm:table-cell">
-                        <button
-                          type="button"
-                          className="flex items-center hover:text-foreground transition-colors cursor-pointer"
-                          onClick={() => handleSort("customer_name")}
-                        >
-                          Customer
-                          {renderSortIcon("customer_name")}
-                        </button>
+                        Customer
                       </th>
                       <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden md:table-cell">
                         Product

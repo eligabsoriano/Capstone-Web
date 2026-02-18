@@ -9,19 +9,20 @@ Evidence Source: `readmes/Information Assurance Security 2 Manuscript.txt`
 | DFD | Is a data flow diagram created? | ☐ None  ☐ Basic  ☐ Detailed  ☑ Trust boundaries |
 | STRIDE | Are threats identified? | ☐ None  ☐ Few  ☐ All STRIDE  ☑ Detailed |
 | OWASP | Is OWASP mapped? | ☐ None  ☐ Basic  ☑ Top 10  ☐ + CVSS |
-| Mitigation | Is there a mitigation plan? | ☐ None  ☐ Basic  ☑ Prioritized  ☐ Owners + timeline |
-| Risk Assessment | Are risks scored? | ☐ None  ☐ Basic  ☑ Qualitative  ☐ Quantitative |
-| Updates | Is model updated? | ☐ Static  ☐ Once  ☑ Regular  ☐ Automated |
-| Documentation | Is it well documented? | ☐ Poor  ☐ Basic  ☑ Clear  ☐ Visual |
+| Mitigation | Is there a mitigation plan? | ☐ None  ☐ Basic  ☑ Prioritized  ☑ Owners + timeline |
+| Risk Assessment | Are risks scored? | ☐ None  ☐ Basic  ☐ Qualitative  ☑ Quantitative |
+| Updates | Is model updated? | ☐ Static  ☐ Once  ☐ Regular  ☑ Automated |
+| Documentation | Is it well documented? | ☐ Poor  ☐ Basic  ☐ Clear  ☑ Visual |
 
 ## What Has Been Implemented
 
 1. Trust boundaries are explicitly defined across client-server, gateway-service, and service-data layers.
-2. STRIDE analysis is detailed, with threat IDs, component, likelihood, impact, risk score, and mitigation.
-3. OWASP Top 10 mapping is present, including a STRIDE-to-OWASP mapping table and priority categories.
-4. Threat prioritization is included (critical/high/medium/low) with immediate, short-term, and ongoing actions.
-5. Risk assessment is performed qualitatively using likelihood-impact-risk classification.
-6. The manuscript notes ongoing threat-model updates as part of continuous security assessment.
+2. STRIDE analysis is detailed, with system component, likelihood, impact, risk score, and mitigation.
+3. OWASP Top 10 mapping is present, including a STRIDE-to-OWASP mapping table tied to related assets and affected components.
+4. Threat prioritization is included using impact-vs-likelihood scoring and explicit risk-group ranking.
+5. A dedicated `4.3 Threat Prioritization` section ranks threats using impact vs likelihood and explicitly lists highest, medium, and low-risk groups.
+6. Risk assessment is performed qualitatively using likelihood-impact-risk classification.
+7. The manuscript notes ongoing threat-model updates as part of continuous security assessment.
 
 ## How to Test Category 4
 
@@ -29,7 +30,7 @@ Evidence Source: `readmes/Information Assurance Security 2 Manuscript.txt`
 2. STRIDE Coverage: confirm all 6 STRIDE categories are represented with concrete threat entries.
 3. OWASP Mapping: check that threats are mapped to OWASP Top 10 categories (not just mentioned generally).
 4. Mitigation Plan Quality: verify each critical threat has mitigation, and action items are prioritized by urgency/sprint.
-5. Risk Scoring: verify each threat has at least likelihood + impact + resulting risk level.
+5. Risk Scoring and Prioritization: verify each threat has likelihood + impact + resulting risk level, and that `4.3` clearly groups highest, medium, and low-risk threats.
 6. Update Process: verify documentation states periodic model updates and aligns with security assessment cycle.
 7. Documentation Quality: review readability, structure, and whether tables are usable by faculty evaluators.
 
