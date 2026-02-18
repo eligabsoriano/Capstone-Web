@@ -491,215 +491,28 @@ Low-risk threats
 
 5. Mapping to OWASP Top 10
 
-
 5.1 Relevant OWASP Risks
-OWASP Category
-	Relevance to MSME Pathways
-	Risk Level
-	Specific Vulnerabilities
-	Mitigation Controls
-	A01: Broken Access Control
-	High – Multiple user roles (microentrepreneur, loan officer, admin)
-	Critical
-	IDOR in user profiles, missing function-level access control, and metadata manipulation
-	RBAC implementation, authorization middleware, server-side session management
-	A02: Cryptographic Failures
-	High – PII, financial data, and documents stored
-	Critical
-	Weak encryption, hardcoded keys, unencrypted PII in transit and at rest
-	AES-256 for data at rest
-	A03: Injection
-	High – Chatbot NLP, document OCR, database queries
-	High
-	SQL injection, NoSQL injection, and command injection in OCR
-	Parameterized queries, strict input validation
-	A04: Insecure Design
-	Medium – New system with AI components
-	High
-	Insufficient threat modeling, missing security requirements
-	Secure-by-design principles, threat modeling, and security user stories
-	A05: Security Misconfiguration
-	Medium – Cloud infrastructure and API gateway
-	Medium
-	Default credentials, unnecessary features enabled, verbose error messages
-	Hardening checklists, infrastructure as code
-	A06: Vulnerable Components
-	Medium – Third-party libraries and ML frameworks
-	Medium
-	Outdated dependencies, known CVEs
-	regular updates
-	A07: Identification & Authentication Failures
-	High – Mobile application authentication
-	Critical
-	Weak passwords, credential stuffing, and session fixation
-	MFA, strong password policies, secure session handling, and account lockout
-	A08: Software & Data Integrity Failures
-	Medium – ML model updates and document processing
-	High
-	Unsigned updates, compromised CI/CD pipelines
-	Code signing, verified pipelines, and integrity checks
-	A09: Security Logging & Monitoring Failures
-	Medium – BSP compliance requirements
-	Medium
-	Insufficient logging, lack of alerting, and log tampering
-	SIEM integration, immutable logs
-	A10: Server-Side Request Forgery (SSRF)
-	Low – Document URL processing
-	Low
-	SSRF via document fetch URLs
-	URL validation, allowlists
-	
+Applicable OWASP risks identified for this system are:
+* Broken Authentication (A07: Identification and Authentication Failures) - Weak credential controls or session handling can allow account takeover and unauthorized login.
+* Broken Access Control (A01) - Improper role and permission enforcement can expose admin-only functions or other users' data.
+* Injection (A03) - Malicious or unvalidated input can alter backend processing, queries, or business logic outcomes.
+* Cryptographic Failures (A02) - Poor protection of secrets, tokens, and sensitive data can lead to data exposure in storage or transit.
+* Security Logging and Monitoring Failures (A09) - Inadequate audit trails and alerting make attacks harder to detect, investigate, and contain.
+* Insecure Design (A04) - Missing security-by-design controls can leave systemic weaknesses across APIs and workflows.
+* Security Misconfiguration (A05) - Unsafe defaults or weak environment hardening can increase exploitability of otherwise manageable issues.
 
-Table Explanation: 
-OWASP Top 10 Mapping. This table maps the OWASP Top 10 Web Application Security Risks (2021) to specific vulnerabilities in MSME Pathways: 
-
-
-Why OWASP Top 10?
-1. Industry-standard framework recognized by BSP and international regulators
-2. Updated every 3-4 years based on real-world attack data
-3. Provides actionable mitigation guidance 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+These categories were selected because they directly map to the STRIDE threats in Section 4 and affect critical assets (user credentials, personal/sensitive data, authentication tokens, and application source code).
 
 5.2 STRIDE-OWASP Mapping Table
-STRIDE Threat ID
-	OWASP Top 10 Category
-	Affected Component
-	Mitigation Controls
-	S-01, S-02
-	A07: Identification & Authentication Failures
-	Mobile App, API Gateway
-	MFA, strong password policies, secure session handling, and account lockout
-	S-03
-	A07: Identification & Authentication Failures
-	Document Upload
-	ML-based document verification, liveness detection
-	T-01
-	A01: Broken Access Control
-	Database
-	RBAC, database encryption, and integrity checks
-	T-02
-	A03: Injection
-	API Requests
-	Input validation, parameterized queries, server-side calculations
-	T-03
-	A08: Software & Data Integrity Failures
-	ML Model
-	Model input validation, anomaly detection, and signed model updates
-	T-04
-	A08: Software & Data Integrity Failures
-	Mobile App
-	Code obfuscation, integrity checks, certificate pinning
-	R-01, R-02, R-03
-	A09: Security Logging & Monitoring Failures
-	Loan Recommendations, User/Admin Actions
-	Digital signatures, immutable logs, blockchain-backed records
-	I-01
-	A01: Broken Access Control + A02: Crypto Failures
-	User Data (API)
-	Authorization at all layers, data masking, and field-level encryption
-	I-02
-	A02: Cryptographic Failures
-	Financial Data
-	AES-256 encryption, access controls, data classification
-	I-03, I-04
-	A02: Cryptographic Failures
-	Chatbot Logs, Mobile Storage
-	Log sanitization, PII redaction, encrypted local storage
-	D-01, D-02, D-03
-	A05: Security Misconfiguration
-	API Gateway, Database, AI Service
-	Rate limiting, CDN, auto-scaling, circuit breakers
-	E-01, E-02
-	A01: Broken Access Control
-	Admin Portal, API Endpoints
-	RBAC, privilege separation, MFA, least privilege principle
-	E-03
-	A04: Insecure Design
-	Mobile App
-	Server-side enforcement, secure feature flags
-	
 
-Risk Distribution Summary:
-
-
-Risk Level
-	OWASP Categories
-	Percentage
-	Critical
-	A01, A02, A07
-	30%
-	High
-	A03, A04, A08
-	30%
-	Medium
-	A05, A06, A09
-	30%
-	Low
-	A10
-	10%
-	
-
-Top 3 Priorities Based on Context:
-1. A01 (Broken Access Control): Critical because the system has three distinct roles with vastly different permissions—a regular user accessing loan officer data would be catastrophic.
-2. A07 (Identification & Authentication Failures): Critical for mobile-first design, where users may have weak passwords and devices are often shared in informal sector contexts
-3. A02 (Cryptographic Failures): Critical given the sensitivity of financial and identity data from economically vulnerable populations ---
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+| Related Asset | STRIDE Threat | OWASP Top 10 Category | Affected Component |
+|---|---|---|---|
+| User Credentials, Authentication Tokens | Spoofing | A07: Identification and Authentication Failures | Authentication Service |
+| Personal or Sensitive Data | Tampering | A03: Injection | Loan Application API |
+| Personal or Sensitive Data, Authentication Tokens | Repudiation | A09: Security Logging and Monitoring Failures | Audit Logging Service |
+| Personal or Sensitive Data | Information Disclosure | A01: Broken Access Control, A02: Cryptographic Failures | Profile and Document APIs |
+| Application Source Code, Service Availability | Denial of Service | A04: Insecure Design, A05: Security Misconfiguration | API Gateway |
+| User Credentials, Authentication Tokens | Elevation of Privilege | A01: Broken Access Control | Admin Access Control |
 
 6. Security Controls and Mitigations
 6.1 Preventive Controls
