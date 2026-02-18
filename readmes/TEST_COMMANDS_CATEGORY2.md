@@ -110,105 +110,144 @@ curl -i -X POST http://localhost:8000/api/auth/signup/ \
   -d '{"first_name":"test","last_name":"test","email":"test'\''; DROP TABLE users; --@mail.com","password":"Admin123!","password_confirm":"Admin123!"}'
 
 
-### XSS
-# 1) Check CSP header exists and is strict
-  curl -i http://localhost:8000/api/health/
-# 2) Quick grep to confirm unsafe directives are gone
-  curl -s -D - http://localhost:8000/api/health/ -o /dev/null | grep -i content-security-policy
-# 3) Negative check (should print nothing)
-  curl -s -D - http://localhost:8000/api/health/ -o /dev/null | grep -Ei "unsafe-inline|unsafe-eval"
-# 4) For CSP + sanitize proof (XSS criterion), also re-run sanitize test:
-  curl -s -X PUT http://localhost:8000/api/profile/ \
-    -H "Authorization: Bearer <ACCESS_TOKEN>" \
-    -H "Content-Type: application/json" \
-    -d '{"address_line1":"<script>alert(1)</script> Main","barangay":"<b>Barangay 1</b>"}'
+### XSS (INSOMNIA ONLY)
+Use Insomnia for these checks. No terminal/curl needed for this section.
 
-  curl -s http://localhost:8000/api/profile/ \
-    -H "Authorization: Bearer <ACCESS_TOKEN>"
+1) Check CSP header exists and is strict
+- Method/URL: `GET {{ base_url }}/api/health/`
+- In Insomnia, open the response `Headers` tab.
+- Expected:
+  - `Content-Security-Policy` header exists
+  - CSP includes strict directives like `default-src 'none'` and `script-src 'none'`
+  - CSP does **not** contain `unsafe-inline` or `unsafe-eval`
+
+2) Profile input sanitization (stored XSS check)
+- Step A: send payload
+  - Method/URL: `PUT {{ base_url }}/api/profile/`
+  - Headers: `Authorization`, `Content-Type: application/json`
+  - Body:
+```json
+{
+  "address_line1": "<script>alert(1)</script> Main",
+  "barangay": "<b>Barangay 1</b>"
+}
+```
+- Step B: read back value
+  - Method/URL: `GET {{ base_url }}/api/profile/`
+- Expected:
+  - HTTP `200` for both requests
+  - Returned values are sanitized (no `<script>`, no HTML tags)
 
 
 ### FILE UPLOAD
-# 0) login and copy access token
-curl -s -X POST http://localhost:8000/api/auth/login/ \
-  -H "Content-Type: application/json" \
-  -d '{"email":"sorianoeligabriel@gmail.com","password":"Admin123!"}'
+Use this main request in Insomnia to prove scanning is active:
 
-# 1) Create fake executable disguised as jpg (should FAIL) EXPECTED 400 WITH
-printf 'MZ fake executable content' > /tmp/fake.jpg
+- Method/URL: `POST {{ base_url }}/api/documents/upload/`
+- Header: `Authorization: Bearer <ACCESS_TOKEN>`
+- Body type: `Multipart Form`
+- Fields:
+  - `document_type=valid_id`
+  - `file=<malicious test file>` (for example, fake `.jpg` with `MZ` content, or PDF with `/JavaScript`)
 
-curl -i -X POST http://localhost:8000/api/documents/upload/ \
-  -H "Authorization: Bearer TOKEN" \
-  -F "document_type=valid_id" \
-  -F "file=@/tmp/fake.jpg;type=image/jpeg"
-
-# 2) Create suspicious PDF with JavaScript marker (should FAIL) Expected: 400 with Potentially unsafe PDF content detected.
-cat > /tmp/bad.pdf <<'EOF'
-%PDF-1.7
-1 0 obj
-<< /Type /Catalog /OpenAction << /S /JavaScript /JS (app.alert("xss")) >> >>
-endobj
-%%EOF
-EOF
-
-curl -i -X POST http://localhost:8000/api/documents/upload/ \
-  -H "Authorization: Bearer TOKEN" \
-  -F "document_type=valid_id" \
-  -F "file=@/tmp/bad.pdf;type=application/pdf"
-
-# 3) Upload a real valid file (should PASS) insomnia
-curl -i -X POST http://localhost:8000/api/documents/upload/ \
-  -H "Authorization: Bearer TOKEN" \
-  -F "document_type=valid_id" \
-  -F "file='/Users/gab/Downloads/SUCCESS LADDER(2).jpeg';type=image/jpeg"
+If scanning is working, response is `400` with messages like:
+- `Potentially unsafe file content detected`
+- `Potentially unsafe PDF content detected`
+- `File content does not match the declared file type`
 
 
 ### API VALIDATION AUTO + FEEDBACK
-curl -s -X PUT http://localhost:8000/api/profile/ \
-  -H "Authorization: Bearer <ACCESS_TOKEN>" \
-  -H "Content-Type: application/json" \
-  -d '{"date_of_birth":"not-a-date","gender":"invalid"}'
+Use Insomnia for this check. No terminal/curl needed for this section.
+
+1) Send invalid profile payload
+- Method/URL: `PUT {{ base_url }}/api/profile/`
+- Headers: `Authorization`, `Content-Type: application/json`
+- Body:
+```json
+{
+  "date_of_birth": "not-a-date",
+  "gender": "invalid"
+}
+```
+
+2) Verify validation response structure
+- Expected:
+  - HTTP `400`
+  - `status: "error"`
+  - `errors` object exists with field-level messages
+  - `validation_feedback` exists with:
+    - `error_count`
+    - `fields`
+    - `issues` (each issue has `field`, `message`, `code`, `hint`)
 
 
-### NOSQL INJECTION (ORM + VALIDATION)
-curl -i -X POST http://localhost:8000/api/auth/login/ \
-  -H "Content-Type: application/json" \
-  -d '{"email":{"$ne":""},"password":"anything"}'
+### NOSQL INJECTION (INSOMNIA ONLY)
+Use Insomnia for these checks. No terminal/curl needed for this section.
 
-curl -i -X POST http://localhost:8000/api/loans/apply/ \
-  -H "Authorization: Bearer <ACCESS_TOKEN>" \
-  -H "Content-Type: application/json" \
-  -d '{"product_id":{"$ne":""},"requested_amount":{"$gt":1000},"term_months":12}'
+1) Login request with Mongo operator payload
+- Method/URL: `POST {{ base_url }}/api/auth/login/`
+- Headers: `Content-Type: application/json`
+- Body:
+```json
+{
+  "email": { "$ne": "" },
+  "password": "anything"
+}
+```
+- Expected:
+  - HTTP `400`
+  - `message`: `Potential NoSQL injection payload detected` (or strict type validation error)
+  - `validation_feedback.issues[0].code`: `nosql_injection_detected` (when middleware catches it)
 
-curl -i -X PUT http://localhost:8000/api/profile/ \
-  -H "Authorization: Bearer <ACCESS_TOKEN>" \
-  -H "Content-Type: application/json" \
-  -d '{"gender":{"$ne":"male"},"civil_status":"single"}'
+2) Loan apply with nested operator payload
+- Method/URL: `POST {{ base_url }}/api/loans/apply/`
+- Headers: `Authorization`, `Content-Type: application/json`
+- Body:
+```json
+{
+  "product_id": { "$ne": "" },
+  "requested_amount": { "$gt": 1000 },
+  "term_months": 12
+}
+```
+- Expected:
+  - HTTP `400`
+  - Request rejected before query execution
 
 
 ### CSRF SAME-SITE + TOKEN
-curl -i -c /tmp/csrf_cookies.txt http://localhost:8000/api/auth/csrf-token/
+Use Insomnia for this check. No terminal/curl needed for this section.
 
-CSRF_TOKEN=$(grep csrftoken /tmp/csrf_cookies.txt | awk '{print $7}')
+1) Get CSRF token and cookie
+- Method/URL: `GET {{ base_url }}/api/auth/csrf-token/`
+- Expected:
+  - HTTP `200`
+  - Response body contains `data.csrf_token`
+  - Response includes `Set-Cookie` for `csrftoken`
+  - `Set-Cookie` contains `SameSite` (for example `Lax`)
 
-curl -i -b /tmp/csrf_cookies.txt -X POST http://localhost:8000/api/auth/signup/ \
-  -H "Content-Type: application/json" \
-  -d '{"email":"bad-email","password":"123","first_name":"","last_name":"123"}'
+2) Send unsafe request without `X-CSRFToken` (with cookie present)
+- Method/URL: `POST {{ base_url }}/api/auth/signup/`
+- Headers: `Content-Type: application/json`
+- Body:
+```json
+{
+  "email": "bad-email",
+  "password": "123",
+  "first_name": "",
+  "last_name": "123"
+}
+```
+- Important:
+  - Keep Insomnia cookie jar enabled so `csrftoken` cookie is sent automatically.
+  - Do not add `X-CSRFToken` header in this step.
+- Expected:
+  - HTTP `403`
+  - Error code like `csrf_token_missing`
 
-curl -i -b /tmp/csrf_cookies.txt -X POST http://localhost:8000/api/auth/signup/ \
-  -H "X-CSRFToken: ${CSRF_TOKEN}" \
-  -H "Content-Type: application/json" \
-  -d '{"email":"bad-email","password":"123","first_name":"","last_name":"123"}'
-
-
-### SQL INJECTION (ORM / NO RAW SQL PATH)
-curl -i -X POST http://localhost:8000/api/auth/login/ \
-  -H "Content-Type: application/json" \
-  -d '{"email":"'\'' OR 1=1 --","password":"anything"}'
-
-curl -i -X POST http://localhost:8000/api/auth/login/ \
-  -H "Content-Type: application/json" \
-  -d '{"email":"admin@example.com","password":"'\'' OR 1=1 --"}'
-
-curl -i -X POST http://localhost:8000/api/auth/signup/ \
-  -H "Content-Type: application/json" \
-  -d '{"first_name":"test","last_name":"test","email":"test'\''; DROP TABLE users; --@mail.com","password":"Admin123!","password_confirm":"Admin123!"}'
+3) Retry with matching CSRF header
+- Same request as step 2, but add header:
+  - `X-CSRFToken: <csrf_token_from_step_1>`
+- Expected:
+  - CSRF check passes (not `403`)
+  - Endpoint returns normal validation/auth response (for this invalid signup payload, expect `400` validation error)
+  
