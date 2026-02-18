@@ -4,7 +4,7 @@
 
 | Criteria | Checkpoint Questions | Rating |
 |---|---|---|
-| Password Storage | Are passwords hashed securely? | ☐ Plaintext  ☐ MD5/SHA1  ☑ bcrypt/Argon2  ☐ bcrypt + salt/pepper |
+| Password Storage | Are passwords hashed securely? | ☐ Plaintext  ☐ MD5/SHA1  ☐ bcrypt/Argon2  ☑ bcrypt + salt/pepper |
 | Session Management | Do sessions expire and use secure flags? | ☐ None  ☐ No expiry  ☑ Expiry set  ☐ Expiry + secure flags |
 | Error Handling | Do login errors leak info? | ☐ Leaks  ☐ Inconsistent  ☑ Generic  ☐ Generic + logs |
 | Brute Force Protection | Are login attempts limited? | ☐ None  ☐ Counting  ☑ Rate limit  ☐ Rate + CAPTCHA |
