@@ -1,42 +1,99 @@
 CATEGORY 2 TESTING:
 
-### SERVER VALIDATION
-curl -s -X POST http://localhost:8000/api/auth/login/ \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email":"sorianoeligabriel@gmail.com",
-    "password":"Admin123!"
-  }'
+### SERVER VALIDATION (INSOMNIA ONLY)
+Use Insomnia for these checks. No terminal/curl needed for this section.
 
-curl -i -X POST http://localhost:8000/api/auth/signup/ \
-  -H "Content-Type: application/json" \
-  -d '{"email":"bad-email","password":"123","first_name":"","last_name":"123"}'
+1) Setup in Insomnia
+- Create Environment variable: `base_url = http://localhost:8000`
+- Login first (`POST {{ base_url }}/api/auth/login/`) and save `access` token.
+- Add header for protected endpoints: `Authorization: Bearer <ACCESS_TOKEN>`
 
-curl -i -X PUT http://localhost:8000/api/profile/ \
-  -H "Authorization: Bearer <ACCESS_TOKEN>" \
-  -H "Content-Type: application/json" \
-  -d '{"date_of_birth":"not-a-date","gender":"invalid"}'
+2) Invalid Signup Payload (Schema validation)
+- Method/URL: `POST {{ base_url }}/api/auth/signup/`
+- Headers: `Content-Type: application/json`
+- Body:
+```json
+{
+  "email": "bad-email",
+  "password": "123",
+  "first_name": "",
+  "last_name": "123"
+}
+```
+- Expected:
+  - HTTP `400`
+  - `status: "error"`
+  - `errors` present
+  - `validation_feedback` present
 
-curl -i -X POST http://localhost:8000/api/loans/apply/ \
-  -H "Authorization: Bearer <ACCESS_TOKEN>" \
-  -H "Content-Type: application/json" \
-  -d '{"product_id":"abc","requested_amount":10,"term_months":0}'
+3) Invalid Profile Update (Field/type validation)
+- Method/URL: `PUT {{ base_url }}/api/profile/`
+- Headers: `Authorization`, `Content-Type: application/json`
+- Body:
+```json
+{
+  "date_of_birth": "not-a-date",
+  "gender": "invalid"
+}
+```
+- Expected:
+  - HTTP `400`
+  - Field-specific validation errors
 
-curl -i -X POST http://localhost:8000/api/documents/upload/ \
-  -H "Authorization: Bearer <ACCESS_TOKEN>" \
-  -F "document_type=valid_id"
+4) Invalid Loan Apply Payload (Business + schema validation)
+- Method/URL: `POST {{ base_url }}/api/loans/apply/`
+- Headers: `Authorization`, `Content-Type: application/json`
+- Body:
+```json
+{
+  "product_id": "abc",
+  "requested_amount": 10,
+  "term_months": 0
+}
+```
+- Expected:
+  - HTTP `400` or `404` (depends on product existence check order)
+  - No application created
 
-(sanitization test)
-curl -s -X PUT http://localhost:8000/api/profile/ \
-  -H "Authorization: Bearer <ACCESS_TOKEN>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "address_line1":"<b>Main</b> <script>alert(1)</script> Street",
-    "barangay":"  <i>Barangay 1</i>  "
-  }'
+5) Missing File on Upload (Required input validation)
+- Method/URL: `POST {{ base_url }}/api/documents/upload/`
+- Headers: `Authorization`
+- Body type: `Multipart Form`
+- Fields: `document_type=valid_id` (do not attach file)
+- Expected:
+  - HTTP `400`
+  - Message similar to `"No file provided"`
 
-curl -s http://localhost:8000/api/profile/ \
-  -H "Authorization: Bearer <ACCESS_TOKEN>"
+6) Sanitization Check (Server-side input cleanup)
+- Step A: send payload
+  - Method/URL: `PUT {{ base_url }}/api/profile/`
+  - Headers: `Authorization`, `Content-Type: application/json`
+  - Body:
+```json
+{
+  "address_line1": "<b>Main</b> <script>alert(1)</script> Street",
+  "barangay": "  <i>Barangay 1</i>  "
+}
+```
+- Step B: read back saved profile
+  - Method/URL: `GET {{ base_url }}/api/profile/`
+- Expected:
+  - Stored values are sanitized/normalized (tags stripped, whitespace normalized)
+  - No script content execution
+
+7) Invalid Boolean Query Param (Strict boolean validation)
+- Method/URL: `GET {{ base_url }}/api/notifications/?unread=maybe`
+- Headers: `Authorization`
+- Expected:
+  - HTTP `400`
+  - Error for `unread` boolean format
+
+8) Invalid Enum Query Param (Strict choice validation)
+- Method/URL: `GET {{ base_url }}/api/loans/applications/?status=not_a_real_status`
+- Headers: `Authorization`
+- Expected:
+  - HTTP `400`
+  - Error for invalid `status` choice
 
 
 ### SQL INJECTION (ORM / NO RAW SQL PATH)

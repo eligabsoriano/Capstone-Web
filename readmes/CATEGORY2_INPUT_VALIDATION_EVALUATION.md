@@ -4,13 +4,13 @@
 
 | Criteria | Checkpoint Questions | Rating |
 |---|---|---|
-| Server Validation | Is all input validated server-side? | ☐ None  ☐ Some  ☐ All  ☑ + Sanitization | DONE AND TESTED
-| SQL Injection | Are queries protected? | ☐ Raw  ☐ Escaped  ☐ Parameterized  ☑ ORM | DONE AND TESTED
-| XSS | Is output safely escaped? | ☐ None  ☐ Basic  ☐ Context aware  ☑ CSP + sanitize | DONE AND TESTED
-| File Upload | Are uploads checked? | ☐ None  ☐ Type only  ☐ Type + size  ☑ + scanning | DONE AND TESTED
-| API Validation | Are APIs validated? | ☐ None  ☐ Manual  ☐ Schema  ☑ Auto + feedback | DONE AND TESTED
-| NoSQL Injection | Are NoSQL queries protected? | ☐ None  ☐ Filter  ☐ Param  ☑ ORM + validation | DONE AND TESTED
-| CSRF | Is CSRF protection enabled? | ☐ None  ☐ Token  ☐ Sync tokens  ☑ SameSite + token | DONE AND TESTED
+| Server Validation | Is all input validated server-side? | ☐ None  ☐ Some  ☑ All  ☑ + Sanitization |
+| SQL Injection | Are queries protected? | ☐ Raw  ☐ Escaped  ☐ Parameterized  ☑ ORM |
+| XSS | Is output safely escaped? | ☐ None  ☐ Basic  ☐ Context aware  ☑ CSP + sanitize |
+| File Upload | Are uploads checked? | ☐ None  ☐ Type only  ☐ Type + size  ☑ + scanning |
+| API Validation | Are APIs validated? | ☐ None  ☐ Manual  ☐ Schema  ☑ Auto + feedback |
+| NoSQL Injection | Are NoSQL queries protected? | ☐ None  ☐ Filter  ☐ Param  ☑ ORM + validation |
+| CSRF | Is CSRF protection enabled? | ☐ None  ☐ Token  ☐ Sync tokens  ☑ SameSite + token |
 
 ## How to Test Category 2
 
@@ -24,9 +24,10 @@
 
 ## Overall Readiness
 
-- Readiness: **Mostly Ready (Good)**
-- Estimated Category 2 level: **Excellent (5/5)**
-- Main gaps after current improvements:
-1. Optionally integrate external AV engine (e.g., ClamAV) for signature-based malware feeds.
-2. Add automated security regression tests for validation, CSP, and upload scanning.
-3. Add deployment runbook for CSRF/CORS trusted origins per environment.
+- Readiness: **Ready (Very Good)**
+- Estimated Category 2 level: **Very Good to Excellent (4.5/5)**
+- Final notes:
+1. Manual endpoints were hardened to strict type/range/enum validation with explicit `400` responses.
+2. Server-side sanitization is applied through serializers and targeted manual sanitization for free-text/query inputs.
+3. Keep running regression tests after every endpoint change to preserve `All + Sanitization` coverage.
+4. Optional next step: move remaining manual validation logic into dedicated serializers for easier long-term maintenance.
