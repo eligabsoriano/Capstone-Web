@@ -1,3 +1,4 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   AlertCircle,
   ArrowLeft,
@@ -10,27 +11,39 @@ import {
   GraduationCap,
   Home,
   Loader2,
+  MessageSquare,
   User,
   XCircle,
 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { parseError } from "@/lib/errors";
+import { resolveMediaUrl } from "@/shared/utils/media";
+import type { DisburseApplicationResponse } from "@/types/api";
+import { requestReupload } from "../api/documentsApi";
 import { ApprovalModal } from "../components/ApprovalModal";
 import { DisbursementModal } from "../components/DisbursementModal";
+import { DisbursementReceiptModal } from "../components/DisbursementReceiptModal";
 import { RejectionModal } from "../components/RejectionModal";
+import { RequestDocumentsModal } from "../components/RequestDocumentsModal";
 import {
+  useAddApplicationNote,
   useDisburseApplication,
   useOfficerApplicationDetail,
+  useRequestMissingDocuments,
   useReviewApplication,
 } from "../hooks";
 
 export function OfficerApplicationDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const {
     data: application,
@@ -39,10 +52,44 @@ export function OfficerApplicationDetailPage() {
   } = useOfficerApplicationDetail(id || "");
   const reviewMutation = useReviewApplication();
   const disburseMutation = useDisburseApplication();
+  const addApplicationNoteMutation = useAddApplicationNote();
+  const requestMissingDocumentsMutation = useRequestMissingDocuments();
 
   const [approvalModalOpen, setApprovalModalOpen] = useState(false);
   const [rejectionModalOpen, setRejectionModalOpen] = useState(false);
   const [disbursementModalOpen, setDisbursementModalOpen] = useState(false);
+  const [receiptModalOpen, setReceiptModalOpen] = useState(false);
+  const [latestDisbursement, setLatestDisbursement] =
+    useState<DisburseApplicationResponse | null>(null);
+  const [requestDocumentsModalOpen, setRequestDocumentsModalOpen] =
+    useState(false);
+  const [internalNoteDraft, setInternalNoteDraft] = useState("");
+
+  const requestDocumentsMutation = useMutation({
+    mutationFn: ({
+      documentId,
+      reason,
+    }: {
+      documentId: string;
+      reason: string;
+    }) => requestReupload(documentId, { reason }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["officer-application", id],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ["officer-applications"],
+      });
+      await queryClient.invalidateQueries({ queryKey: ["officer-documents"] });
+      await queryClient.invalidateQueries({
+        queryKey: ["admin", "audit-logs"],
+      });
+      toast.success("Document request sent to customer");
+    },
+    onError: (err: unknown) => {
+      toast.error(parseError(err));
+    },
+  });
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-PH", {
@@ -119,11 +166,66 @@ export function OfficerApplicationDetailPage() {
     amount: number,
   ) => {
     if (!id) return;
-    await disburseMutation.mutateAsync({
+    const response = await disburseMutation.mutateAsync({
       applicationId: id,
       data: { method, reference, amount },
     });
     setDisbursementModalOpen(false);
+    if (response.status === "success" && response.data) {
+      setLatestDisbursement(response.data);
+      setReceiptModalOpen(true);
+      toast.success("Loan disbursed successfully");
+    }
+  };
+
+  const handleRequestDocuments = async (documentId: string, reason: string) => {
+    try {
+      await requestDocumentsMutation.mutateAsync({ documentId, reason });
+      setRequestDocumentsModalOpen(false);
+    } catch {
+      // Error toast is handled in mutation onError.
+    }
+  };
+
+  const handleRequestMissingDocuments = async (
+    missingDocumentTypes: string[],
+    reason: string,
+  ) => {
+    if (!id) return;
+    try {
+      await requestMissingDocumentsMutation.mutateAsync({
+        applicationId: id,
+        data: {
+          missing_documents: missingDocumentTypes,
+          reason,
+        },
+      });
+      toast.success("Missing documents request sent to customer");
+      setRequestDocumentsModalOpen(false);
+    } catch (err) {
+      toast.error(parseError(err));
+    }
+  };
+
+  const handleAddInternalNote = async () => {
+    if (!id) return;
+
+    const note = internalNoteDraft.trim();
+    if (!note) {
+      toast.error("Please enter a note");
+      return;
+    }
+
+    try {
+      await addApplicationNoteMutation.mutateAsync({
+        applicationId: id,
+        data: { note },
+      });
+      toast.success("Internal note saved");
+      setInternalNoteDraft("");
+    } catch (err) {
+      toast.error(parseError(err));
+    }
   };
 
   if (isLoading) {
@@ -158,6 +260,33 @@ export function OfficerApplicationDetailPage() {
 
   const canReview = ["submitted", "under_review"].includes(application.status);
   const canDisburse = application.status === "approved";
+  const requestableDocuments = (application.documents || []).filter(
+    (doc) => doc.status !== "approved",
+  );
+  const uploadedDocumentTypes = new Set(
+    (application.documents || []).map((doc) => doc.document_type),
+  );
+  const missingRequiredDocuments = (
+    application.product.required_documents || []
+  ).filter((docType) => !uploadedDocumentTypes.has(docType));
+  const internalNotes = application.internal_notes || [];
+  const scopedLatestDisbursement =
+    latestDisbursement?.id === application.id ? latestDisbursement : null;
+  const receiptData = scopedLatestDisbursement ?? {
+    id: application.id,
+    status: application.status,
+    disbursed_amount: application.disbursed_amount ?? 0,
+    disbursement_method: application.disbursement_method ?? "",
+    disbursement_reference: application.disbursement_reference ?? "",
+    disbursed_at: application.disbursed_at ?? null,
+  };
+  const canViewReceipt =
+    application.status === "disbursed" &&
+    Boolean(
+      receiptData.disbursement_reference ||
+        receiptData.disbursed_at ||
+        receiptData.disbursed_amount,
+    );
 
   return (
     <div className="space-y-6">
@@ -572,7 +701,10 @@ export function OfficerApplicationDetailPage() {
                             className="h-7 w-7"
                             onClick={() =>
                               doc.file_url &&
-                              window.open(doc.file_url, "_blank")
+                              window.open(
+                                resolveMediaUrl(doc.file_url),
+                                "_blank",
+                              )
                             }
                           >
                             <Eye className="h-4 w-4" />
@@ -754,6 +886,26 @@ export function OfficerApplicationDetailPage() {
                     <XCircle className="h-4 w-4 mr-2" />
                     Reject Application
                   </Button>
+                  <Button
+                    variant="secondary"
+                    className="w-full"
+                    onClick={() => setRequestDocumentsModalOpen(true)}
+                    disabled={
+                      requestDocumentsMutation.isPending ||
+                      requestMissingDocumentsMutation.isPending ||
+                      (requestableDocuments.length === 0 &&
+                        missingRequiredDocuments.length === 0)
+                    }
+                  >
+                    <FileText className="h-4 w-4 mr-2" />
+                    Request Documents
+                  </Button>
+                  {requestableDocuments.length === 0 &&
+                    missingRequiredDocuments.length === 0 && (
+                      <p className="text-xs text-muted-foreground text-center">
+                        No missing or re-upload request options available.
+                      </p>
+                    )}
                 </>
               )}
               {canDisburse && (
@@ -766,7 +918,17 @@ export function OfficerApplicationDetailPage() {
                   Disburse Loan
                 </Button>
               )}
-              {!canReview && !canDisburse && (
+              {canViewReceipt && (
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => setReceiptModalOpen(true)}
+                >
+                  <Eye className="h-4 w-4 mr-2" />
+                  View Receipt
+                </Button>
+              )}
+              {!canReview && !canDisburse && !canViewReceipt && (
                 <p className="text-sm text-muted-foreground text-center py-4">
                   No actions available for this application status.
                 </p>
@@ -774,7 +936,61 @@ export function OfficerApplicationDetailPage() {
             </CardContent>
           </Card>
 
-          {/* Decision Info (if available) */}
+          {/* Internal Notes */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MessageSquare className="h-5 w-5 text-primary" />
+                Internal Notes
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Textarea
+                value={internalNoteDraft}
+                onChange={(e) => setInternalNoteDraft(e.target.value)}
+                placeholder="Add review note for officer/admin visibility"
+                rows={3}
+                disabled={addApplicationNoteMutation.isPending}
+              />
+              <Button
+                className="w-full"
+                onClick={handleAddInternalNote}
+                disabled={
+                  addApplicationNoteMutation.isPending ||
+                  !internalNoteDraft.trim()
+                }
+              >
+                {addApplicationNoteMutation.isPending
+                  ? "Saving Note..."
+                  : "Save Note"}
+              </Button>
+              {internalNotes.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  No internal notes yet.
+                </p>
+              ) : (
+                <div className="space-y-2">
+                  {[...internalNotes].reverse().map((note, index) => (
+                    <div
+                      key={`${note.created_at || "note"}-${index}`}
+                      className="rounded-md border p-3"
+                    >
+                      <p className="text-sm whitespace-pre-wrap break-all">
+                        {note.content}
+                      </p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {(note.author_role || "user")
+                          .replace(/_/g, " ")
+                          .toUpperCase()}{" "}
+                        • {formatDate(note.created_at)}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
           {application.decision_date && (
             <Card>
               <CardHeader>
@@ -828,6 +1044,36 @@ export function OfficerApplicationDetailPage() {
         onConfirm={handleDisburse}
         approvedAmount={application.recommended_amount}
         isPending={disburseMutation.isPending}
+      />
+      <DisbursementReceiptModal
+        open={receiptModalOpen}
+        onClose={() => setReceiptModalOpen(false)}
+        receipt={{
+          applicationId: application.id,
+          customerName:
+            `${application.customer?.personal_profile?.first_name || ""} ${application.customer?.personal_profile?.last_name || ""}`.trim(),
+          productName: application.product.name,
+          amount: receiptData.disbursed_amount,
+          method: receiptData.disbursement_method,
+          reference: receiptData.disbursement_reference,
+          disbursedAt: receiptData.disbursed_at,
+          schedule: receiptData.schedule,
+        }}
+      />
+      <RequestDocumentsModal
+        open={requestDocumentsModalOpen}
+        onClose={() => setRequestDocumentsModalOpen(false)}
+        documents={requestableDocuments.map((doc) => ({
+          id: doc.id,
+          document_type: doc.document_type,
+          filename: doc.filename,
+          status: doc.status,
+        }))}
+        missingDocumentTypes={missingRequiredDocuments}
+        isSubmittingMissing={requestMissingDocumentsMutation.isPending}
+        isSubmittingReupload={requestDocumentsMutation.isPending}
+        onConfirmMissing={handleRequestMissingDocuments}
+        onConfirmReupload={handleRequestDocuments}
       />
     </div>
   );

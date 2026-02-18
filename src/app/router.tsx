@@ -3,13 +3,13 @@ import { AdminLayout } from "@/features/admin/components";
 import {
   AdminAdminDetailPage,
   AdminAdminsPage,
+  AdminApplicationsPage,
   AdminAuditLogsPage,
   AdminDashboardPage,
   AdminOfficerDetailPage,
   AdminOfficersPage,
   AdminProductsPage,
   AdminSettingsPage,
-  AdminWorkloadPage,
 } from "@/features/admin/pages";
 import {
   ForgotPasswordPage,
@@ -28,6 +28,7 @@ import {
   OfficerApplicationsPage,
   OfficerDashboardPage,
   OfficerDocumentsPage,
+  OfficerPaymentHistoryPage,
   OfficerPaymentsPage,
   OfficerSettingsPage,
 } from "@/features/loan-officer/pages";
@@ -126,6 +127,10 @@ export const router = createBrowserRouter([
                 element: <OfficerPaymentsPage />,
               },
               {
+                path: "payment-history",
+                element: <OfficerPaymentHistoryPage />,
+              },
+              {
                 path: "settings",
                 element: <OfficerSettingsPage />,
               },
@@ -149,6 +154,10 @@ export const router = createBrowserRouter([
               {
                 index: true,
                 element: <AdminDashboardPage />,
+              },
+              {
+                path: "applications",
+                element: <AdminApplicationsPage />,
               },
               // Loan Officers Management - requires manage_loan_officers
               {
@@ -184,14 +193,10 @@ export const router = createBrowserRouter([
                   </RequireSuperAdmin>
                 ),
               },
-              // Officer Workload - requires view_analytics
+              // Legacy workload path - keep backward compatibility
               {
                 path: "workload",
-                element: (
-                  <RequirePermission permission="view_analytics">
-                    <AdminWorkloadPage />
-                  </RequirePermission>
-                ),
+                element: <Navigate to="/admin/applications" replace />,
               },
               // Loan Products - requires manage_system
               {

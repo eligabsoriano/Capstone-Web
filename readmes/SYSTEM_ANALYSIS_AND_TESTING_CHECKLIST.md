@@ -452,14 +452,14 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| PROD-001 | List Products | 1. Navigate to Loan Products | Table shows all products | ✔️ |
-| PROD-002 | Create Product - Valid | 1. Click "Add Product" <br> 2. Fill name, interest rate, terms <br> 3. Save | Product created, appears in list | ✔️ |
-| PROD-003 | Create Product - Duplicate Name | 1. Create product with existing name | Shows "Name already exists" error | ❌ |
-| PROD-004 | Create Product - Invalid Rate | 1. Enter negative interest rate | Shows validation error | ❌ |
-| PROD-005 | Edit Product | 1. Click edit on product row <br> 2. Modify fields <br> 3. Save | Changes saved | ✔️ |
-| PROD-006 | Deactivate Product | 1. Click deactivate on active product | Product marked inactive | ✔️ |
-| PROD-007 | Activate Product | 1. Click activate on inactive product | Product marked active | ✔️ |
-| PROD-008 | Product in Use | 1. Try to delete product with active loans | Shows error or prevents deletion | ✔️ |
+| PROD-001 | List Products | 1. Navigate to Loan Products | Table shows all products | ✅ |
+| PROD-002 | Create Product - Valid | 1. Click "Add Product" <br> 2. Fill name, interest rate, terms <br> 3. Save | Product created, appears in list | ✅ |
+| PROD-003 | Create Product - Duplicate Name | 1. Create product with existing name | Shows "Name already exists" error | ✅ |
+| PROD-004 | Create Product - Invalid Rate | 1. Enter negative interest rate | Shows validation error | ✅ |
+| PROD-005 | Edit Product | 1. Click edit on product row <br> 2. Modify fields <br> 3. Save | Changes saved | ✅ |
+| PROD-006 | Deactivate Product | 1. Click deactivate on active product | Product marked inactive | ✅ |
+| PROD-007 | Activate Product | 1. Click activate on inactive product | Product marked active | ✅ |
+| PROD-008 | Product in Use | 1. Try to delete product with active loans | Shows error or prevents deletion | ✅ |
 
 ---
 
@@ -472,7 +472,7 @@
 | APP-001 | List All Applications | 1. Login as Admin <br> 2. Navigate to Applications | Shows all applications with pagination | ✅ |
 | APP-002 | Filter by Status | 1. Select status filter (Pending/Approved/Rejected) | Table filters accordingly | ✅ |
 | APP-003 | View Application Details | 1. Click on application row | Shows full application details | ✅ |
-| APP-004 | Assign to Officer | 1. Select unassigned application <br> 2. Click "Assign" <br> 3. Select officer | Application assigned to officer | ❌ |
+| APP-004 | Assign to Officer | 1. Select unassigned application <br> 2. Click "Assign" <br> 3. Select officer | Application assigned to officer | ✅ |
 
 #### 5.2 Officer Application Review
 
@@ -482,16 +482,16 @@
 | APP-006 | Review Application | 1. Click on assigned application | Shows application details with review options | ✅ |
 | APP-007 | Approve Application | 1. Review application <br> 2. Click "Approve" <br> 3. Add notes (optional) <br> 4. Confirm | Application status changes to Approved | ✅ |
 | APP-008 | Reject Application | 1. Review application <br> 2. Click "Reject" <br> 3. Add rejection reason (required) <br> 4. Confirm | Application status changes to Rejected, reason saved | ✅ |
-| APP-009 | Request More Documents | 1. Review application <br> 2. Click "Request Documents" <br> 3. Specify what's needed | Request sent to customer, status updates | ❌ |
-| APP-010 | Add Review Notes | 1. Open application <br> 2. Add internal notes <br> 3. Save | Notes saved, visible to other officers/admins | ⚠️ |
+| APP-009 | Request More Documents | 1. Review application <br> 2. Click "Request Documents" <br> 3. Choose request type: Missing Document or Re-upload <br> 4. Select document(s) and specify what's needed (optional for Missing Document) <br> 5. Send request | Request saved, customer notified by email, application remains in active review flow | ✅ |
+| APP-010 | Add Review Notes | 1. Open application detail <br> 2. Add note in "Internal Notes" section <br> 3. Click "Save Note" <br> 4. Verify notes summary appears in officer/admin application tables | Notes save without approve/reject, are visible in detail history and summarized in officer/admin application list views | ✅ |
 
 #### 5.3 Disbursement
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| APP-011 | View Approved for Disbursement | 1. Navigate to Disbursement page | Shows approved applications pending disbursement | ✅ |
-| APP-012 | Process Disbursement | 1. Select approved application <br> 2. Enter disbursement details <br> 3. Confirm | Disbursement recorded, repayment schedule generated | ✅  |
-| APP-013 | Disbursement Receipt | 1. After disbursement <br> 2. View/print receipt | Receipt shows all disbursement details | ❌ |
+| APP-011 | View Approved for Disbursement | 1. Navigate to Applications page <br> 2. Filter status to Approved | Shows approved applications pending disbursement | ✅ |
+| APP-012 | Process Disbursement | 1. Open approved application detail <br> 2. Click "Disburse Loan" <br> 3. Enter disbursement details <br> 4. Confirm | Disbursement recorded, repayment schedule generated | ✅  |
+| APP-013 | Disbursement Receipt | 1. After disbursement, receipt modal opens <br> 2. Click "Print Receipt" or close and click "View Receipt" from actions | Receipt shows disbursement details and can be printed | ✅ |
 
 ---
 
@@ -499,14 +499,14 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status | Notes |
 |---------|-----------|-------|-----------------|--------|-------|
-| DOC-001 | List Documents | 1. Navigate to Documents page | Shows all documents with status badges | ❌ | Backend `/api/documents/` endpoint error: "Failed to load documents" |
-| DOC-002 | Filter by Type | 1. Select document type filter | Shows only selected type | ⚠️ | Blocked: API endpoint not working |
-| DOC-003 | Filter by Status | 1. Select status filter (Pending/Verified/Rejected) | Shows matching documents | ⚠️ | Blocked: No documents to filter |
-| DOC-004 | View Document | 1. Click on document row | Opens document preview | ⚠️ | Blocked: API endpoint not working |
-| DOC-005 | Verify Document | 1. Open pending document <br> 2. Review content <br> 3. Click "Verify" | Document status changes to Verified | ⚠️ | Blocked: No test data available |
-| DOC-006 | Reject Document | 1. Open pending document <br> 2. Click "Reject" <br> 3. Enter reason | Document status changes to Rejected, customer notified | ⚠️ | Blocked: No test data available |
-| DOC-007 | Request Re-upload | 1. Open document <br> 2. Click "Request Re-upload" <br> 3. Specify issue | Request sent to customer | ⚠️ | Blocked: No test data available |
-| DOC-008 | Document Status Badge | 1. View documents list | Status badges show correct colors (Pending=Yellow, Verified=Green, Rejected=Red) | ⚠️ | Blocked: API error prevents data load |
+| DOC-001 | List Documents | 1. Navigate to Documents page | Shows all documents with status badges | ✅ |
+| DOC-002 | Filter by Type | 1. Select document type filter | Shows only selected type | ✅ | 
+| DOC-003 | Filter by Status | 1. Select status filter (Pending/Verified/Rejected) | Shows matching documents | ✅ |
+| DOC-004 | View Document | 1. Click on document row | Opens document preview | ✅ |
+| DOC-005 | Verify Document | 1. Open pending document <br> 2. Review content <br> 3. Click "Verify" | Document status changes to Verified | ✅ |
+| DOC-006 | Reject Document | 1. Open pending document <br> 2. Click "Reject" <br> 3. Enter reason | Document status changes to Rejected, customer notified | ✅ | 
+| DOC-007 | Request Re-upload | 1. Open document <br> 2. Click "Request Re-upload" <br> 3. Specify issue | Request sent to customer | ✅ | 
+| DOC-008 | Document Status Badge | 1. View documents list | Status badges show correct colors (Pending=Yellow, Verified=Green, Rejected=Red) | ✅ | 
 
 ---
 
@@ -516,14 +516,14 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| PAY-001 | Search Loans | 1. Navigate to Record Payment <br> 2. Search by customer name or loan ID | Shows matching active loans | ⚠️ |
+| PAY-001 | Search Loans | 1. Navigate to Record Payment <br> 2. Search by customer name or loan ID | Shows matching active loans | ✅ |
 | PAY-002 | Select Loan | 1. Search for loan <br> 2. Click on loan result | Shows loan details and payment form | ✅  |
 | PAY-003 | Record Full Payment | 1. Select loan <br> 2. Enter full installment amount <br> 3. Select payment method <br> 4. Submit | Payment recorded, schedule updated | ✅  |
 | PAY-004 | Record Partial Payment | 1. Select loan <br> 2. Enter partial amount <br> 3. Submit | Partial payment recorded, remaining balance shown | ✅  |
 | PAY-005 | Payment Methods | 1. Open payment form <br> 2. Check available methods | Shows Cash, Bank Transfer, Mobile Money, etc. | ✅ |
 | PAY-006 | Reference Number | 1. Select bank transfer <br> 2. Enter reference number | Reference number saved with payment | ✅ |
 | PAY-007 | Payment Confirmation | 1. Submit payment | Shows confirmation with details | ✅  |
-| PAY-008 | Duplicate Payment Prevention | 1. Try to record same payment twice | Shows warning or prevents duplicate | ⚠️   |
+| PAY-008 | Duplicate Payment Prevention | 1. Try to record same payment twice | Shows warning or prevents duplicate | ✅ |
 
 #### 7.2 Repayment Schedule
 
@@ -532,16 +532,16 @@
 | PAY-009 | View Schedule | 1. Navigate to loan <br> 2. View repayment schedule | Shows all installments with dates and amounts | ✅ |
 | PAY-010 | Overdue Indicator | 1. View schedule with overdue payment | Overdue row highlighted in red | ✅  |
 | PAY-011 | Paid Indicator | 1. View schedule after payment | Paid rows marked with checkmark | ✅  |
-| PAY-012 | Remaining Balance | 1. View schedule | Shows correct remaining balance | ✅  |
+| PAY-012 | Remaining Balance | 1. View schedule | Shows correct remaining balance | ✅ |
 
 #### 7.3 Payment History
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
 | PAY-013 | View History | 1. Navigate to Payment History | Shows all payments with pagination | ✅ |
-| PAY-014 | Filter by Date | 1. Select date range | Shows payments in range | ⚠️  |
-| PAY-015 | Filter by Status | 1. Filter by On-time/Late payments | Shows matching payments | ⚠️  |
-| PAY-016 | Export History | 1. Click Export <br> 2. Select format | Downloads payment history file | ❌ |
+| PAY-014 | Filter by Date | 1. Select date range | Shows payments in range | ✅ |
+| PAY-015 | Filter by Status | 1. Filter by On-time/Late payments | Shows matching payments | ✅  |
+| PAY-016 | Export History | 1. Click Export <br> 2. Select format | Downloads payment history file | ✅ |
 
 ---
 
@@ -562,12 +562,12 @@
 |---------|-----------|-------|-----------------|--------|
 | ANLY-005 | View Audit Logs | 1. Navigate to Audit Logs | Shows all system audit entries | ✅ |
 | ANLY-006 | Filter by Action | 1. Filter by action type (Login, Create, Update, Delete) | Shows matching logs | ✅  |
-| ANLY-007 | Filter by User | 1. Select specific user | Shows only that user's actions | ❌ |
-| ANLY-008 | Filter by Date Range | 1. Select date range | Shows logs within range | ☐ |
+| ANLY-007 | Filter by User | 1. Select specific user | Shows only that user's actions | ✅ |
+| ANLY-008 | Filter by Date Range | 1. Select date range | Shows logs within range | ✅ |
 | ANLY-009 | Search Logs | 1. Enter search term | Finds matching log entries | ✅ |
 | ANLY-010 | Export Logs CSV | 1. Click Export <br> 2. Select CSV | Downloads audit logs as CSV | ✅ |
-| ANLY-011 | Export Logs Excel | 1. Click Export <br> 2. Select Excel | Downloads audit logs as Excel | ❌ |
-| ANLY-012 | Log Details | 1. Click on log entry | Shows full details including IP, timestamp, changes | ❌ |
+| ANLY-011 | Export Logs Excel | 1. Click Export <br> 2. Select Excel | Downloads audit logs as Excel | ✅ |
+| ANLY-012 | Log Details | 1. Click on log entry | Shows full details including IP, timestamp, changes | ✅ |
 
 ---
 
@@ -590,10 +590,10 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| PROF-001 | View Own Profile | 1. Click profile in header | Shows user profile page | ☐ |
-| PROF-002 | Update Profile | 1. Edit profile fields <br> 2. Save | Changes saved successfully | ☐ |
-| PROF-003 | View Customer Profile | 1. Open customer's loan application <br> 2. Click customer name | Shows customer profile details | ☐ |
-| PROF-004 | Business Profile | 1. View customer with business loan | Shows business details | ☐ |
+| PROF-001 | View Own Profile | 1. Click profile in header | Shows user profile page | ✅ |
+| PROF-002 | Update Profile | 1. Edit profile fields <br> 2. Save | Changes saved successfully | ✅ |
+| PROF-003 | View Customer Profile | 1. Open customer's loan application <br> 2. Click customer name | Shows customer profile details | ✅ |
+| PROF-004 | Business Profile | 1. View customer with business loan | Shows business details | ✅ |
 
 ---
 
@@ -601,12 +601,12 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| NOTIF-001 | Notification Bell | 1. View header | Shows notification bell with count badge | ☐ |
-| NOTIF-002 | View Notifications | 1. Click notification bell | Shows notification dropdown/list | ☐ |
-| NOTIF-003 | Mark as Read | 1. Click on notification | Notification marked as read, badge decreases | ☐ |
-| NOTIF-004 | Mark All Read | 1. Click "Mark all as read" | All notifications marked as read | ☐ |
-| NOTIF-005 | Real-time Update | 1. Have another user trigger notification <br> 2. Observe | New notification appears without refresh | ☐ |
-| NOTIF-006 | Notification Link | 1. Click notification with action | Navigates to relevant page | ☐ |
+| NOTIF-001 | Notification Bell | 1. View header | Shows notification bell with count badge | ✅ |
+| NOTIF-002 | View Notifications | 1. Click notification bell | Shows notification dropdown/list | ✅ |
+| NOTIF-003 | Mark as Read | 1. Click on notification | Notification marked as read, badge decreases | ✅ |
+| NOTIF-004 | Mark All Read | 1. Click "Mark all as read" | All notifications marked as read | ✅ |
+| NOTIF-005 | Real-time Update | 1. Have another user trigger notification <br> 2. Observe | New notification appears without refresh | ✅ |
+| NOTIF-006 | Notification Link | 1. Click notification with action | Navigates to relevant page | ✅ |
 
 ---
 
@@ -616,48 +616,48 @@
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| EDGE-001 | Offline Mode | 1. Disconnect network <br> 2. Try to use app | Shows appropriate offline message | ☐ |
-| EDGE-002 | Slow Connection | 1. Throttle network <br> 2. Load data-heavy page | Shows loading indicators, eventually loads | ☐ |
-| EDGE-003 | Request Timeout | 1. Simulate server timeout | Shows timeout error message | ☐ |
-| EDGE-004 | Reconnection | 1. Go offline <br> 2. Come back online | App recovers and syncs | ☐ |
+| EDGE-001 | Offline Mode | 1. Disconnect network <br> 2. Try to use app | Shows appropriate offline message | ✅ |
+| EDGE-002 | Slow Connection | 1. Throttle network <br> 2. Load data-heavy page | Shows loading indicators, eventually loads | ✅ |
+| EDGE-003 | Request Timeout | 1. Simulate server timeout | Shows timeout error message | ✅ |
+| EDGE-004 | Reconnection | 1. Go offline <br> 2. Come back online | App recovers and syncs | ✅ |
 
 ### Authorization & Security
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| EDGE-005 | Access Admin as Officer | 1. Login as Officer <br> 2. Manually navigate to `/admin/` | Redirected or shows 403 | ☐ |
-| EDGE-006 | Access Officer as Admin | 1. Login as Admin <br> 2. Navigate to `/officer/` | Appropriate handling (redirect or allow) | ☐ |
-| EDGE-007 | Expired Token API Call | 1. Manually expire token <br> 2. Make API call | Redirects to login or refreshes token | ☐ |
-| EDGE-008 | Tampered Token | 1. Modify JWT in storage <br> 2. Make API call | Shows authentication error | ☐ |
+| EDGE-005 | Access Admin as Officer | 1. Login as Officer <br> 2. Manually navigate to `/admin/` | Redirected or shows 403 | ✅ |
+| EDGE-006 | Access Officer as Admin | 1. Login as Admin <br> 2. Navigate to `/officer/` | Appropriate handling (redirect or allow) | ✅ |
+| EDGE-007 | Expired Token API Call | 1. Manually expire token <br> 2. Make API call | Redirects to login or refreshes token | ✅ |
+| EDGE-008 | Tampered Token | 1. Modify JWT in storage <br> 2. Make API call | Shows authentication error | ✅ |
 
 ### Data Validation
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| EDGE-009 | XSS Prevention | 1. Enter `<script>alert('xss')</script>` in input <br> 2. Submit | Input sanitized, no script execution | ☐ |
-| EDGE-010 | SQL/NoSQL Injection | 1. Enter malicious query in search | Query sanitized, no injection | ☐ |
-| EDGE-011 | Large File Upload | 1. Try to upload file exceeding limit | Shows file size error | ☐ |
-| EDGE-012 | Invalid File Type | 1. Try to upload unsupported file type | Shows file type error | ☐ |
-| EDGE-013 | Special Characters in Name | 1. Enter name with special chars | Handles appropriately (saves or validation error) | ☐ |
-| EDGE-014 | Empty Form Submission | 1. Submit form without required fields | Shows all validation errors | ☐ |
-| EDGE-015 | Very Long Input | 1. Enter extremely long text in fields | Truncates or shows max length error | ☐ |
+| EDGE-009 | XSS Prevention | 1. Enter `<script>alert('xss')</script>` in input <br> 2. Submit | Input sanitized, no script execution | ✅ |
+| EDGE-010 | SQL/NoSQL Injection | 1. Enter malicious query in search | Query sanitized, no injection | ✅ |
+| EDGE-011 | Large File Upload | 1. Try to upload file exceeding limit | Shows file size error | ✅ |
+| EDGE-012 | Invalid File Type | 1. Try to upload unsupported file type | Shows file type error | ✅ |
+| EDGE-013 | Special Characters in Name | 1. Enter name with special chars | Handles appropriately (saves or validation error) | ✅ |
+| EDGE-014 | Empty Form Submission | 1. Submit form without required fields | Shows all validation errors | ✅ |
+| EDGE-015 | Very Long Input | 1. Enter extremely long text in fields | Truncates or shows max length error | ✅ |
 
 ### Concurrent Operations
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| EDGE-016 | Simultaneous Edits | 1. User A opens edit form <br> 2. User B saves same record <br> 3. User A tries to save | Shows conflict or last-write-wins | ☐ |
-| EDGE-017 | Double Submit | 1. Click submit button rapidly twice | Only one submission processed | ☐ |
-| EDGE-018 | Stale Data | 1. View list <br> 2. Another user adds record <br> 3. Refresh | New record appears | ☐ |
+| EDGE-016 | Simultaneous Edits | 1. User A opens edit form <br> 2. User B saves same record <br> 3. User A tries to save | Shows conflict or last-write-wins | ✅ |
+| EDGE-017 | Double Submit | 1. Click submit button rapidly twice | Only one submission processed | ✅ |
+| EDGE-018 | Stale Data | 1. View list <br> 2. Another user adds record <br> 3. Refresh | New record appears | ✅ |
 
 ### Browser & Device
 
 | Test ID | Test Case | Steps | Expected Result | Status |
 |---------|-----------|-------|-----------------|--------|
-| EDGE-019 | Browser Back Button | 1. Navigate through pages <br> 2. Click back | Navigates correctly, state preserved | ☐ |
-| EDGE-020 | Page Refresh | 1. In middle of workflow <br> 2. Refresh page | State recovered or graceful reset | ☐ |
-| EDGE-021 | Multiple Tabs | 1. Open app in two tabs <br> 2. Logout in one | Both tabs reflect logout | ☐ |
-| EDGE-022 | Print Page | 1. Try to print report/list | Prints with proper formatting | ☐ |
+| EDGE-019 | Browser Back Button | 1. Navigate through pages <br> 2. Click back | Navigates correctly, state preserved | ✅ |
+| EDGE-020 | Page Refresh | 1. In middle of workflow <br> 2. Refresh page | State recovered or graceful reset | ✅ |
+| EDGE-021 | Multiple Tabs | 1. Open app in two tabs <br> 2. Logout in one | Both tabs reflect logout | ✅ |x   
+| EDGE-022 | Print Page | 1. Try to print report/list | Prints with proper formatting | ✅ |
 
 ---
 

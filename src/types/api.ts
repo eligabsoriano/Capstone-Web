@@ -153,6 +153,7 @@ export interface LoanOfficerDetail extends LoanOfficerListItem {
   phone: string;
   verified: boolean;
   must_change_password: boolean;
+  updated_at?: string;
 }
 
 export interface CreateOfficerRequest {
@@ -176,6 +177,7 @@ export interface UpdateOfficerRequest {
   phone?: string;
   department?: string;
   active?: boolean;
+  last_known_updated_at?: string;
 }
 
 // Search params for officers list
@@ -217,6 +219,7 @@ export interface AdminListItem {
 export interface AdminDetail extends AdminListItem {
   first_name: string;
   last_name: string;
+  updated_at?: string;
 }
 
 export interface CreateAdminRequest {
@@ -238,6 +241,7 @@ export interface UpdateAdminRequest {
   first_name?: string;
   last_name?: string;
   active?: boolean;
+  last_known_updated_at?: string;
 }
 
 export interface UpdatePermissionsRequest {
@@ -315,12 +319,21 @@ export interface AuditLog {
   id: string;
   user_id: string;
   user_type: string;
+  user_email?: string;
   action: string;
   description: string;
   resource_type: string;
   resource_id: string | null;
+  details?: Record<string, unknown>;
   ip_address: string;
   timestamp: string;
+}
+
+export interface AuditLogUserOption {
+  user_id: string;
+  user_type: string;
+  user_email: string;
+  label: string;
 }
 
 export interface AuditLogsResponse {
@@ -329,6 +342,10 @@ export interface AuditLogsResponse {
   page: number;
   page_size: number;
   total_pages: number;
+}
+
+export interface AuditLogUsersResponse {
+  users: AuditLogUserOption[];
 }
 
 // ============================================================================
@@ -347,6 +364,13 @@ export interface ApplicationListItem {
   risk_category: string;
   assigned_officer: string | null;
   submitted_at: string;
+}
+
+export interface ApplicationInternalNote {
+  content: string;
+  author_id: string | null;
+  author_role: string | null;
+  created_at: string | null;
 }
 
 export interface AssignApplicationRequest {
@@ -429,6 +453,8 @@ export interface PendingApplication {
   risk_category: string | null;
   assigned_officer: string | null;
   submitted_at: string | null;
+  internal_notes_count?: number;
+  latest_internal_note?: ApplicationInternalNote | null;
 }
 
 // ============================================================================
@@ -536,6 +562,8 @@ export interface OfficerApplicationListItem {
   eligibility_score: number;
   risk_category: RiskCategory;
   submitted_at: string | null;
+  internal_notes_count?: number;
+  latest_internal_note?: ApplicationInternalNote | null;
 }
 
 export interface OfficerApplicationDetail {
@@ -545,6 +573,7 @@ export interface OfficerApplicationDetail {
     id: string | null;
     name: string;
     code: string | null;
+    required_documents?: string[];
   };
   requested_amount: number;
   recommended_amount: number;
@@ -560,6 +589,16 @@ export interface OfficerApplicationDetail {
   rejection_reason: string | null;
   submitted_at: string | null;
   decision_date: string | null;
+  disbursed_amount?: number | null;
+  disbursement_method?: string | null;
+  disbursement_reference?: string | null;
+  disbursed_at?: string | null;
+  internal_notes?: ApplicationInternalNote[];
+  internal_notes_count?: number;
+  latest_internal_note?: ApplicationInternalNote | null;
+  missing_documents_requested?: string[];
+  missing_documents_reason?: string | null;
+  missing_documents_requested_at?: string | null;
   // Complete customer data
   customer?: {
     customer_id: string;
@@ -656,6 +695,30 @@ export interface DisburseApplicationResponse {
   };
 }
 
+export interface RequestMissingDocumentsRequest {
+  missing_documents: string[];
+  reason?: string;
+}
+
+export interface RequestMissingDocumentsResponse {
+  id: string;
+  status: string;
+  missing_documents_requested: string[];
+  missing_documents_reason: string;
+  missing_documents_requested_at: string | null;
+}
+
+export interface AddApplicationInternalNoteRequest {
+  note: string;
+}
+
+export interface AddApplicationInternalNoteResponse {
+  id: string;
+  status: string;
+  internal_notes_count: number;
+  latest_internal_note: ApplicationInternalNote | null;
+}
+
 // ============================================================================
 // LOAN OFFICER - PAYMENTS TYPES
 // ============================================================================
@@ -742,4 +805,48 @@ export interface OfficerDashboardData {
     total_reviewed: number;
     approval_rate: string;
   };
+}
+
+// ============================================================================
+// NOTIFICATIONS TYPES
+// ============================================================================
+
+export interface NotificationItem {
+  id: string;
+  notification_type: string;
+  subject: string;
+  message: string;
+  related_type: string | null;
+  related_id: string | null;
+  channel: string;
+  status: string;
+  is_read: boolean;
+  created_at: string | null;
+  sent_at: string | null;
+}
+
+export interface NotificationListResponse {
+  notifications: NotificationItem[];
+  unread_count: number;
+  pagination: {
+    page: number;
+    page_size: number;
+    total_items: number;
+    total_pages: number;
+    has_next: boolean;
+    has_previous: boolean;
+  };
+}
+
+export interface NotificationUnreadCountResponse {
+  unread_count: number;
+}
+
+export interface NotificationMarkReadResponse {
+  notification_id: string;
+  status: "read";
+}
+
+export interface NotificationMarkAllReadResponse {
+  marked_count: number;
 }

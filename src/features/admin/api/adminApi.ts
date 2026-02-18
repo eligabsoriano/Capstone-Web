@@ -7,7 +7,9 @@ import type {
   ApiResponse,
   AssignApplicationRequest,
   AssignApplicationResponse,
+  AuditLog,
   AuditLogsResponse,
+  AuditLogUsersResponse,
   CreateAdminRequest,
   CreateAdminResponse,
   CreateOfficerRequest,
@@ -18,8 +20,7 @@ import type {
   LoanProduct,
   OfficerSearchParams,
   OfficersListResponse,
-  OfficerWorkload,
-  PendingApplication,
+  OfficerWorkloadResponse,
   ReassignApplicationRequest,
   ReassignApplicationResponse,
   UpdateAdminRequest,
@@ -135,6 +136,9 @@ export async function deactivateOfficer(
  */
 export async function getAuditLogs(params?: {
   action?: string;
+  action_group?: "login" | "create" | "update" | "delete";
+  user_id?: string;
+  user_type?: "customer" | "loan_officer" | "admin";
   page?: number;
   page_size?: number;
   date_from?: string;
@@ -155,6 +159,40 @@ export async function getAuditLogs(params?: {
   return response.data;
 }
 
+/**
+ * Get distinct users found in audit logs for dropdown filtering
+ * GET /api/analytics/audit-logs/users/
+ */
+export async function getAuditLogUsers(params?: {
+  search?: string;
+  limit?: number;
+}): Promise<ApiResponse<AuditLogUsersResponse>> {
+  const cleanParams = params
+    ? Object.fromEntries(
+        Object.entries(params).filter(([_, value]) => value !== undefined),
+      )
+    : {};
+
+  const response = await apiClient.get<ApiResponse<AuditLogUsersResponse>>(
+    "/api/analytics/audit-logs/users/",
+    { params: cleanParams },
+  );
+  return response.data;
+}
+
+/**
+ * Get full details for one audit log entry
+ * GET /api/analytics/audit-logs/:logId/
+ */
+export async function getAuditLogDetail(
+  logId: string,
+): Promise<ApiResponse<AuditLog>> {
+  const response = await apiClient.get<ApiResponse<AuditLog>>(
+    `/api/analytics/audit-logs/${logId}/`,
+  );
+  return response.data;
+}
+
 // ============================================================================
 // OFFICER WORKLOAD
 // ============================================================================
@@ -167,17 +205,7 @@ export async function getOfficerWorkload(params?: {
   search?: string;
   page?: number;
   page_size?: number;
-}): Promise<
-  ApiResponse<{
-    officers: OfficerWorkload[];
-    total: number;
-    page: number;
-    page_size: number;
-    total_pages: number;
-    pending_applications?: PendingApplication[];
-    pending_count?: number;
-  }>
-> {
+}): Promise<ApiResponse<OfficerWorkloadResponse>> {
   // Filter out undefined values
   const cleanParams = params
     ? Object.fromEntries(
@@ -185,17 +213,10 @@ export async function getOfficerWorkload(params?: {
       )
     : {};
 
-  const response = await apiClient.get<
-    ApiResponse<{
-      officers: OfficerWorkload[];
-      total: number;
-      page: number;
-      page_size: number;
-      total_pages: number;
-      pending_applications?: PendingApplication[];
-      pending_count?: number;
-    }>
-  >("/api/loans/admin/officers/workload/", { params: cleanParams });
+  const response = await apiClient.get<ApiResponse<OfficerWorkloadResponse>>(
+    "/api/loans/admin/officers/workload/",
+    { params: cleanParams },
+  );
   return response.data;
 }
 

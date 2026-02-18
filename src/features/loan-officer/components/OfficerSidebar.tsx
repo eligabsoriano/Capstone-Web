@@ -6,6 +6,7 @@ import {
   FileText,
   LayoutDashboard,
   LogOut,
+  Receipt,
   Settings,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
@@ -50,7 +51,12 @@ export function OfficerSidebar({
       badge: queueCount > 0 ? queueCount : undefined,
     },
     { label: "Documents", icon: FileText, href: "/officer/documents" },
-    { label: "Payments", icon: CreditCard, href: "/officer/payments" },
+    { label: "Record Payment", icon: CreditCard, href: "/officer/payments" },
+    {
+      label: "Payment History",
+      icon: Receipt,
+      href: "/officer/payment-history",
+    },
     { label: "Settings", icon: Settings, href: "/officer/settings" },
   ];
 

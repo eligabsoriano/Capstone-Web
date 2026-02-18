@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { parseError } from "@/lib/errors";
 import type { RecordPaymentRequest } from "@/types/api";
 import { type ActiveLoan, searchActiveLoans } from "../api/applicationsApi";
 import { PaymentHistoryCard, RepaymentScheduleCard } from "../components";
@@ -77,6 +78,9 @@ export function OfficerPaymentsPage() {
     });
   };
 
+  const amountExceedsRemaining =
+    !!selectedLoan && formData.amount - selectedLoan.remaining_balance > 0.01;
+
   // Search for loans
   const handleSearch = async () => {
     if (!searchQuery.trim() || searchQuery.length < 2) {
@@ -93,8 +97,8 @@ export function OfficerPaymentsPage() {
           toast.info("No active loans found for this search");
         }
       }
-    } catch {
-      toast.error("Failed to search loans");
+    } catch (err) {
+      toast.error(parseError(err));
     } finally {
       setIsSearching(false);
     }
@@ -123,6 +127,15 @@ export function OfficerPaymentsPage() {
       toast.error("Amount must be greater than 0");
       return;
     }
+    if (
+      selectedLoan &&
+      formData.amount - selectedLoan.remaining_balance > 0.01
+    ) {
+      toast.error(
+        `Amount exceeds remaining balance of ${formatCurrency(selectedLoan.remaining_balance)}`,
+      );
+      return;
+    }
     // Reference is optional now - backend will auto-generate if empty
 
     const submitData = {
@@ -134,12 +147,16 @@ export function OfficerPaymentsPage() {
     recordMutation.mutate(submitData, {
       onSuccess: (response) => {
         toast.success(response.message || "Payment recorded successfully");
+        const newRemaining = Math.max(response.data?.remaining_balance || 0, 0);
         setLastPayment({
           loan_id: response.data?.loan_id || formData.loan_id,
           amount: response.data?.amount || formData.amount,
-          remaining: response.data?.remaining_balance || 0,
+          remaining: newRemaining,
           reference: response.data?.reference || formData.reference,
         });
+        setSelectedLoan((prev) =>
+          prev ? { ...prev, remaining_balance: newRemaining } : prev,
+        );
         // Reset form but keep loan_id for multiple installments
         setFormData({
           ...initialFormData,
@@ -147,8 +164,8 @@ export function OfficerPaymentsPage() {
           installment_number: formData.installment_number + 1,
         });
       },
-      onError: (err: Error) => {
-        toast.error(err.message || "Failed to record payment");
+      onError: (err: unknown) => {
+        toast.error(parseError(err));
       },
     });
   };
@@ -186,13 +203,13 @@ export function OfficerPaymentsPage() {
                 Find Loan
               </CardTitle>
               <CardDescription>
-                Search by customer name, phone, or ID
+                Search by customer name, phone, customer ID, or loan ID
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex gap-2">
                 <Input
-                  placeholder="Enter customer name or phone..."
+                  placeholder="Enter name, phone, customer ID, or loan ID..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
@@ -317,12 +334,19 @@ export function OfficerPaymentsPage() {
                       id="amount"
                       type="number"
                       min={0}
+                      max={selectedLoan?.remaining_balance}
                       step={0.01}
                       value={formData.amount || ""}
                       onChange={(e) =>
                         handleInputChange("amount", Number(e.target.value))
                       }
                     />
+                    {amountExceedsRemaining && selectedLoan && (
+                      <p className="text-xs text-destructive">
+                        Amount cannot exceed remaining balance of{" "}
+                        {formatCurrency(selectedLoan.remaining_balance)}.
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -392,7 +416,11 @@ export function OfficerPaymentsPage() {
                 <Button
                   type="submit"
                   className="w-full"
-                  disabled={recordMutation.isPending || !selectedLoan}
+                  disabled={
+                    recordMutation.isPending ||
+                    !selectedLoan ||
+                    amountExceedsRemaining
+                  }
                 >
                   {recordMutation.isPending ? (
                     <>
@@ -467,7 +495,10 @@ export function OfficerPaymentsPage() {
               <CardTitle>Quick Tips</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-sm text-muted-foreground">
-              <p>• Search by customer name or phone number</p>
+              <p>
+                • Search by name, phone, customer ID, or loan/application ID
+              </p>
+              <p>• Product ID is not supported in this search</p>
               <p>• System auto-fills next due installment</p>
               <p>• Reference # auto-generates if left empty</p>
               <p>• After recording, next installment auto-increments</p>

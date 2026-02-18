@@ -2,7 +2,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import type { ReactNode } from "react";
 import { Toaster } from "sonner";
-import { ErrorBoundary, ThemeProvider } from "@/components/common";
+import {
+  ErrorBoundary,
+  NetworkStatusBanner,
+  ThemeProvider,
+} from "@/components/common";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,6 +26,7 @@ export function Providers({ children }: ProvidersProps) {
     <ErrorBoundary>
       <ThemeProvider defaultTheme="system">
         <QueryClientProvider client={queryClient}>
+          <NetworkStatusBanner />
           {children}
           <Toaster
             position="top-right"

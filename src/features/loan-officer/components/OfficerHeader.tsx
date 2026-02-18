@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useLogout } from "@/features/auth/hooks";
 import { useAuthStore } from "@/features/auth/store/authStore";
+import { NotificationBell } from "@/features/notifications/components";
 
 interface OfficerHeaderProps {
   onMenuClick: () => void;
@@ -102,6 +103,9 @@ export function OfficerHeader({
               <span className="font-medium">{queueCount}</span>
             </Button>
           )}
+
+          {/* Notifications */}
+          <NotificationBell />
 
           {/* Profile Dropdown */}
           <DropdownMenu>

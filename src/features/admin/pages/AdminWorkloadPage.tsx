@@ -43,7 +43,15 @@ import {
 import type { PendingApplication } from "@/types/api";
 import { useAssignApplication, useOfficerWorkload } from "../hooks";
 
-export function AdminWorkloadPage() {
+interface AdminWorkloadPageProps {
+  title?: string;
+  description?: string;
+}
+
+export function AdminWorkloadPage({
+  title = "Officer Workload",
+  description = "Monitor officer capacity and assign applications",
+}: AdminWorkloadPageProps) {
   // Search states
   const [unassignedSearch, setUnassignedSearch] = useState("");
   const [assignedSearch, setAssignedSearch] = useState("");
@@ -291,10 +299,8 @@ export function AdminWorkloadPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Officer Workload</h1>
-          <p className="text-muted-foreground">
-            Monitor officer capacity and assign applications
-          </p>
+          <h1 className="text-2xl font-bold">{title}</h1>
+          <p className="text-muted-foreground">{description}</p>
         </div>
         <div className="flex gap-2">
           <Badge variant="secondary" className="text-sm">
@@ -415,6 +421,7 @@ export function AdminWorkloadPage() {
                     <TableHead className="text-center">Score</TableHead>
                     <TableHead className="text-center">Risk</TableHead>
                     <TableHead>Submitted</TableHead>
+                    <TableHead>Notes</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -442,6 +449,17 @@ export function AdminWorkloadPage() {
                       </TableCell>
                       <TableCell className="text-muted-foreground text-sm">
                         {formatDate(app.submitted_at)}
+                      </TableCell>
+                      <TableCell>
+                        <div className="max-w-[220px]">
+                          <p className="text-xs font-medium">
+                            {app.internal_notes_count ?? 0} note
+                            {(app.internal_notes_count ?? 0) === 1 ? "" : "s"}
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {app.latest_internal_note?.content || "—"}
+                          </p>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -510,6 +528,7 @@ export function AdminWorkloadPage() {
                     <TableHead className="text-right">Amount</TableHead>
                     <TableHead className="text-center">Risk</TableHead>
                     <TableHead>Submitted</TableHead>
+                    <TableHead>Notes</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -541,6 +560,17 @@ export function AdminWorkloadPage() {
                         </TableCell>
                         <TableCell className="text-muted-foreground text-sm">
                           {formatDate(app.submitted_at)}
+                        </TableCell>
+                        <TableCell>
+                          <div className="max-w-[220px]">
+                            <p className="text-xs font-medium">
+                              {app.internal_notes_count ?? 0} note
+                              {(app.internal_notes_count ?? 0) === 1 ? "" : "s"}
+                            </p>
+                            <p className="text-xs text-muted-foreground truncate">
+                              {app.latest_internal_note?.content || "—"}
+                            </p>
+                          </div>
                         </TableCell>
                         <TableCell className="text-right">
                           <Button

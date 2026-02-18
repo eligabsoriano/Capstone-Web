@@ -53,6 +53,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { getNameValidationError, normalizeName } from "@/lib/nameValidation";
 import type { AdminSearchParams, CreateAdminRequest } from "@/types/api";
 import { useAdminsList, useCreateAdmin } from "../hooks";
 
@@ -151,10 +152,26 @@ export function AdminAdminsPage() {
 
     if (!createForm.first_name.trim()) {
       errors.first_name = "First name is required";
+    } else {
+      const nameError = getNameValidationError(
+        createForm.first_name,
+        "First name",
+      );
+      if (nameError) {
+        errors.first_name = nameError;
+      }
     }
 
     if (!createForm.last_name.trim()) {
       errors.last_name = "Last name is required";
+    } else {
+      const nameError = getNameValidationError(
+        createForm.last_name,
+        "Last name",
+      );
+      if (nameError) {
+        errors.last_name = nameError;
+      }
     }
 
     if (!createForm.email.trim()) {
@@ -173,7 +190,13 @@ export function AdminAdminsPage() {
     }
 
     try {
-      const response = await createAdminMutation.mutateAsync(createForm);
+      const payload: CreateAdminRequest = {
+        ...createForm,
+        first_name: normalizeName(createForm.first_name),
+        last_name: normalizeName(createForm.last_name),
+      };
+
+      const response = await createAdminMutation.mutateAsync(payload);
       if (response.status === "success" && response.data) {
         setShowCreateModal(false);
         setShowPasswordModal({
@@ -481,6 +504,7 @@ export function AdminAdminsPage() {
                   <Input
                     id="admin-first-name"
                     value={createForm.first_name}
+                    maxLength={50}
                     onChange={(e) =>
                       setCreateForm({
                         ...createForm,
@@ -508,6 +532,7 @@ export function AdminAdminsPage() {
                   <Input
                     id="admin-last-name"
                     value={createForm.last_name}
+                    maxLength={50}
                     onChange={(e) =>
                       setCreateForm({
                         ...createForm,

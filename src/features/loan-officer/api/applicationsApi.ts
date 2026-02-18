@@ -1,10 +1,14 @@
 import { apiClient } from "@/shared/api/client";
 import type {
+  AddApplicationInternalNoteRequest,
+  AddApplicationInternalNoteResponse,
   ApiResponse,
   DisburseApplicationRequest,
   DisburseApplicationResponse,
   OfficerApplicationDetail,
   OfficerApplicationListItem,
+  RequestMissingDocumentsRequest,
+  RequestMissingDocumentsResponse,
   ReviewApplicationRequest,
   ReviewApplicationResponse,
 } from "@/types/api";
@@ -89,6 +93,34 @@ export async function reviewApplication(
 }
 
 /**
+ * Request missing documents that were never uploaded
+ */
+export async function requestMissingDocuments(
+  applicationId: string,
+  data: RequestMissingDocumentsRequest,
+): Promise<ApiResponse<RequestMissingDocumentsResponse>> {
+  const response = await apiClient.post(
+    `/api/loans/officer/applications/${applicationId}/request-missing-documents/`,
+    data,
+  );
+  return response.data;
+}
+
+/**
+ * Add standalone internal note to an application
+ */
+export async function addApplicationInternalNote(
+  applicationId: string,
+  data: AddApplicationInternalNoteRequest,
+): Promise<ApiResponse<AddApplicationInternalNoteResponse>> {
+  const response = await apiClient.post(
+    `/api/loans/officer/applications/${applicationId}/notes/`,
+    data,
+  );
+  return response.data;
+}
+
+/**
  * Disburse an approved loan
  */
 export async function disburseApplication(
@@ -128,7 +160,7 @@ export interface ActiveLoan {
 
 /**
  * Search active (disbursed) loans for payment recording
- * @param search - Customer name, phone, or ID
+ * @param search - Customer name, phone, customer ID, or loan/application ID
  */
 export async function searchActiveLoans(
   search: string,

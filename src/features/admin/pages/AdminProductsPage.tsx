@@ -80,7 +80,12 @@ const initialFormData: CreateProductRequest = {
 };
 
 export function AdminProductsPage() {
-  const { data: productsData, isLoading, error, refetch } = useProducts();
+  const {
+    data: productsData,
+    isLoading,
+    error,
+    refetch,
+  } = useProducts({ active: false });
   const createMutation = useCreateProduct();
   const updateMutation = useUpdateProduct();
   const deleteMutation = useDeleteProduct();
@@ -137,6 +142,41 @@ export function AdminProductsPage() {
       return;
     }
 
+    // Frontend validation
+    const errors: string[] = [];
+
+    if (formData.min_amount < 0)
+      errors.push("Minimum amount cannot be negative");
+    if (formData.max_amount < 0)
+      errors.push("Maximum amount cannot be negative");
+    if (formData.interest_rate < 0)
+      errors.push("Interest rate cannot be negative");
+    if (formData.min_term_months < 1)
+      errors.push("Minimum term must be at least 1 month");
+    if (formData.max_term_months < 1)
+      errors.push("Maximum term must be at least 1 month");
+    if (formData.min_business_months && formData.min_business_months < 0) {
+      errors.push("Minimum business age cannot be negative");
+    }
+    if (formData.min_monthly_income && formData.min_monthly_income < 0) {
+      errors.push("Minimum monthly income cannot be negative");
+    }
+
+    // Min/Max validation
+    if (formData.max_amount < formData.min_amount) {
+      errors.push(
+        "Maximum amount must be greater than or equal to minimum amount",
+      );
+    }
+    if (formData.max_term_months < formData.min_term_months) {
+      errors.push("Maximum term must be greater than or equal to minimum term");
+    }
+
+    if (errors.length > 0) {
+      toast.error(errors[0]); // Show first error
+      return;
+    }
+
     // Convert interest rate from percentage (e.g., 12) to decimal (e.g., 0.12)
     const interestRateDecimal = formData.interest_rate / 100;
 
@@ -156,16 +196,34 @@ export function AdminProductsPage() {
         target_description: formData.target_description,
       };
 
+      // DEBUG: Log what we're sending
+      console.log("[UPDATE Product] Sending data:", updateData);
+      console.log("[UPDATE Product] Eligibility fields:", {
+        min_business_months: updateData.min_business_months,
+        min_monthly_income: updateData.min_monthly_income,
+        business_types: updateData.business_types,
+      });
+
       updateMutation.mutate(
         { productId: editingProduct.id, data: updateData },
         {
           onSuccess: () => {
             toast.success("Product updated successfully");
             setIsModalOpen(false);
-            refetch();
+            // Cache invalidation in the mutation hook will trigger refetch automatically
           },
-          onError: (err: Error) => {
-            toast.error(err.message || "Failed to update product");
+          onError: (err: any) => {
+            // Parse field-specific errors from backend
+            const errorMsg = err?.response?.data?.errors
+              ? Object.entries(err.response.data.errors)
+                  .map(([field, msg]) => `${field}: ${msg}`)
+                  .join(", ")
+              : err?.response?.data?.message ||
+                err.message ||
+                "Failed to update product";
+
+            console.error("[UPDATE Product] Error:", err?.response?.data);
+            toast.error(errorMsg);
           },
         },
       );
@@ -179,10 +237,18 @@ export function AdminProductsPage() {
         onSuccess: () => {
           toast.success("Product created successfully");
           setIsModalOpen(false);
-          refetch();
+          // Cache invalidation in the mutation hook will trigger refetch automatically
         },
-        onError: (err: Error) => {
-          toast.error(err.message || "Failed to create product");
+        onError: (err: any) => {
+          // Parse field-specific errors from backend
+          const errorMsg = err?.response?.data?.errors
+            ? Object.entries(err.response.data.errors)
+                .map(([field, msg]) => `${field}: ${msg}`)
+                .join(", ")
+            : err?.response?.data?.message ||
+              err.message ||
+              "Failed to create product";
+          toast.error(errorMsg);
         },
       });
     }
@@ -198,8 +264,13 @@ export function AdminProductsPage() {
         setDeletingProduct(null);
         // refetch is handled by the mutation hook via invalidateQueries
       },
-      onError: (err: Error) => {
-        toast.error(err.message || "Failed to deactivate product");
+      onError: (err: any) => {
+        // Parse error from backend (e.g., active loans check)
+        const errorMsg =
+          err?.response?.data?.message ||
+          err.message ||
+          "Failed to deactivate product";
+        toast.error(errorMsg);
       },
     });
   };
@@ -299,24 +370,59 @@ export function AdminProductsPage() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => handleOpenEdit(product)}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="text-destructive hover:text-destructive"
-                          onClick={() => {
-                            setDeletingProduct(product);
-                            setIsDeleteDialogOpen(true);
-                          }}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        {product.active ? (
+                          <>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleOpenEdit(product)}
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="text-destructive hover:text-destructive"
+                              onClick={() => {
+                                setDeletingProduct(product);
+                                setIsDeleteDialogOpen(true);
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </>
+                        ) : (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              // Reactivate product by updating active=true
+                              updateMutation.mutate(
+                                {
+                                  productId: product.id,
+                                  data: { active: true },
+                                },
+                                {
+                                  onSuccess: () => {
+                                    toast.success(
+                                      "Product reactivated successfully",
+                                    );
+                                    refetch();
+                                  },
+                                  onError: (err: any) => {
+                                    const errorMsg =
+                                      err?.response?.data?.message ||
+                                      err.message ||
+                                      "Failed to reactivate product";
+                                    toast.error(errorMsg);
+                                  },
+                                },
+                              );
+                            }}
+                          >
+                            Reactivate
+                          </Button>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
@@ -379,6 +485,8 @@ export function AdminProductsPage() {
                 <Input
                   id="min_amount"
                   type="number"
+                  min="0"
+                  step="1000"
                   value={formData.min_amount}
                   onChange={(e) =>
                     handleInputChange("min_amount", Number(e.target.value))
@@ -390,6 +498,8 @@ export function AdminProductsPage() {
                 <Input
                   id="max_amount"
                   type="number"
+                  min="0"
+                  step="1000"
                   value={formData.max_amount}
                   onChange={(e) =>
                     handleInputChange("max_amount", Number(e.target.value))
@@ -402,6 +512,8 @@ export function AdminProductsPage() {
               <Input
                 id="interest_rate"
                 type="number"
+                min="0"
+                max="100"
                 step="0.1"
                 value={formData.interest_rate}
                 onChange={(e) =>
@@ -415,6 +527,8 @@ export function AdminProductsPage() {
                 <Input
                   id="min_term"
                   type="number"
+                  min="1"
+                  step="1"
                   value={formData.min_term_months}
                   onChange={(e) =>
                     handleInputChange("min_term_months", Number(e.target.value))
@@ -426,6 +540,8 @@ export function AdminProductsPage() {
                 <Input
                   id="max_term"
                   type="number"
+                  min="1"
+                  step="1"
                   value={formData.max_term_months}
                   onChange={(e) =>
                     handleInputChange("max_term_months", Number(e.target.value))
@@ -448,6 +564,8 @@ export function AdminProductsPage() {
                   <Input
                     id="min_business_months"
                     type="number"
+                    min="0"
+                    step="1"
                     value={formData.min_business_months ?? 6}
                     onChange={(e) =>
                       handleInputChange(
@@ -464,6 +582,8 @@ export function AdminProductsPage() {
                   <Input
                     id="min_monthly_income"
                     type="number"
+                    min="0"
+                    step="1000"
                     value={formData.min_monthly_income ?? 5000}
                     onChange={(e) =>
                       handleInputChange(

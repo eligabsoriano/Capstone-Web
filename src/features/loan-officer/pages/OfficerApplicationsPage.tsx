@@ -266,6 +266,9 @@ export function OfficerApplicationsPage() {
                           {renderSortIcon("submitted_at")}
                         </button>
                       </th>
+                      <th className="text-left py-3 px-4 font-medium text-muted-foreground hidden xl:table-cell">
+                        Notes
+                      </th>
                       <th className="text-right py-3 px-4 font-medium text-muted-foreground">
                         Actions
                       </th>
@@ -306,6 +309,17 @@ export function OfficerApplicationsPage() {
                         </td>
                         <td className="py-3 px-4 hidden lg:table-cell text-muted-foreground">
                           {formatDate(app.submitted_at)}
+                        </td>
+                        <td className="py-3 px-4 hidden xl:table-cell">
+                          <div className="max-w-[220px]">
+                            <p className="text-xs font-medium">
+                              {app.internal_notes_count ?? 0} note
+                              {(app.internal_notes_count ?? 0) === 1 ? "" : "s"}
+                            </p>
+                            <p className="text-xs text-muted-foreground truncate">
+                              {app.latest_internal_note?.content || "—"}
+                            </p>
+                          </div>
                         </td>
                         <td className="py-3 px-4 text-right">
                           <Button variant="outline" size="sm" asChild>

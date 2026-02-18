@@ -5,9 +5,11 @@ import type {
 } from "@/types/api";
 import {
   type ApplicationSearchParams,
+  addApplicationInternalNote,
   disburseApplication,
   getOfficerApplicationDetail,
   getOfficerApplications,
+  requestMissingDocuments,
   reviewApplication,
 } from "../api/applicationsApi";
 
@@ -30,6 +32,29 @@ export function useOfficerApplications(
             page_size: 20,
             total_pages: 0,
           },
+  });
+}
+
+/**
+ * Hook for adding standalone internal notes on an application
+ */
+export function useAddApplicationNote() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      applicationId,
+      data,
+    }: {
+      applicationId: string;
+      data: { note: string };
+    }) => addApplicationInternalNote(applicationId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["officer-applications"] });
+      queryClient.invalidateQueries({ queryKey: ["officer-application"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "workload"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "audit-logs"] });
+    },
   });
 }
 
@@ -83,6 +108,28 @@ export function useDisburseApplication() {
       applicationId: string;
       data: DisburseApplicationRequest;
     }) => disburseApplication(applicationId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["officer-applications"] });
+      queryClient.invalidateQueries({ queryKey: ["officer-application"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "audit-logs"] });
+    },
+  });
+}
+
+/**
+ * Hook for requesting missing documents that were never uploaded
+ */
+export function useRequestMissingDocuments() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      applicationId,
+      data,
+    }: {
+      applicationId: string;
+      data: { missing_documents: string[]; reason?: string };
+    }) => requestMissingDocuments(applicationId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["officer-applications"] });
       queryClient.invalidateQueries({ queryKey: ["officer-application"] });

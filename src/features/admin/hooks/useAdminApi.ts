@@ -16,7 +16,9 @@ import {
   getAdminDashboard,
   getAdminDetail,
   getAdminsList,
+  getAuditLogDetail,
   getAuditLogs,
+  getAuditLogUsers,
   getOfficerDetail,
   getOfficersList,
   updateAdmin,
@@ -44,12 +46,19 @@ export const adminQueryKeys = {
     [...adminQueryKeys.admins(), "detail", id] as const,
   auditLogs: (filters?: {
     action?: string;
+    action_group?: "login" | "create" | "update" | "delete";
+    user_id?: string;
+    user_type?: "customer" | "loan_officer" | "admin";
     page?: number;
     page_size?: number;
     date_from?: string;
     date_to?: string;
     search?: string;
   }) => [...adminQueryKeys.all, "audit-logs", filters] as const,
+  auditLogUsers: (search?: string) =>
+    [...adminQueryKeys.all, "audit-log-users", search] as const,
+  auditLogDetail: (id: string) =>
+    [...adminQueryKeys.all, "audit-log-detail", id] as const,
   workload: () => [...adminQueryKeys.all, "workload"] as const,
 };
 
@@ -147,6 +156,9 @@ export function useDeactivateOfficer() {
 
 export function useAuditLogs(filters?: {
   action?: string;
+  action_group?: "login" | "create" | "update" | "delete";
+  user_id?: string;
+  user_type?: "customer" | "loan_officer" | "admin";
   page?: number;
   page_size?: number;
   date_from?: string;
@@ -162,6 +174,36 @@ export function useAuditLogs(filters?: {
       }
       return response.data!;
     },
+  });
+}
+
+export function useAuditLogUsers(search = "") {
+  return useQuery({
+    queryKey: adminQueryKeys.auditLogUsers(search),
+    queryFn: async () => {
+      const response = await getAuditLogUsers({
+        search: search || undefined,
+        limit: 300,
+      });
+      if (response.status === "error") {
+        throw new Error(response.message || "Failed to fetch audit log users");
+      }
+      return response.data!;
+    },
+  });
+}
+
+export function useAuditLogDetail(logId: string, enabled: boolean) {
+  return useQuery({
+    queryKey: adminQueryKeys.auditLogDetail(logId),
+    queryFn: async () => {
+      const response = await getAuditLogDetail(logId);
+      if (response.status === "error") {
+        throw new Error(response.message || "Failed to fetch audit log detail");
+      }
+      return response.data!;
+    },
+    enabled: !!logId && enabled,
   });
 }
 

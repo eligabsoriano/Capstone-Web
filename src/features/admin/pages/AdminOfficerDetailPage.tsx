@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { getNameValidationError, normalizeName } from "@/lib/nameValidation";
 import {
   useDeactivateOfficer,
   useOfficerDetail,
@@ -58,6 +59,10 @@ export function AdminOfficerDetailPage() {
     phone: "",
     department: "",
   });
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [editBaseUpdatedAt, setEditBaseUpdatedAt] = useState<string | null>(
+    null,
+  );
 
   // Initialize edit form when officer data loads
   const startEditing = () => {
@@ -68,15 +73,66 @@ export function AdminOfficerDetailPage() {
         phone: officer.phone || "",
         department: officer.department || "",
       });
+      setEditBaseUpdatedAt(officer.updated_at ?? null);
+      setFormErrors({});
       setIsEditing(true);
     }
   };
 
+  const validateEditForm = (): boolean => {
+    const errors: Record<string, string> = {};
+
+    const firstNameError = getNameValidationError(
+      editForm.first_name,
+      "First name",
+    );
+    if (firstNameError) {
+      errors.first_name = firstNameError;
+    }
+
+    const lastNameError = getNameValidationError(
+      editForm.last_name,
+      "Last name",
+    );
+    if (lastNameError) {
+      errors.last_name = lastNameError;
+    }
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSave = async () => {
+    if (!validateEditForm()) {
+      return;
+    }
+
     try {
-      await updateMutation.mutateAsync(editForm);
+      await updateMutation.mutateAsync({
+        ...editForm,
+        first_name: normalizeName(editForm.first_name),
+        last_name: normalizeName(editForm.last_name),
+        ...(editBaseUpdatedAt
+          ? { last_known_updated_at: editBaseUpdatedAt }
+          : {}),
+      });
       setIsEditing(false);
-    } catch (err) {
+      setEditBaseUpdatedAt(null);
+      setFormErrors({});
+    } catch (err: any) {
+      const apiErrors = err?.response?.data?.errors;
+      const apiMessage = err?.response?.data?.message;
+
+      if (apiErrors && typeof apiErrors === "object") {
+        setFormErrors((prev) => ({ ...prev, ...apiErrors }));
+      } else if (apiMessage) {
+        setFormErrors((prev) => ({ ...prev, general: apiMessage }));
+      } else {
+        setFormErrors((prev) => ({
+          ...prev,
+          general: "Failed to update officer. Please try again.",
+        }));
+      }
       console.error("Failed to update officer:", err);
     }
   };
@@ -230,23 +286,38 @@ export function AdminOfficerDetailPage() {
               </div>
               <div>
                 {isEditing ? (
-                  <div className="flex gap-2">
-                    <Input
-                      value={editForm.first_name}
-                      onChange={(e) =>
-                        setEditForm({ ...editForm, first_name: e.target.value })
-                      }
-                      className="w-32"
-                      placeholder="First name"
-                    />
-                    <Input
-                      value={editForm.last_name}
-                      onChange={(e) =>
-                        setEditForm({ ...editForm, last_name: e.target.value })
-                      }
-                      className="w-32"
-                      placeholder="Last name"
-                    />
+                  <div className="space-y-1">
+                    <div className="flex gap-2">
+                      <Input
+                        value={editForm.first_name}
+                        maxLength={50}
+                        onChange={(e) =>
+                          setEditForm({
+                            ...editForm,
+                            first_name: e.target.value,
+                          })
+                        }
+                        className="w-32"
+                        placeholder="First name"
+                      />
+                      <Input
+                        value={editForm.last_name}
+                        maxLength={50}
+                        onChange={(e) =>
+                          setEditForm({
+                            ...editForm,
+                            last_name: e.target.value,
+                          })
+                        }
+                        className="w-32"
+                        placeholder="Last name"
+                      />
+                    </div>
+                    {(formErrors.first_name || formErrors.last_name) && (
+                      <p className="text-destructive text-xs">
+                        {formErrors.first_name || formErrors.last_name}
+                      </p>
+                    )}
                   </div>
                 ) : (
                   <h2 className="text-xl font-semibold">{officer.full_name}</h2>
@@ -330,9 +401,10 @@ export function AdminOfficerDetailPage() {
             </div>
           </div>
 
-          {updateMutation.error && (
+          {(updateMutation.error || formErrors.general) && (
             <p className="text-destructive text-sm mt-4">
-              Failed to update officer. Please try again.
+              {formErrors.general ||
+                "Failed to update officer. Please try again."}
             </p>
           )}
         </div>

@@ -1,4 +1,4 @@
-import { Bell, LogOut, Menu, Settings } from "lucide-react";
+import { LogOut, Menu, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ThemeToggle } from "@/components/common";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useLogout } from "@/features/auth/hooks";
 import { useAuthStore } from "@/features/auth/store/authStore";
+import { NotificationBell } from "@/features/notifications/components";
 
 interface AdminHeaderProps {
   onMenuClick: () => void;
@@ -79,12 +80,7 @@ export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
           <ThemeToggle />
 
           {/* Notifications */}
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="h-5 w-5" />
-            {/* Notification badge - can be made dynamic later */}
-            {/* <span className="absolute top-1 right-1 h-2 w-2 bg-destructive rounded-full" /> */}
-            <span className="sr-only">Notifications</span>
-          </Button>
+          <NotificationBell />
 
           {/* Profile Dropdown */}
           <DropdownMenu>
