@@ -5,7 +5,7 @@
 | Criteria | Checkpoint | Rating |
 |---|---|---|
 | Credential Storage | How are DB creds stored? | ☐ Hardcoded  ☐ Exposed .env  ☑ Secure .env  ☐ Vault |
-| Access Control | Who can access DB? | ☐ Admin all  ☐ Roles  ☑ RBAC  ☐ RBAC + ABAC |
+| Access Control | Who can access DB? | ☐ Admin all  ☐ Roles  ☐ RBAC  ☑ RBAC + ABAC |
 | Encryption at Rest | Is data encrypted? | ☐ None  ☐ Some  ☐ Full  ☑ Field + TDE |
 | Access Control | Who can access DB? | ☐ Admin all  ☐ Roles  ☐ RBAC  ☑ RBAC + ABAC |
 | Encryption at Rest | Is data encrypted? | ☐ None  ☐ Some  ☑ Full  ☐ Field + TDE |
