@@ -140,6 +140,7 @@ export async function setup2FA(): Promise<
   ApiResponse<{
     provisioning_uri: string;
     manual_entry_key: string;
+    qr_code_data_url?: string;
     message: string;
   }>
 > {
@@ -147,6 +148,7 @@ export async function setup2FA(): Promise<
     ApiResponse<{
       provisioning_uri: string;
       manual_entry_key: string;
+      qr_code_data_url?: string;
       message: string;
     }>
   >("/api/auth/2fa/setup/");

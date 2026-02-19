@@ -6,9 +6,9 @@
 |---|---|---|
 | Password Storage | Are passwords hashed securely? | ☐ Plaintext  ☐ MD5/SHA1   bcrypt/Argon2  ☑ bcrypt + salt/pepper |
 | Session Management | Do sessions expire and use secure flags? | ☐ None  ☐ No expiry  ☐ Expiry set  ☑ Expiry + secure flags |
-| Error Handling | Do login errors leak info? | ☐ Leaks  ☐ Inconsistent  ☑ Generic  ☐ Generic + logs |
+| Error Handling | Do login errors leak info? | ☐ Leaks  ☐ Inconsistent  ☐ Generic  ☑ Generic + logs |
 | Brute Force Protection | Are login attempts limited? | ☐ None  ☐ Counting  ☑ Rate limit  ☐ Rate + CAPTCHA |
-| MFA / 2FA | Is MFA enforced? | ☐ None  ☐ Planned  ☑ Optional  ☐ Mandatory (admin) |
+| MFA / 2FA | Is MFA enforced? | ☐ None  ☐ Planned  ☐ Optional  ☑ Mandatory (admin) |
 | Token Security | Are auth tokens validated? | ☐ None  ☐ Basic  ☐ JWT validated  ☑ Short-lived + refresh |
 | Password Policy | Is there a strong password policy? | ☐ None  ☑ Length  ☐ Length + complexity  ☐ + expiration |
 | Logout / Inactivity | Does logout destroy the session? | ☐ None  ☐ Partial  ☑ Invalidate  ☐ Auto timeout |
@@ -23,6 +23,7 @@
 
 Detailed session/cookie verification guide: [SESSION_EXPIRY_SECURE_FLAGS_TESTING_GUIDE.md](SESSION_EXPIRY_SECURE_FLAGS_TESTING_GUIDE.md)
 Detailed login error-handling verification guide: [LOGIN_ERROR_HANDLING_TESTING_GUIDE.md](LOGIN_ERROR_HANDLING_TESTING_GUIDE.md)
+Detailed admin mandatory 2FA verification guide: [ADMIN_MANDATORY_2FA_TESTING_GUIDE.md](ADMIN_MANDATORY_2FA_TESTING_GUIDE.md)
 
 1. Password Storage: register a user password, then verify DB value is bcrypt hash (not plaintext).
 2. Session Management: login, decode JWT and verify `exp`; after expiry, call protected API and expect 401.
