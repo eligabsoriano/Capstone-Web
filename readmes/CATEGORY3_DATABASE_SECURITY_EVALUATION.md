@@ -7,9 +7,7 @@
 | Credential Storage | How are DB creds stored? | ☐ Hardcoded  ☐ Exposed .env  ☑ Secure .env  ☐ Vault |
 | Access Control | Who can access DB? | ☐ Admin all  ☐ Roles  ☐ RBAC  ☑ RBAC + ABAC |
 | Encryption at Rest | Is data encrypted? | ☐ None  ☐ Some  ☐ Full  ☑ Field + TDE |
-| Access Control | Who can access DB? | ☐ Admin all  ☐ Roles  ☐ RBAC  ☑ RBAC + ABAC |
-| Encryption at Rest | Is data encrypted? | ☐ None  ☐ Some  ☑ Full  ☐ Field + TDE |
-| Backup Security | Are backups secured? | ☑ None  ☐ Unencrypted  ☐ Encrypted  ☐ Encrypted + offsite |
+| Backup Security | Are backups secured? | ☐ None  ☐ Unencrypted  ☑ Encrypted  ☐ Encrypted + offsite |
 | Audit Logging | Are DB actions logged? | ☐ None  ☐ Errors  ☑ Full logs  ☐ Real-time alerts |
 | Connection Security | Are connections encrypted? | ☐ Plain  ☐ Self-signed  ☑ Valid TLS  ☐ mTLS + pinning |
 | Hardening | Is DB hardened? | ☐ Default  ☐ Basic  ☑ Hardened  ☐ Scanned + patched |
