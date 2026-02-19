@@ -1,4 +1,8 @@
 import axios, { AxiosHeaders } from "axios";
+import {
+  CertificatePinMismatchError,
+  validateServerPin,
+} from "./certificatePinning";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
@@ -52,9 +56,31 @@ async function ensureCsrfCookie(): Promise<void> {
   }
 }
 
-// Request interceptor - attach CSRF token for unsafe requests.
+// Request interceptor - certificate pinning + CSRF token for unsafe requests.
 apiClient.interceptors.request.use(
   async (config) => {
+    // --- Certificate Pinning Validation ---
+    // Validates the server's certificate pin on the first request.
+    // Skips pin check for the server-pins endpoint itself (bootstrap).
+    const requestUrl = config.url || "";
+    const isServerPinsUrl = requestUrl.includes("/api/auth/server-pins/");
+
+    if (!isServerPinsUrl) {
+      try {
+        await validateServerPin(API_BASE_URL);
+      } catch (error) {
+        if (error instanceof CertificatePinMismatchError) {
+          console.error(
+            `[Security] Certificate pin mismatch detected! Blocking request to ${requestUrl}`,
+          );
+          return Promise.reject(error);
+        }
+        // Non-pin errors are logged but don't block requests
+        console.warn("[Certificate Pinning] Validation warning:", error);
+      }
+    }
+
+    // --- CSRF Token ---
     if (isUnsafeMethod(config.method)) {
       await ensureCsrfCookie();
       const csrfToken = getCookie(CSRF_COOKIE_NAME) || csrfTokenCache;
