@@ -465,14 +465,124 @@ Scoring Model (Likelihood and Impact)
 
 4.2 STRIDE Threat Table
 
-| System Component | STRIDE Category | Threat Description | Impact (1-5) | Likelihood (1-5) | Risk Level | Mitigation |
-|---|---|---|---|---|---|---|
-| Authentication Service | Spoofing | Attacker impersonates a valid user using stolen credentials/tokens | 5 | 3 | High (15) | MFA, strong password policy, short-lived tokens, lockout/rate limits |
-| Loan Application API | Tampering | Request parameter manipulation alters loan eligibility outcomes | 5 | 4 | Critical (20) | Server-side validation/calculation, signed critical actions, integrity checks |
-| Audit Logging Service | Repudiation | User/admin denies performing actions due to weak/non-verifiable logs | 4 | 3 | High (12) | Immutable timestamped logs, actor ID capture, tamper-evident retention |
-| Profile and Document APIs | Information Disclosure | Unauthorized access/IDOR exposes PII and sensitive documents | 5 | 4 | Critical (20) | Object-level authorization, RBAC enforcement, masking/minimization |
-| API Gateway | Denial of Service | Flooding or abusive traffic degrades system response and availability | 4 | 4 | Critical (16) | Rate limiting, WAF/CDN, autoscaling, circuit breaker controls |
-| Admin Access Control | Elevation of Privilege | Non-admin user gains officer/admin capabilities via broken authorization | 5 | 3 | High (15) | Least privilege RBAC, defense-in-depth authz checks, privilege separation |
+| System Component | STRIDE Category | Threat Description | Impact (1-5) | Likelihood (1-5) | Risk Level | Mitigation | Owner | Acceptance Criteria |
+|---|---|---|---|---|---|---|---|---|
+| Authentication Service | Spoofing | Attacker impersonates a valid user using stolen credentials/tokens | 5 | 3 | High (15) | MFA, strong password policy, short-lived tokens, lockout/rate limits | IAM and Auth Team Lead | 2FA required for admin/officer logins; 5 failed attempts trigger lockout/rate limit; tampered/expired token tests fail with 401/redirect and no unauthorized access |
+| Loan Application API | Tampering | Request parameter manipulation alters loan eligibility outcomes | 5 | 4 | Critical (20) | Server-side validation/calculation, signed critical actions, integrity checks | Backend API Lead (Loans Module) | Eligibility is computed server-side only; schema and business-rule validation reject modified payloads; unauthorized value changes are logged and return 4xx |
+| Audit Logging Service | Repudiation | User/admin denies performing actions due to weak/non-verifiable logs | 4 | 3 | High (12) | Immutable timestamped logs, actor ID capture, tamper-evident retention | Security and Compliance Officer | All privileged actions include actor, role, timestamp, source IP, and action ID; logs are append-only/immutable for retention window; log export and review workflow is testable and repeatable |
+| Profile and Document APIs | Information Disclosure | Unauthorized access/IDOR exposes PII and sensitive documents | 5 | 4 | Critical (20) | Object-level authorization, RBAC enforcement, masking/minimization | Data Protection and Backend Lead | IDOR tests across user IDs return 403/404 with no foreign records; PII fields are masked for unauthorized roles; document access requires valid scoped permission/token |
+| API Gateway | Denial of Service | Flooding or abusive traffic degrades system response and availability | 4 | 4 | Critical (16) | Rate limiting, WAF/CDN, autoscaling, circuit breaker controls | DevOps and SRE Lead | Per-IP and per-endpoint limits return 429 during bursts; service remains available for legitimate traffic under load tests; alerts are generated for sustained anomalous traffic |
+| Admin Access Control | Elevation of Privilege | Non-admin user gains officer/admin capabilities via broken authorization | 5 | 3 | High (15) | Least privilege RBAC, defense-in-depth authz checks, privilege separation | RBAC Owner (Admin Platform Team) | Non-admin tokens cannot access admin routes/endpoints; permission checks are enforced at route and API layers; admin role/permission changes generate audit entries and require authorized admin credentials |
+
+4.2.1 Risk Justification Basis
+Risk scoring is based on the threat scenario in the Threat Description (one score per STRIDE row). System Component identifies where the threat occurs, and STRIDE Category identifies the threat type.
+
+Impact Assessment Method:
+* Legal/Regulatory impact
+* Confidentiality/Integrity impact
+* Reputation impact
+* Operational impact
+* Overall Impact = highest factor score
+
+Likelihood Assessment Method:
+* Exposure (internet-facing surface)
+* Attack Frequency (how common the attack is)
+* System Complexity (role/workflow complexity)
+* Controls Present (existing safeguards reduce likelihood)
+* Overall Likelihood = rounded average of factors
+
+4.2.2 Risk Justification by Threat
+Ordered exactly by the row sequence in Section 4.2 STRIDE Threat Table.
+
+1) Risk: "Unauthorized account access via stolen credentials/tokens" (Authentication Service, Spoofing)
+Impact Assessment:
+* Legal/Regulatory: Unauthorized access to financial profile data and account actions -> Score 5
+* Confidentiality/Integrity: Session hijacking exposes data and enables unauthorized transactions -> Score 5
+* Reputation: Reduced trust in account security -> Score 4
+* Operational: Recovery and forced session resets disrupt users -> Score 3
+* Overall Impact = 5
+Likelihood Assessment:
+* Exposure: Public login and token-based sessions -> Score 4
+* Attack Frequency: Credential stuffing and token theft are common -> Score 4
+* System Complexity: Multi-role authentication paths increase attack surface -> Score 3
+* Controls Present: MFA, lockout, and token expiry reduce success rate -> Score 2
+* Overall Likelihood = 3 (average approx 3.25)
+Risk Score = 5 x 3 = 15 (High)
+
+2) Risk: "Manipulation of loan eligibility inputs or parameters" (Loan Application API, Tampering)
+Impact Assessment:
+* Legal/Regulatory: Incorrect approvals/denials can violate lending and fairness obligations -> Score 5
+* Integrity: Core decision logic is corrupted -> Score 5
+* Reputation: Perceived unfairness damages platform trust -> Score 4
+* Operational: Rework, dispute handling, and audit effort increase -> Score 5
+* Overall Impact = 5
+Likelihood Assessment:
+* Exposure: API endpoints are reachable through client requests -> Score 4
+* Attack Frequency: Parameter tampering and business-logic abuse are common -> Score 4
+* System Complexity: Eligibility rules and edge cases add complexity -> Score 4
+* Controls Present: Server-side validation and integrity checks partially reduce risk -> Score 3
+* Overall Likelihood = 4 (average approx 3.75)
+Risk Score = 5 x 4 = 20 (Critical)
+
+3) Risk: "Action denial due to weak/non-verifiable logs" (Audit Logging Service, Repudiation)
+Impact Assessment:
+* Legal/Regulatory: Incomplete evidentiary trails weaken compliance posture -> Score 4
+* Integrity: Disputed actions reduce confidence in accountability records -> Score 3
+* Reputation: Stakeholders may perceive poor governance -> Score 3
+* Operational: Incident response and investigations take longer -> Score 4
+* Overall Impact = 4
+Likelihood Assessment:
+* Exposure: Logging pipeline is a central shared dependency -> Score 3
+* Attack Frequency: Repudiation attempts are less frequent than direct exploitation -> Score 3
+* System Complexity: Multi-actor workflows increase attribution challenges -> Score 3
+* Controls Present: Actor IDs and timestamped logs reduce likelihood -> Score 3
+* Overall Likelihood = 3 (average 3.00)
+Risk Score = 4 x 3 = 12 (High)
+
+4) Risk: "Exposure of PII/documents through unauthorized object access (IDOR)" (Profile and Document APIs, Information Disclosure)
+Impact Assessment:
+* Legal/Regulatory: Personal/financial data exposure creates major compliance risk -> Score 5
+* Confidentiality: Direct leakage of sensitive records -> Score 5
+* Reputation: Loss of user trust due to privacy incident -> Score 4
+* Operational: Breach response, user notification, and remediation overhead -> Score 4
+* Overall Impact = 5
+Likelihood Assessment:
+* Exposure: Profile/document endpoints are routinely accessed -> Score 4
+* Attack Frequency: IDOR and broken object-level auth are common patterns -> Score 4
+* System Complexity: Object ownership and role checks are error-prone -> Score 4
+* Controls Present: RBAC and authorization checks reduce but do not eliminate risk -> Score 3
+* Overall Likelihood = 4 (average approx 3.75)
+Risk Score = 5 x 4 = 20 (Critical)
+
+5) Risk: "Service disruption from request flooding/abuse" (API Gateway, Denial of Service)
+Impact Assessment:
+* Legal/Regulatory: Extended outage may violate service commitments -> Score 3
+* Availability/Integrity: Legitimate transactions are blocked or delayed -> Score 4
+* Reputation: Perceived platform unreliability -> Score 4
+* Operational: Emergency scaling and response activities increase -> Score 4
+* Overall Impact = 4
+Likelihood Assessment:
+* Exposure: Public-facing gateway is always reachable -> Score 5
+* Attack Frequency: Volumetric and abusive-traffic events are common -> Score 4
+* System Complexity: Distributed services can amplify bottlenecks -> Score 3
+* Controls Present: Rate limits and traffic controls lower success probability -> Score 3
+* Overall Likelihood = 4 (average approx 3.75)
+Risk Score = 4 x 4 = 16 (Critical)
+
+6) Risk: "Unauthorized escalation to officer/admin privileges" (Admin Access Control, Elevation of Privilege)
+Impact Assessment:
+* Legal/Regulatory: Privilege abuse can expose restricted records and admin actions -> Score 5
+* Confidentiality/Integrity: High-level permissions enable wide data and config impact -> Score 5
+* Reputation: Governance failure harms stakeholder confidence -> Score 4
+* Operational: Recovery may require role resets, audits, and account suspension -> Score 4
+* Overall Impact = 5
+Likelihood Assessment:
+* Exposure: Privileged endpoints are protected but network-reachable -> Score 3
+* Attack Frequency: Authorization bypass attempts are common in web apps -> Score 4
+* System Complexity: Fine-grained permissions and role inheritance increase risk -> Score 3
+* Controls Present: Defense-in-depth authz and separation of privilege reduce likelihood -> Score 3
+* Overall Likelihood = 3 (average approx 3.25)
+Risk Score = 5 x 3 = 15 (High)
 
 4.3 Threat Prioritization
 
