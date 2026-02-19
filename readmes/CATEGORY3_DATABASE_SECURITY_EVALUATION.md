@@ -6,7 +6,7 @@
 |---|---|---|
 | Credential Storage | How are DB creds stored? | ☐ Hardcoded  ☐ Exposed .env  ☑ Secure .env  ☐ Vault |
 | Access Control | Who can access DB? | ☐ Admin all  ☐ Roles  ☑ RBAC  ☐ RBAC + ABAC |
-| Encryption at Rest | Is data encrypted? | ☐ None  ☐ Some  ☑ Full  ☐ Field + TDE |
+| Encryption at Rest | Is data encrypted? | ☐ None  ☐ Some  ☐ Full  ☑ Field + TDE |
 | Backup Security | Are backups secured? | ☑ None  ☐ Unencrypted  ☐ Encrypted  ☐ Encrypted + offsite |
 | Audit Logging | Are DB actions logged? | ☐ None  ☐ Errors  ☑ Full logs  ☐ Real-time alerts |
 | Connection Security | Are connections encrypted? | ☐ Plain  ☐ Self-signed  ☑ Valid TLS  ☐ mTLS + pinning |
@@ -16,7 +16,9 @@
 
 1. Credential Storage: inspect `config/settings.py` and confirm DB URI is read from env vars; verify no hardcoded credentials in source.
 2. Access Control: test endpoints with different roles (customer/officer/admin) and verify unauthorized roles cannot access restricted resources.
-3. Encryption at Rest: verify your MongoDB Atlas cluster security settings for encryption-at-rest status.
+3. Encryption at Rest: verify both layers:
+   - TDE (storage-level): check MongoDB Atlas cluster settings (Encryption at Rest enabled/KMS).
+   - Field-level: confirm sensitive fields are stored as encrypted tokens (`enc::...`) and decrypted only in the app model layer.
 4. Backup Security: verify whether automated backups/snapshots are enabled in Atlas and whether backup storage is encrypted/offsite.
 5. Audit Logging: perform actions (login, upload, approve/reject, admin changes) then verify corresponding entries appear in audit logs.
 6. Connection Security: confirm deployed DB URI uses `mongodb+srv` and test successful TLS connection in production.
