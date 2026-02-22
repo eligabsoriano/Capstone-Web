@@ -15,26 +15,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { getNameValidationError, normalizeName } from "@/lib/nameValidation";
 import type { CreateOfficerRequest, OfficerSearchParams } from "@/types/api";
 import { useCreateOfficer, useOfficersList } from "../hooks";
-
-// Department options - can be configured as needed
-const DEPARTMENT_OPTIONS = [
-  "Loans Department",
-  "Credit Analysis",
-  "Collections",
-  "Customer Service",
-  "Risk Management",
-  "Operations",
-] as const;
 
 export function AdminOfficersPage() {
   const navigate = useNavigate();
@@ -62,7 +45,6 @@ export function AdminOfficersPage() {
     last_name: "",
     email: "",
     phone: "",
-    department: "",
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
@@ -186,7 +168,6 @@ export function AdminOfficersPage() {
           last_name: "",
           email: "",
           phone: "",
-          department: "",
         });
         setFormErrors({});
       }
@@ -571,31 +552,6 @@ export function AdminOfficersPage() {
                   }
                   placeholder="+63 912 345 6789"
                 />
-              </div>
-              <div>
-                <label
-                  htmlFor="officer-department"
-                  className="text-sm font-medium"
-                >
-                  Department
-                </label>
-                <Select
-                  value={createForm.department}
-                  onValueChange={(value) =>
-                    setCreateForm({ ...createForm, department: value })
-                  }
-                >
-                  <SelectTrigger id="officer-department">
-                    <SelectValue placeholder="Select department..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {DEPARTMENT_OPTIONS.map((dept) => (
-                      <SelectItem key={dept} value={dept}>
-                        {dept}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
               </div>
             </div>
             {formErrors.general && (

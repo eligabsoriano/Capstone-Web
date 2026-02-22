@@ -22,22 +22,6 @@ interface UseLoginReturn {
   clearError: () => void;
 }
 
-const DEMO_REDACTED_BCRYPT_SAMPLE = "$2b$12$xxxxx...[REDACTED]";
-
-function roleLabel(role: "loan_officer" | "admin"): "Loan Officer" | "Admin" {
-  return role === "admin" ? "Admin" : "Loan Officer";
-}
-
-function logDemoLoginSecurityProof(role: "loan_officer" | "admin"): void {
-  console.group("[Security Demo] Login Proof");
-  console.log("Login success message:", "User authenticated successfully");
-  console.log("User role:", roleLabel(role));
-  console.log("Password hash verification status:", true);
-  console.log("Hash algorithm used:", "bcrypt");
-  console.log("Redacted bcrypt hash sample:", DEMO_REDACTED_BCRYPT_SAMPLE);
-  console.groupEnd();
-}
-
 /**
  * Hook for handling login functionality for both loan officers and admins
  */
@@ -94,7 +78,6 @@ export function useLogin(): UseLoginReturn {
 
         // Always redirect to officer dashboard
         // Note: Backend change-password endpoint not supported for loan officers
-        logDemoLoginSecurityProof(role);
         navigate("/officer");
       } else {
         const adminData = data as AdminLoginResponse;
@@ -108,7 +91,6 @@ export function useLogin(): UseLoginReturn {
           superAdmin: adminData.user.super_admin,
         };
         setUser(user);
-        logDemoLoginSecurityProof(role);
         navigate("/admin");
       }
     },
