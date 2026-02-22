@@ -27,6 +27,7 @@ import {
   get2FAStatus,
   setup2FA,
 } from "@/features/auth/api";
+import { useAuthStore } from "@/features/auth/store/authStore";
 import { parseError } from "@/lib/errors";
 
 // ============================================================================
@@ -49,6 +50,7 @@ interface TwoFactorStatus {
 interface SetupData {
   provisioningUri: string;
   manualEntryKey: string;
+  qrCodeDataUrl?: string;
 }
 
 // ============================================================================
@@ -56,6 +58,8 @@ interface SetupData {
 // ============================================================================
 
 export function TwoFactorSettings() {
+  const currentUser = useAuthStore((state) => state.user);
+  const isAdminUser = currentUser?.role === "admin";
   const [status, setStatus] = useState<TwoFactorStatus | null>(null);
   const [step, setStep] = useState<SetupStep>("idle");
   const [setupData, setSetupData] = useState<SetupData | null>(null);
@@ -115,6 +119,7 @@ export function TwoFactorSettings() {
         setSetupData({
           provisioningUri: response.data.provisioning_uri,
           manualEntryKey: response.data.manual_entry_key,
+          qrCodeDataUrl: response.data.qr_code_data_url,
         });
         setStep("qr-display");
       } else {
@@ -315,6 +320,11 @@ export function TwoFactorSettings() {
               your account by requiring a code from your authenticator app when
               signing in.
             </p>
+            {isAdminUser && (
+              <p className="text-sm font-medium text-amber-700">
+                2FA is mandatory for administrator accounts.
+              </p>
+            )}
             <Button onClick={handleStartSetup}>
               <Shield className="mr-2 h-4 w-4" />
               Enable Two-Factor Authentication
@@ -333,6 +343,11 @@ export function TwoFactorSettings() {
               <p className="mt-1 text-sm text-green-600">
                 Backup codes remaining: {status.backupCodesRemaining}
               </p>
+              {isAdminUser && (
+                <p className="mt-1 text-xs text-green-700">
+                  2FA cannot be disabled for administrator accounts.
+                </p>
+              )}
             </div>
 
             <div className="flex flex-wrap gap-2">
@@ -360,18 +375,20 @@ export function TwoFactorSettings() {
                 <QrCode className="mr-2 h-4 w-4" />
                 Generate New Backup Codes
               </Button>
-              <Button
-                variant="destructive"
-                onClick={handleDisable}
-                disabled={!password || isProcessing}
-              >
-                {isProcessing ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <ShieldOff className="mr-2 h-4 w-4" />
-                )}
-                Disable 2FA
-              </Button>
+              {!isAdminUser && (
+                <Button
+                  variant="destructive"
+                  onClick={handleDisable}
+                  disabled={!password || isProcessing}
+                >
+                  {isProcessing ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <ShieldOff className="mr-2 h-4 w-4" />
+                  )}
+                  Disable 2FA
+                </Button>
+              )}
             </div>
           </div>
         )}
@@ -384,13 +401,22 @@ export function TwoFactorSettings() {
                 Scan this QR code with your authenticator app (Google
                 Authenticator, Authy, etc.)
               </p>
-              <div className="inline-block rounded-lg border bg-white p-4">
-                <img
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(setupData.provisioningUri)}`}
-                  alt="2FA QR Code"
-                  className="h-48 w-48"
-                />
-              </div>
+              {setupData.qrCodeDataUrl ? (
+                <div className="inline-block rounded-lg border bg-white p-4">
+                  <img
+                    src={setupData.qrCodeDataUrl}
+                    alt="2FA QR Code"
+                    className="h-48 w-48"
+                  />
+                </div>
+              ) : (
+                <Alert>
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    QR image is unavailable. Use the manual setup key below.
+                  </AlertDescription>
+                </Alert>
+              )}
             </div>
 
             <div className="rounded-lg border bg-muted/50 p-3">

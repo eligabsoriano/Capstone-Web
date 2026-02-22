@@ -31,7 +31,11 @@ export interface LoanOfficerLoginResponse {
   user: LoanOfficerUser;
   must_change_password: boolean;
   requires_2fa?: boolean;
+  requires_2fa_setup?: boolean;
   temp_token?: string;
+  provisioning_uri?: string;
+  manual_entry_key?: string;
+  qr_code_data_url?: string;
 }
 
 // ============================================================================
@@ -58,7 +62,11 @@ export interface AdminLoginResponse {
   refresh_token: string;
   user: AdminUser;
   requires_2fa?: boolean;
+  requires_2fa_setup?: boolean;
   temp_token?: string;
+  provisioning_uri?: string;
+  manual_entry_key?: string;
+  qr_code_data_url?: string;
 }
 
 // ============================================================================
@@ -74,11 +82,13 @@ export interface Verify2FAResponse {
   access_token: string;
   refresh_token: string;
   user: LoanOfficerUser | AdminUser;
+  backup_codes?: string[];
 }
 
 export interface Setup2FAResponse {
   provisioning_uri: string;
   manual_entry_key: string;
+  qr_code_data_url?: string;
   message: string;
 }
 

@@ -27,7 +27,8 @@ interface UseLoginReturn {
  */
 export function useLogin(): UseLoginReturn {
   const navigate = useNavigate();
-  const { setUser, setTempToken, setRequires2FA } = useAuthStore();
+  const { setUser, setTempToken, setRequires2FA, setTwoFactorSetup } =
+    useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,13 +48,19 @@ export function useLogin(): UseLoginReturn {
       if (data.requires_2fa && data.temp_token) {
         setTempToken(data.temp_token);
         setRequires2FA(true);
+        setTwoFactorSetup(
+          data.requires_2fa_setup
+            ? {
+                required: true,
+                provisioningUri: data.provisioning_uri,
+                manualEntryKey: data.manual_entry_key,
+                qrCodeDataUrl: data.qr_code_data_url,
+              }
+            : null,
+        );
         navigate("/verify-2fa");
         return;
       }
-
-      // Store tokens
-      localStorage.setItem("access_token", data.access_token);
-      localStorage.setItem("refresh_token", data.refresh_token);
 
       // Transform and store user data based on role
       if (role === "loan_officer") {
@@ -87,7 +94,7 @@ export function useLogin(): UseLoginReturn {
         navigate("/admin");
       }
     },
-    [navigate, setUser, setTempToken, setRequires2FA],
+    [navigate, setUser, setTempToken, setRequires2FA, setTwoFactorSetup],
   );
 
   /**

@@ -30,11 +30,7 @@ export interface ApplicationSearchParams {
   risk_category?: "low" | "medium" | "high";
   page?: number;
   page_size?: number;
-  sort_by?:
-    | "submitted_at"
-    | "requested_amount"
-    | "eligibility_score"
-    | "customer_name";
+  sort_by?: "submitted_at" | "requested_amount" | "eligibility_score";
   sort_order?: "asc" | "desc";
 }
 

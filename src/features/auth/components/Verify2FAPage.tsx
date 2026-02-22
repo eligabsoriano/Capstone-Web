@@ -39,10 +39,18 @@ type Verify2FAFormData = z.infer<typeof verify2FASchema>;
 
 export function Verify2FAPage() {
   const navigate = useNavigate();
-  const { tempToken, setRequires2FA, setTempToken } = useAuthStore();
+  const {
+    tempToken,
+    twoFactorSetup,
+    setRequires2FA,
+    setTempToken,
+    setTwoFactorSetup,
+  } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [useBackupCode, setUseBackupCode] = useState(false);
+  const isSetupRequired = twoFactorSetup?.required === true;
+  const qrImageSrc = twoFactorSetup?.qrCodeDataUrl;
 
   const {
     register,
@@ -69,16 +77,12 @@ export function Verify2FAPage() {
       const response = await apiClient.post("/api/auth/2fa/verify/", {
         temp_token: tempToken,
         code: data.code,
-        use_backup: useBackupCode,
+        use_backup: isSetupRequired ? false : useBackupCode,
       });
 
       const result = response.data;
 
       if (result.status === "success" && result.data) {
-        // Store tokens - backend returns 'access' and 'refresh'
-        localStorage.setItem("access_token", result.data.access);
-        localStorage.setItem("refresh_token", result.data.refresh);
-
         // Determine user role and create user object
         const userData = result.data.user;
         let user: import("../store/authStore").User;
@@ -114,6 +118,7 @@ export function Verify2FAPage() {
         setUser(user);
         setRequires2FA(false);
         setTempToken(null);
+        setTwoFactorSetup(null);
 
         // Redirect based on role
         navigate(user.role === "admin" ? "/admin" : "/officer");
@@ -130,6 +135,7 @@ export function Verify2FAPage() {
   const handleBackToLogin = () => {
     setRequires2FA(false);
     setTempToken(null);
+    setTwoFactorSetup(null);
     navigate("/login");
   };
 
@@ -141,12 +147,16 @@ export function Verify2FAPage() {
             <ShieldCheck className="h-6 w-6 text-primary" />
           </div>
           <CardTitle className="text-2xl font-bold">
-            Two-Factor Authentication
+            {isSetupRequired
+              ? "Two-Factor Setup Required"
+              : "Two-Factor Authentication"}
           </CardTitle>
           <CardDescription>
-            {useBackupCode
-              ? "Enter one of your backup codes"
-              : "Enter the 6-digit code from your authenticator app"}
+            {isSetupRequired
+              ? "Scan the QR code, then enter your first 6-digit code to activate 2FA."
+              : useBackupCode
+                ? "Enter one of your backup codes"
+                : "Enter the 6-digit code from your authenticator app"}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -158,18 +168,61 @@ export function Verify2FAPage() {
             </Alert>
           )}
 
+          {isSetupRequired && twoFactorSetup?.manualEntryKey && (
+            <div className="mb-4 space-y-3">
+              {qrImageSrc ? (
+                <div className="text-center">
+                  <div className="inline-block rounded-lg border bg-white p-4">
+                    <img
+                      src={qrImageSrc}
+                      alt="2FA Setup QR Code"
+                      className="h-44 w-44"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <Alert>
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    QR image is unavailable. Use the manual setup key below.
+                  </AlertDescription>
+                </Alert>
+              )}
+              <div className="rounded-md border bg-muted/50 p-3">
+                <p className="text-xs text-muted-foreground">
+                  Manual setup key:
+                </p>
+                <code className="mt-1 block break-all rounded bg-background px-2 py-1 font-mono text-xs">
+                  {twoFactorSetup.manualEntryKey}
+                </code>
+              </div>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="code">
-                {useBackupCode ? "Backup Code" : "Verification Code"}
+                {isSetupRequired
+                  ? "Verification Code"
+                  : useBackupCode
+                    ? "Backup Code"
+                    : "Verification Code"}
               </Label>
               <Input
                 id="code"
                 type="text"
-                inputMode={useBackupCode ? "text" : "numeric"}
-                placeholder={useBackupCode ? "XXXX-XXXX" : "000000"}
+                inputMode={
+                  isSetupRequired || !useBackupCode ? "numeric" : "text"
+                }
+                placeholder={
+                  isSetupRequired
+                    ? "000000"
+                    : useBackupCode
+                      ? "XXXX-XXXX"
+                      : "000000"
+                }
                 autoComplete="one-time-code"
-                maxLength={useBackupCode ? 10 : 6}
+                maxLength={isSetupRequired || !useBackupCode ? 6 : 10}
                 className="text-center text-2xl tracking-widest"
                 disabled={isLoading}
                 {...register("code")}
@@ -204,31 +257,33 @@ export function Verify2FAPage() {
             </Button>
           </form>
 
-          <p className="mt-4 text-center text-sm text-muted-foreground">
-            {useBackupCode ? (
-              <>
-                Have your authenticator?{" "}
-                <button
-                  type="button"
-                  className="text-primary hover:underline"
-                  onClick={() => setUseBackupCode(false)}
-                >
-                  Use authenticator code
-                </button>
-              </>
-            ) : (
-              <>
-                Can't access your authenticator?{" "}
-                <button
-                  type="button"
-                  className="text-primary hover:underline"
-                  onClick={() => setUseBackupCode(true)}
-                >
-                  Use backup code
-                </button>
-              </>
-            )}
-          </p>
+          {!isSetupRequired && (
+            <p className="mt-4 text-center text-sm text-muted-foreground">
+              {useBackupCode ? (
+                <>
+                  Have your authenticator?{" "}
+                  <button
+                    type="button"
+                    className="text-primary hover:underline"
+                    onClick={() => setUseBackupCode(false)}
+                  >
+                    Use authenticator code
+                  </button>
+                </>
+              ) : (
+                <>
+                  Can't access your authenticator?{" "}
+                  <button
+                    type="button"
+                    className="text-primary hover:underline"
+                    onClick={() => setUseBackupCode(true)}
+                  >
+                    Use backup code
+                  </button>
+                </>
+              )}
+            </p>
+          )}
         </CardContent>
       </Card>
     </div>

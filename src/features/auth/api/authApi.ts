@@ -5,7 +5,6 @@ import type {
   ApiResponse,
   LoanOfficerLoginRequest,
   LoanOfficerLoginResponse,
-  LogoutRequest,
 } from "@/types/api";
 
 // ============================================================================
@@ -30,12 +29,10 @@ export async function loginLoanOfficer(
  * Logout as a loan officer
  * POST /api/auth/loan-officer/logout/
  */
-export async function logoutLoanOfficer(
-  refreshToken: string,
-): Promise<ApiResponse<null>> {
+export async function logoutLoanOfficer(): Promise<ApiResponse<null>> {
   const response = await apiClient.post<ApiResponse<null>>(
     "/api/auth/loan-officer/logout/",
-    { refresh_token: refreshToken } as LogoutRequest,
+    {},
   );
   return response.data;
 }
@@ -62,12 +59,10 @@ export async function loginAdmin(
  * Logout as an admin
  * POST /api/auth/admin/logout/
  */
-export async function logoutAdmin(
-  refreshToken: string,
-): Promise<ApiResponse<null>> {
+export async function logoutAdmin(): Promise<ApiResponse<null>> {
   const response = await apiClient.post<ApiResponse<null>>(
     "/api/auth/admin/logout/",
-    { refresh_token: refreshToken } as LogoutRequest,
+    {},
   );
   return response.data;
 }
@@ -80,13 +75,12 @@ export async function logoutAdmin(
  * Generic logout function that calls the appropriate endpoint based on user role
  */
 export async function logout(
-  refreshToken: string,
   role: "loan_officer" | "admin",
 ): Promise<ApiResponse<null>> {
   if (role === "admin") {
-    return logoutAdmin(refreshToken);
+    return logoutAdmin();
   }
-  return logoutLoanOfficer(refreshToken);
+  return logoutLoanOfficer();
 }
 
 // ============================================================================
@@ -97,13 +91,12 @@ export async function logout(
  * Refresh access token using refresh token
  * POST /api/auth/refresh-token/
  */
-export async function refreshAccessToken(
-  refreshToken: string,
-): Promise<ApiResponse<{ access_token: string }>> {
-  const response = await apiClient.post<ApiResponse<{ access_token: string }>>(
-    "/api/auth/refresh-token/",
-    { refresh: refreshToken },
-  );
+export async function refreshAccessToken(): Promise<
+  ApiResponse<{ access: string; refresh: string }>
+> {
+  const response = await apiClient.post<
+    ApiResponse<{ access: string; refresh: string }>
+  >("/api/auth/refresh-token/", {});
   return response.data;
 }
 
@@ -120,8 +113,8 @@ export async function verify2FA(data: {
   code: string;
 }): Promise<
   ApiResponse<{
-    access_token: string;
-    refresh_token: string;
+    access: string;
+    refresh: string;
     user:
       | import("@/types/api").LoanOfficerUser
       | import("@/types/api").AdminUser;
@@ -129,8 +122,8 @@ export async function verify2FA(data: {
 > {
   const response = await apiClient.post<
     ApiResponse<{
-      access_token: string;
-      refresh_token: string;
+      access: string;
+      refresh: string;
       user:
         | import("@/types/api").LoanOfficerUser
         | import("@/types/api").AdminUser;
@@ -147,6 +140,7 @@ export async function setup2FA(): Promise<
   ApiResponse<{
     provisioning_uri: string;
     manual_entry_key: string;
+    qr_code_data_url?: string;
     message: string;
   }>
 > {
@@ -154,6 +148,7 @@ export async function setup2FA(): Promise<
     ApiResponse<{
       provisioning_uri: string;
       manual_entry_key: string;
+      qr_code_data_url?: string;
       message: string;
     }>
   >("/api/auth/2fa/setup/");

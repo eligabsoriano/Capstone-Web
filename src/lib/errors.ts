@@ -24,6 +24,9 @@ function formatWaitTime(totalSeconds: number): string {
  */
 export function parseError(err: unknown): string {
   const axiosError = err as {
+    config?: {
+      url?: string;
+    };
     response?: {
       data?: {
         message?: string;
@@ -33,6 +36,21 @@ export function parseError(err: unknown): string {
       status?: number;
     };
   };
+  const requestUrl = axiosError?.config?.url || "";
+  const isLoginRequest = [
+    "/api/auth/login/",
+    "/api/auth/loan-officer/login/",
+    "/api/auth/admin/login/",
+  ].some((path) => requestUrl.includes(path));
+  const status = axiosError?.response?.status;
+
+  // Enforce generic auth failures for login endpoints to prevent user enumeration.
+  if (isLoginRequest && status === 429) {
+    return "Too many login attempts. Please try again later.";
+  }
+  if (isLoginRequest && [401, 403, 404, 423].includes(status ?? 0)) {
+    return "Invalid credentials. Please check your email/username and password.";
+  }
 
   // Handle field-specific validation errors
   if (axiosError?.response?.data?.errors) {
@@ -59,9 +77,6 @@ export function parseError(err: unknown): string {
   if (axiosError?.response?.data?.message) {
     return axiosError.response.data.message;
   }
-
-  // Map status codes
-  const status = axiosError?.response?.status;
 
   // Handle rate limiting (429)
   if (status === 429) {
