@@ -631,7 +631,7 @@ export interface OfficerApplicationDetail {
       business_name: string | null;
       business_type: string | null;
       business_address: string | null;
-      years_in_operation: number | null;
+      business_age_months: number | null;
       is_registered: boolean;
       income_range: string | null;
       estimated_monthly_income: number | null;

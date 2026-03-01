@@ -40,6 +40,21 @@ import {
   useReviewApplication,
 } from "../hooks";
 
+/**
+ * Convert business age from months (canonical unit) to display format
+ * Maps to original buckets for consistency with mobile UX
+ */
+function formatBusinessAge(months: number | null | undefined): string {
+  if (!months) return "-";
+
+  // Map months back to original categories
+  if (months < 12) return "Less than 1 year";
+  if (months <= 24) return "1-2 years";
+  if (months <= 60) return "3-5 years";
+  if (months <= 120) return "6-10 years";
+  return "More than 10 years";
+}
+
 export function OfficerApplicationDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -481,9 +496,10 @@ export function OfficerApplicationDetailPage() {
                     Years in Operation
                   </p>
                   <p className="font-medium">
-                    {application.customer?.business_profile
-                      ?.years_in_operation ?? "-"}{" "}
-                    years
+                    {formatBusinessAge(
+                      application.customer?.business_profile
+                        ?.business_age_months,
+                    )}
                   </p>
                 </div>
                 <div>
