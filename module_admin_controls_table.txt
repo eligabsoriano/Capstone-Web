@@ -1,0 +1,66 @@
+Capstone-Web Admin Controls (bulleted version)
+Note: "Owner / Backup" and "Frequency & SLA" are suggested placeholders based on code evidence and can be edited to match your module format.
+
+- Admin Task: Access control (Admin/Officer)
+  Requirement (plain): Only authorized users should access admin/officer pages and actions.
+  Control (what we do): Backend enforces RBAC/ABAC in API views; frontend uses protected routes, role guards, and permission guards before rendering pages.
+  Evidence (artifact): `backend/accounts/utils/access_control.py`; `src/features/auth/components/RouteGuards.tsx`; `src/app/router.tsx`
+  Owner / Backup: Backend Dev / Tech Lead
+  Frequency & SLA: Every request; deny immediately on unauthorized access
+  Storage / System: Django REST API + MongoDB auth records + React Router
+
+- Admin Task: Login protection
+  Requirement (plain): Reduce brute force and invalid login abuse.
+  Control (what we do): Login endpoints use rate throttles and account lockout after failed attempts; generic error messages reduce info leakage.
+  Evidence (artifact): `backend/accounts/views/auth_views.py`; `backend/accounts/utils/throttles.py`; `backend/accounts/services/lockout_service.py`; `src/features/auth/components/LoginPage.tsx`
+  Owner / Backup: Security Owner / Backend Dev
+  Frequency & SLA: Every login attempt; lockout 15 min after threshold
+  Storage / System: Auth API + MongoDB customer/admin/officer records
+
+- Admin Task: Two-factor authentication (2FA)
+  Requirement (plain): Add extra verification for sign-in, especially privileged users.
+  Control (what we do): TOTP-based 2FA with QR setup, backup codes, and throttled verification; frontend has 2FA verify/setup flow screen.
+  Evidence (artifact): `backend/accounts/services/two_factor_service.py`; `backend/accounts/views/two_factor_views.py`; `src/features/auth/components/Verify2FAPage.tsx`
+  Owner / Backup: Security Owner / Admin Lead
+  Frequency & SLA: Per login when enabled; immediate verification response
+  Storage / System: Auth API + authenticator app + MongoDB stored 2FA fields
+
+- Admin Task: Session and API request security
+  Requirement (plain): Keep API requests authenticated and protected from CSRF issues.
+  Control (what we do): Frontend axios client sends CSRF token for unsafe requests, uses cookies, and retries on token refresh; backend issues CSRF token endpoint and cookie-based auth helpers.
+  Evidence (artifact): `src/shared/api/client.ts`; `backend/accounts/views/auth_views.py`; `backend/config/middleware.py`; `backend/config/settings.py`
+  Owner / Backup: Frontend Dev / Backend Dev
+  Frequency & SLA: Every unsafe API request; auto refresh on 401
+  Storage / System: Browser cookies + Django API + JWT/refresh flow
+
+- Admin Task: Audit logging and admin review
+  Requirement (plain): Important actions should be traceable and reviewable by admins.
+  Control (what we do): Backend stores audit logs for login, documents, loans, and admin actions; frontend admin page filters, views, and exports logs (CSV/Excel).
+  Evidence (artifact): `backend/analytics/models/audit_log.py`; `src/features/admin/pages/AdminAuditLogsPage.tsx`; `src/app/router.tsx`
+  Owner / Backup: Compliance/Admin / Super Admin
+  Frequency & SLA: Real-time logging; admin review on demand (e.g., daily/weekly)
+  Storage / System: MongoDB `audit_logs` + Admin UI
+
+- Admin Task: Document upload and review workflow
+  Requirement (plain): Customer documents must be uploaded, stored, reviewed, and tracked.
+  Control (what we do): Backend validates uploads, stores files through a storage backend, logs actions, and supports review notifications; frontend officer page lists, verifies, and requests re-upload.
+  Evidence (artifact): `backend/documents/views/document_views.py`; `backend/documents/storage/backends.py`; `src/features/loan-officer/api/documentsApi.ts`; `src/features/loan-officer/pages/OfficerDocumentsPage.tsx`
+  Owner / Backup: Loan Ops / Loan Officer Lead
+  Frequency & SLA: Per upload/review action; update status immediately
+  Storage / System: Local media storage (`MEDIA_ROOT`) + MongoDB document metadata + Officer UI
+
+- Admin Task: Backup and restore (database ops)
+  Requirement (plain): Data should be recoverable after failure or incident.
+  Control (what we do): Encrypted MongoDB backup script uses `mongodump` + OpenSSL and retention cleanup; restore script decrypts and restores into target DB for recovery testing.
+  Evidence (artifact): `backend/scripts/create_encrypted_backup.py`; `backend/scripts/restore_encrypted_backup.py`
+  Owner / Backup: DevOps/Admin / Tech Lead
+  Frequency & SLA: Suggested: daily backup, weekly restore test; recovery per incident
+  Storage / System: Encrypted backup files (`.archive.gz.enc`) + MongoDB
+
+- Admin Task: Health check and availability visibility
+  Requirement (plain): Team should be able to check service health quickly.
+  Control (what we do): Backend exposes `/api/health/` with MongoDB/AI service status; frontend shows online/offline banner for user connectivity awareness.
+  Evidence (artifact): `backend/config/views.py`; `backend/config/urls.py`; `src/components/common/NetworkStatusBanner.tsx`
+  Owner / Backup: DevOps / Backend Dev
+  Frequency & SLA: Suggested: monitor every 5 min; alert on degraded/503
+  Storage / System: Health endpoint + browser network status
