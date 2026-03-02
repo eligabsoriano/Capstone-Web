@@ -47,8 +47,8 @@ import {
 function formatBusinessAge(months: number | null | undefined): string {
   if (!months) return "-";
 
-  // Map months back to original categories
-  if (months < 12) return "Less than 1 year";
+  // Map months back to original categories (matching mobile app wording)
+  if (months < 12) return "Under 1 year";
   if (months <= 24) return "1-2 years";
   if (months <= 60) return "3-5 years";
   if (months <= 120) return "6-10 years";
