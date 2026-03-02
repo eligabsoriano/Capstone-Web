@@ -57,6 +57,9 @@ import { getNameValidationError, normalizeName } from "@/lib/nameValidation";
 import type { AdminSearchParams, CreateAdminRequest } from "@/types/api";
 import { useAdminsList, useCreateAdmin } from "../hooks";
 
+const ADMIN_NAME_MAX_LENGTH = 50;
+const ADMIN_USERNAME_MAX_LENGTH = 50;
+
 export function AdminAdminsPage() {
   const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState<
@@ -148,6 +151,11 @@ export function AdminAdminsPage() {
       errors.username = "Username is required";
     } else if (createForm.username.length < 3) {
       errors.username = "Username must be at least 3 characters";
+    } else if (createForm.username.length > ADMIN_USERNAME_MAX_LENGTH) {
+      errors.username = `Username must be at most ${ADMIN_USERNAME_MAX_LENGTH} characters`;
+    } else if (!/^[A-Za-z0-9_-]+$/.test(createForm.username)) {
+      errors.username =
+        "Username can only contain letters, numbers, underscores, and hyphens";
     }
 
     if (!createForm.first_name.trim()) {
@@ -156,6 +164,7 @@ export function AdminAdminsPage() {
       const nameError = getNameValidationError(
         createForm.first_name,
         "First name",
+        ADMIN_NAME_MAX_LENGTH,
       );
       if (nameError) {
         errors.first_name = nameError;
@@ -168,6 +177,7 @@ export function AdminAdminsPage() {
       const nameError = getNameValidationError(
         createForm.last_name,
         "Last name",
+        ADMIN_NAME_MAX_LENGTH,
       );
       if (nameError) {
         errors.last_name = nameError;
@@ -213,8 +223,26 @@ export function AdminAdminsPage() {
         });
         setFormErrors({});
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to create admin:", err);
+
+      const apiResponse = err?.response?.data;
+
+      if (apiResponse?.errors && typeof apiResponse.errors === "object") {
+        const flattenedErrors = Object.fromEntries(
+          Object.entries(apiResponse.errors).map(([field, value]) => [
+            field,
+            Array.isArray(value) ? String(value[0] ?? "") : String(value ?? ""),
+          ]),
+        );
+        setFormErrors(flattenedErrors);
+      } else if (apiResponse?.message) {
+        setFormErrors({ general: apiResponse.message });
+      } else if (err?.message) {
+        setFormErrors({ general: err.message });
+      } else {
+        setFormErrors({ general: "Failed to create admin. Please try again." });
+      }
     }
   };
 
@@ -481,6 +509,7 @@ export function AdminAdminsPage() {
                 <Input
                   id="admin-username"
                   value={createForm.username}
+                  maxLength={ADMIN_USERNAME_MAX_LENGTH}
                   onChange={(e) =>
                     setCreateForm({ ...createForm, username: e.target.value })
                   }
@@ -504,7 +533,7 @@ export function AdminAdminsPage() {
                   <Input
                     id="admin-first-name"
                     value={createForm.first_name}
-                    maxLength={50}
+                    maxLength={ADMIN_NAME_MAX_LENGTH}
                     onChange={(e) =>
                       setCreateForm({
                         ...createForm,
@@ -532,7 +561,7 @@ export function AdminAdminsPage() {
                   <Input
                     id="admin-last-name"
                     value={createForm.last_name}
-                    maxLength={50}
+                    maxLength={ADMIN_NAME_MAX_LENGTH}
                     onChange={(e) =>
                       setCreateForm({
                         ...createForm,
@@ -639,9 +668,9 @@ export function AdminAdminsPage() {
                 </div>
               )}
             </div>
-            {createAdminMutation.error && (
+            {formErrors.general && (
               <p className="text-destructive text-sm mt-4">
-                Failed to create admin. Please try again.
+                {formErrors.general}
               </p>
             )}
             <div className="flex justify-end gap-2 mt-6">

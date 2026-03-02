@@ -19,6 +19,10 @@ import { getNameValidationError, normalizeName } from "@/lib/nameValidation";
 import type { CreateOfficerRequest, OfficerSearchParams } from "@/types/api";
 import { useCreateOfficer, useOfficersList } from "../hooks";
 
+const OFFICER_NAME_MAX_LENGTH = 50;
+const OFFICER_EMPLOYEE_ID_MAX_LENGTH = 20;
+const OFFICER_PHONE_LENGTH = 11;
+
 export function AdminOfficersPage() {
   const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState<
@@ -107,6 +111,13 @@ export function AdminOfficersPage() {
 
     if (!createForm.employee_id.trim()) {
       errors.employee_id = "Employee ID is required";
+    } else if (
+      createForm.employee_id.trim().length > OFFICER_EMPLOYEE_ID_MAX_LENGTH
+    ) {
+      errors.employee_id = "Employee ID must be at most 20 characters";
+    } else if (!/^[A-Za-z0-9_-]+$/.test(createForm.employee_id.trim())) {
+      errors.employee_id =
+        "Employee ID can only contain letters, numbers, underscores, and hyphens";
     }
 
     if (!createForm.first_name.trim()) {
@@ -115,6 +126,7 @@ export function AdminOfficersPage() {
       const nameError = getNameValidationError(
         createForm.first_name,
         "First name",
+        OFFICER_NAME_MAX_LENGTH,
       );
       if (nameError) {
         errors.first_name = nameError;
@@ -127,6 +139,7 @@ export function AdminOfficersPage() {
       const nameError = getNameValidationError(
         createForm.last_name,
         "Last name",
+        OFFICER_NAME_MAX_LENGTH,
       );
       if (nameError) {
         errors.last_name = nameError;
@@ -137,6 +150,10 @@ export function AdminOfficersPage() {
       errors.email = "Email is required";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(createForm.email)) {
       errors.email = "Please enter a valid email address";
+    }
+
+    if (createForm.phone?.trim() && !/^\d{11}$/.test(createForm.phone.trim())) {
+      errors.phone = "Phone must be exactly 11 digits";
     }
 
     setFormErrors(errors);
@@ -449,6 +466,7 @@ export function AdminOfficersPage() {
                 <Input
                   id="officer-employee-id"
                   value={createForm.employee_id}
+                  maxLength={OFFICER_EMPLOYEE_ID_MAX_LENGTH}
                   onChange={(e) =>
                     setCreateForm({
                       ...createForm,
@@ -475,7 +493,7 @@ export function AdminOfficersPage() {
                   <Input
                     id="officer-first-name"
                     value={createForm.first_name}
-                    maxLength={50}
+                    maxLength={OFFICER_NAME_MAX_LENGTH}
                     onChange={(e) =>
                       setCreateForm({
                         ...createForm,
@@ -503,7 +521,7 @@ export function AdminOfficersPage() {
                   <Input
                     id="officer-last-name"
                     value={createForm.last_name}
-                    maxLength={50}
+                    maxLength={OFFICER_NAME_MAX_LENGTH}
                     onChange={(e) =>
                       setCreateForm({
                         ...createForm,
@@ -547,11 +565,24 @@ export function AdminOfficersPage() {
                 <Input
                   id="officer-phone"
                   value={createForm.phone}
+                  inputMode="numeric"
+                  maxLength={OFFICER_PHONE_LENGTH}
                   onChange={(e) =>
-                    setCreateForm({ ...createForm, phone: e.target.value })
+                    setCreateForm({
+                      ...createForm,
+                      phone: e.target.value
+                        .replace(/\D/g, "")
+                        .slice(0, OFFICER_PHONE_LENGTH),
+                    })
                   }
-                  placeholder="+63 912 345 6789"
+                  placeholder="09123456789"
+                  className={formErrors.phone ? "border-destructive" : ""}
                 />
+                {formErrors.phone && (
+                  <p className="text-destructive text-xs mt-1">
+                    {formErrors.phone}
+                  </p>
+                )}
               </div>
             </div>
             {formErrors.general && (
